@@ -3,7 +3,7 @@
     <input
       name="file"
       type="file"
-      @change="handleSelect($event)"
+      @change="handleFileOpening($event)"
     />
     <div
       v-if="currentlyPlaying"
@@ -15,42 +15,68 @@
       <div>
         <audio
           v-if="audioURL"
+          preload="auto"
+          ref="player"
+          :src="audioURL"
+          :type="audioType"
           controls
-        >
-          <source
-            :src="audioURL"
-            :type="audioType"
-          />
-        </audio>
+        />
       </div>
       <div
         v-for="item in playlist"
-        :key="item.path"
+        :key="item.id"
       >
         <button
           type="button"
-          @click="handleTrackSelection(item.path)"
+          @click="handleTrackSelection(item.id)"
         >
           {{ item.path }}
         </button>
       </div>
     </div>
+    <div class="controls">
+      <button
+        type="button"
+        @click="playPrevious()"
+      >
+        Previous
+      </button>
+      <button
+        type="button"
+        @click="playNext()"
+      >
+        Next
+      </button>
+      <button
+        type="button"
+        @click="clearPlaylist()"
+      >
+        Clear playlist
+      </button>
+    </div>
+    <div
+      v-if="playbackError"
+      class="error"
+    >
+      {{ playbackError }}
+    </div>
   </div>
 </template>
 
 <script>
-import * as fs from 'fs';
-
-const fsPromises = fs.promises;
+import { promises as fs } from 'fs';
+import { lookup } from 'mime-types';
 
 export default {
   name: 'App',
   data() {
     return {
-      playlist: [],
+      audioID: null,
       audioPath: '',
       audioType: '',
       audioURL: '',
+      playbackError: '',
+      playlist: [],
     };
   },
   computed: {
@@ -65,14 +91,15 @@ export default {
     /**
      * Handle file selection
      * @param {event} event - input event
-     * @returns {Promise<*>}
+     * @returns {void}
      */
-    async handleSelect(event) {
+    handleFileOpening(event) {
       event.preventDefault();
-      console.log(event);
+      this.playbackError = '';
 
       // add file to the playlist
       this.playlist.push({
+        id: Date.now(),
         path: event.target.files[0].path,
         type: event.target.files[0].type,
       });
@@ -82,11 +109,66 @@ export default {
       this.audioURL = URL.createObjectURL(event.target.files[0]);
       return localStorage.setItem('playlist', JSON.stringify(this.playlist));
     },
-    async handleTrackSelection(path = '') {
-      console.log('path:', path);
-      console.log(fsPromises);
-      const file = await fsPromises.readFile(path);
-      console.log('file', file);
+    /**
+     * Handle track selection
+     * @param {number|string} id - track ID
+     * @returns {Promise<*>}
+     */
+    async handleTrackSelection(id = '') {
+      try {
+        this.playbackError = '';
+        this.audioPath = '';
+
+        // open a file
+        const [{ path = '' }] = this.playlist.filter((item) => item.id === id);
+        const buffer = await fs.readFile(path);
+
+        this.audioID = id;
+        this.audioPath = path;
+        this.audioType = lookup(path.split('.').slice(-1)[0]);
+
+        return this.audioURL = URL.createObjectURL(new Blob([buffer], { type: this.audioType }));
+      } catch (error) {
+        console.log('>>>>>>>>> error', error, Object.keys(error), error.code, error.syscall);
+        if (error.code && error.code === 'ENOENT') {
+          return this.playbackError = 'File not found!';
+        }
+        return this.playbackError = 'Error!';
+      }
+    },
+    /**
+     * Clear playlist
+     * @returns {void}
+     */
+    clearPlaylist() {
+      localStorage.removeItem('playlist');
+      this.audioPath = '';
+      this.audioType = '';
+      this.audioURL = '';
+      this.playbackError = '';
+      return this.playlist = [];
+    },
+    /**
+     * Play the next track
+     * @returns {*}
+     */
+    playNext() {
+      const playlistIDs = this.playlist.map(({ id = null }) => id);
+      const nextTrackID = playlistIDs[playlistIDs.indexOf(this.audioID) + 1];
+      if (nextTrackID) {
+        return this.handleTrackSelection(nextTrackID);
+      }
+    },
+    /**
+     * Play the previous track
+     * @returns {Promise<*>}
+     */
+    async playPrevious() {
+      const playlistIDs = this.playlist.map(({ id = null }) => id);
+      const previousTrackID = playlistIDs[playlistIDs.indexOf(this.audioID) - 1];
+      if (previousTrackID) {
+        return this.handleTrackSelection(previousTrackID);
+      }
     },
   },
 };
@@ -102,8 +184,17 @@ export default {
   margin-top: 60px;
 }
 .player {
-  padding: 32px;
-  color: white;
   background-color: black;
+  color: white;
+  font-size: 24px;
+  padding: 32px;
+}
+.error {
+  color: red;
+  font-size: 20px;
+}
+.controls {
+  display: flex;
+  justify-content: space-between;
 }
 </style>
