@@ -22,43 +22,17 @@
           controls
         />
       </div>
-      <div
-        v-for="item in playlist"
-        :key="item.id"
-      >
-        <button
-          type="button"
-          @click="handleTrackSelection(item.id)"
-        >
-          {{ item.path }}
-        </button>
-      </div>
+      <Playlist
+        :tracks="playlist"
+        @select-track="handleTrackSelection($event)"
+      />
     </div>
-    <div class="controls">
-      <button
-        type="button"
-        @click="playPrevious()"
-      >
-        Previous
-      </button>
-      <button
-        type="button"
-        @click="playNext()"
-      >
-        Next
-      </button>
-      <button
-        type="button"
-        @click="clearPlaylist()"
-      >
-        Clear playlist
-      </button>
-    </div>
-    <div
-      v-if="playbackError"
-      class="error"
-    >
-      {{ playbackError }}
+    <PlaybackControls
+      @play-next="playNext()"
+      @play-previous="playPrevious()"
+    />
+    <div v-if="playbackError">
+      <PlaybackError :message="playbackError" />
     </div>
   </div>
 </template>
@@ -66,9 +40,19 @@
 <script>
 import { promises as fs } from 'fs';
 import { lookup } from 'mime-types';
+import { nextTick } from 'vue';
+
+import PlaybackControls from './components/PlaybackControls';
+import PlaybackError from './components/PlaybackError';
+import Playlist from './components/Playlist';
 
 export default {
   name: 'App',
+  components: {
+    PlaybackControls,
+    PlaybackError,
+    Playlist,
+  },
   data() {
     return {
       audioID: null,
@@ -123,13 +107,15 @@ export default {
         const [{ path = '' }] = this.playlist.filter((item) => item.id === id);
         const buffer = await fs.readFile(path);
 
+        // prepare the file and load it
         this.audioID = id;
         this.audioPath = path;
         this.audioType = lookup(path.split('.').slice(-1)[0]);
+        this.audioURL = URL.createObjectURL(new Blob([buffer], { type: this.audioType }));
 
-        return this.audioURL = URL.createObjectURL(new Blob([buffer], { type: this.audioType }));
+        // auto-play on the next refresh tick
+        return nextTick(() => this.$refs.player.play());
       } catch (error) {
-        console.log('>>>>>>>>> error', error, Object.keys(error), error.code, error.syscall);
         if (error.code && error.code === 'ENOENT') {
           return this.playbackError = 'File not found!';
         }
@@ -188,13 +174,5 @@ export default {
   color: white;
   font-size: 24px;
   padding: 32px;
-}
-.error {
-  color: red;
-  font-size: 20px;
-}
-.controls {
-  display: flex;
-  justify-content: space-between;
 }
 </style>
