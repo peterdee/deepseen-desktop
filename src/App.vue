@@ -82,16 +82,25 @@ export default {
       this.playbackError = '';
 
       // add file to the playlist
-      this.playlist.push({
-        id: Date.now(),
-        path: event.target.files[0].path,
-        type: event.target.files[0].type,
-      });
+      const id = Date.now();
 
+      this.audioID = id;
       this.audioPath = event.target.files[0].path;
       this.audioType = event.target.files[0].type;
       this.audioURL = URL.createObjectURL(event.target.files[0]);
-      return localStorage.setItem('playlist', JSON.stringify(this.playlist));
+      return nextTick(() => {
+        const { player } = this.$refs;
+        return player.onloadedmetadata = () => {
+          this.playlist.push({
+            duration: player.duration,
+            id,
+            path: event.target.files[0].path,
+            type: event.target.files[0].type,
+          });
+          localStorage.setItem('playlist', JSON.stringify(this.playlist));
+          return player.play();
+        };
+      });
     },
     /**
      * Handle track selection
