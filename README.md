@@ -1,24 +1,48 @@
-# vue-electron-audioplayer
+## vue-electron-audioplayer
 
-## Project setup
-```
-npm install
+A very simple audio player with Vue and Electron
+
+DEV (browser): http://localhost:8080
+
+### Deploy
+
+```shell script
+git clone https://github.com/peterdee/vue-electron-audioplayer
+cd ./vue-electron-audioplayer
+nvm use 14
+npm i
 ```
 
-### Compiles and hot-reloads for development
-```
+### Launch
+
+Browser:
+
+```shell script
 npm run serve
 ```
 
-### Compiles and minifies for production
+Standalone:
+
+```shell script
+npm run electron:serve
 ```
+
+### Build
+
+Static:
+
+```shell script
 npm run build
 ```
 
-### Lints and fixes files
-```
-npm run lint
+Binary:
+
+```shell script
+npm run electron:build
 ```
 
-### Customize configuration
-See [Configuration Reference](https://cli.vuejs.org/config/).
+### Linting
+
+```shell script
+npm run lint
+```

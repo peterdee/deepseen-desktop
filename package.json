@@ -2,16 +2,35 @@
   "name": "vue-electron-audioplayer",
   "version": "1.0.0",
   "private": true,
+  "author": {
+    "name": "Peter Dyumin",
+    "url": "https://github.com/peterdee"
+  },
+  "description": "A very simple audio player with Vue and Electron",
+  "homepage": "https://github.com/peterdee/vue-electron-audioplayer",
+  "main": "background.js",
   "scripts": {
-    "serve": "vue-cli-service serve",
     "build": "vue-cli-service build",
-    "lint": "vue-cli-service lint",
     "electron:build": "vue-cli-service electron:build",
     "electron:serve": "vue-cli-service electron:serve",
+    "lint": "vue-cli-service lint",
     "postinstall": "electron-builder install-app-deps",
-    "postuninstall": "electron-builder install-app-deps"
+    "postuninstall": "electron-builder install-app-deps",
+    "serve": "vue-cli-service serve"
   },
-  "main": "background.js",
+  "engines": {
+    "node": "14.4.0",
+    "npm": "6.14.5"
+  },
+  "repository": {
+    "type": "git",
+    "url": "git+https://github.com/peterdee/vue-electron-audioplayer"
+  },
+  "keywords": [
+    "Audio player",
+    "Electron",
+    "Vue"
+  ],
   "dependencies": {
     "core-js": "^3.6.5",
     "mime-types": "^2.1.27",
