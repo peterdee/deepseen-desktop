@@ -73,9 +73,8 @@ export default {
   display: flex;
   font-size: 16px;
   justify-content: space-between;
-  margin: 4px 0;
   outline: none;
-  padding: 4px 16px;
+  padding: 8px 16px;
   text-align: left;
   transition: background-color 125ms ease-in-out;
   width: 100%;

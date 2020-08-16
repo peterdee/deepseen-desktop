@@ -1,16 +1,18 @@
 <template>
   <div class="controls">
     <button
+      class="control-button"
       type="button"
       @click="$emit('play-previous')"
     >
-      Previous
+      ◄
     </button>
     <button
+      class="control-button"
       type="button"
       @click="$emit('play-next')"
     >
-      Next
+      ►
     </button>
   </div>
 </template>
@@ -23,7 +25,24 @@ export default {
 
 <style>
 .controls {
+  background-color: black;
   display: flex;
-  justify-content: space-between;
+  justify-content: center;
+  padding: 16px;
+}
+.control-button {
+  background-color: white;
+  border: none;
+  border-radius: 50%;
+  font-size: 16px;
+  margin: 0 4px;
+  outline: none;
+  padding: 16px;
+  transition: background-color 150ms ease-in-out;
+}
+.control-button:hover {
+  background-color: #bfbfbf;
+  cursor: pointer;
+  transition: background-color 150ms ease-in-out;
 }
 </style>

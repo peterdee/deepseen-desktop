@@ -40,7 +40,6 @@
 <script>
 import { promises as fs } from 'fs';
 import { lookup } from 'mime-types';
-import { nextTick } from 'vue';
 
 import PlaybackControls from './components/PlaybackControls';
 import PlaybackError from './components/PlaybackError';
@@ -81,26 +80,23 @@ export default {
       event.preventDefault();
       this.playbackError = '';
 
-      // add file to the playlist
       const id = Date.now();
 
       this.audioID = id;
       this.audioPath = event.target.files[0].path;
       this.audioType = event.target.files[0].type;
       this.audioURL = URL.createObjectURL(event.target.files[0]);
-      return nextTick(() => {
-        const { player } = this.$refs;
-        return player.onloadedmetadata = () => {
-          this.playlist.push({
-            duration: player.duration,
-            id,
-            path: event.target.files[0].path,
-            type: event.target.files[0].type,
-          });
-          localStorage.setItem('playlist', JSON.stringify(this.playlist));
-          return player.play();
-        };
-      });
+      
+      const { player } = this.$refs;
+      return player.onloadedmetadata = () => {
+        this.playlist.push({
+          duration: player.duration,
+          id,
+          path: event.target.files[0].path,
+          type: event.target.files[0].type,
+        });
+        return localStorage.setItem('playlist', JSON.stringify(this.playlist));
+      };
     },
     /**
      * Handle track selection
@@ -110,7 +106,6 @@ export default {
     async handleTrackSelection(id = '') {
       try {
         this.playbackError = '';
-        this.audioPath = '';
 
         // open a file
         const [{ path = '' }] = this.playlist.filter((item) => item.id === id);
@@ -122,8 +117,9 @@ export default {
         this.audioType = lookup(path.split('.').slice(-1)[0]);
         this.audioURL = URL.createObjectURL(new Blob([buffer], { type: this.audioType }));
 
-        // auto-play on the next refresh tick
-        return nextTick(() => this.$refs.player.play());
+        // play the track
+        const { player } = this.$refs;
+        return player.onloadedmetadata = () => player.play();
       } catch (error) {
         if (error.code && error.code === 'ENOENT') {
           return this.playbackError = 'File not found!';
@@ -137,6 +133,7 @@ export default {
      */
     clearPlaylist() {
       localStorage.removeItem('playlist');
+      this.audioID = '';
       this.audioPath = '';
       this.audioType = '';
       this.audioURL = '';
@@ -156,9 +153,9 @@ export default {
     },
     /**
      * Play the previous track
-     * @returns {Promise<*>}
+     * @returns {*}
      */
-    async playPrevious() {
+    playPrevious() {
       const playlistIDs = this.playlist.map(({ id = null }) => id);
       const previousTrackID = playlistIDs[playlistIDs.indexOf(this.audioID) - 1];
       if (previousTrackID) {
