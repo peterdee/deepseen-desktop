@@ -94,10 +94,13 @@ export default {
      * @returns {void}
      */
     handleFileDrop(event) {
-      this.playbackError = '';
-
       const file = event.dataTransfer.files[0];
-      const id = Date.now();
+
+      // make sure that the file is not in the playlist (compare paths)
+      const existingFile = this.playlist.filter(({ path = '' }) => path === file.path);
+      if (existingFile) {
+        return false;
+      }
 
       return nextTick(() => {
         const audio = new Audio();
@@ -107,7 +110,7 @@ export default {
         audio.oncanplay = () => {
           this.playlist.push({
             duration: audio.duration,
-            id,
+            id: Date.now(),
             path: file.path,
             type: file.type,
           });
