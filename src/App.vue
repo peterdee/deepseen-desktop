@@ -30,8 +30,8 @@
     />
     <PlaylistControls
       @clear-playlist="clearPlaylist()"
-      @open-playlist="openPlaylist()"
-      @save-playlist="savePlaylist()"
+      @open-playlist="openPlaylistFromFS()"
+      @save-playlist="savePlaylistToFS()"
     />
     <div v-if="playbackError">
       <PlaybackError
@@ -42,9 +42,12 @@
 </template>
 
 <script>
+import { remote as electron } from 'electron';
 import { nextTick } from 'vue';
 import { promises as fs } from 'fs';
 import { lookup } from 'mime-types';
+
+import { deletePlaylist, getPlaylist, savePlaylist } from './utilities/playlist';
 
 import PlaybackControls from './components/PlaybackControls';
 import PlaybackError from './components/PlaybackError';
@@ -80,12 +83,36 @@ export default {
       return this.audioPath.split('/').slice(-1)[0] || 'Nothing is playing';
     },
   },
-  mounted() {
+  async mounted() {
     // load application options
     this.options = JSON.parse(localStorage.getItem('options')) || defaultOptions;
 
     // load stored playlist
-    this.playlist = JSON.parse(localStorage.getItem('playlist')) || [];
+    this.playlist = getPlaylist() || [];
+
+    // load last played track
+    const lastPlayedID = localStorage.getItem('last') || null;
+    if (lastPlayedID) {
+      try {
+        const [track = {}] = this.playlist.filter(
+          (item) => Number(item.id) === Number(lastPlayedID),
+        );
+        if (track && track.path) {
+          const { path = '' } = track;
+          const buffer = await fs.readFile(path);
+
+          this.audioID = lastPlayedID;
+          this.audioPath = path;
+          this.audioType = lookup(path.split('.').slice(-1)[0]);
+          this.audioURL = URL.createObjectURL(new Blob([buffer], { type: this.audioType }));
+        }
+      } catch (error) {
+        if (error.code && error.code === 'ENOENT') {
+          return this.playbackError = 'File not found!';
+        }
+        return this.playbackError = 'Error!';
+      }
+    }
   },
   methods: {
     /**
@@ -114,7 +141,7 @@ export default {
             path: file.path,
             type: file.type,
           });
-          return localStorage.setItem('playlist', JSON.stringify(this.playlist));
+          return savePlaylist(this.playlist);
         };
       });
     },
@@ -137,6 +164,8 @@ export default {
         this.audioType = lookup(path.split('.').slice(-1)[0]);
         this.audioURL = URL.createObjectURL(new Blob([buffer], { type: this.audioType }));
 
+        localStorage.setItem('last', id);
+
         // play the track
         return nextTick(() => {
           const { player } = this.$refs;
@@ -144,7 +173,7 @@ export default {
             // play the next track when current one ends
             player.onended = () => this.playNext();
 
-            // play the current track  
+            // play the current track
             return player.play();
           };
         });
@@ -160,7 +189,8 @@ export default {
      * @returns {void}
      */
     clearPlaylist() {
-      localStorage.removeItem('playlist');
+      localStorage.removeItem('last');
+      deletePlaylist();
       this.audioID = '';
       this.audioPath = '';
       this.audioType = '';
@@ -172,8 +202,34 @@ export default {
      * Open an existing playlist
      * @returns {Promise<*>}
      */
-    openPlaylist() {
-      return console.log('open playlist');
+    async openPlaylistFromFS() {
+      try {
+        const {
+          canceled = false,
+          filePaths = [],
+        } = await electron.dialog.showOpenDialog(null, ['openFile']);
+        if (canceled) {
+          return false;
+        }
+
+        // open the file and convert it
+        const buffer = await fs.readFile(filePaths[0]);
+        const string = await buffer.toString('utf8');
+
+        // update the playlist
+        this.playlist = JSON.parse(string);
+        savePlaylist(this.playlist);
+
+        // play the first file if playlist is not empty
+        if (this.playlist.length > 0) {
+          return this.handleTrackSelection(this.playlist[0].id);
+        }
+      } catch (error) {
+        if (error.code && error.code === 'ENOENT') {
+          return this.playbackError = 'File not found!';
+        }
+        return this.playbackError = 'Error!';
+      }
     },
     /**
      * Play the next track
@@ -211,14 +267,35 @@ export default {
      * Save current playlist
      * @returns {Promise<*>}
      */
-    savePlaylist() {
-      return console.log('save playlist', this.playlist);
+    async savePlaylistToFS() {
+      try {
+        const { canceled = false, filePath = '' } = await electron.dialog.showSaveDialog(
+          null,
+          {
+            title: 'Save playlist',
+            buttonLabel: 'Save',
+            message: 'Please provide the playlist name',
+          },
+        );
+        if (canceled) {
+          return false;
+        }
+        
+        return fs.writeFile(`${filePath}.spl`, JSON.stringify(this.playlist));
+      } catch (error) {
+        return this.playbackError = 'Error saving playlist!';
+      }
     },
   },
 };
 </script>
 
 <style>
+body, html {
+  background-color: black;
+  margin: 0;
+  padding: 0;
+}
 #app {
   font-family: Avenir, Helvetica, Arial, sans-serif;
   -webkit-font-smoothing: antialiased;

@@ -21,6 +21,9 @@ function createWindow() {
     height: 600,
     resizable: false,
     webPreferences: {
+      // enable remote module
+      enableRemoteModule: true,
+      
       // enable Node APIs
       nodeIntegration: true,
     },
