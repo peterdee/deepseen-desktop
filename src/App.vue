@@ -1,10 +1,5 @@
 <template>
   <div id="app">
-    <input
-      name="file"
-      type="file"
-      @change="handleFileOpening($event)"
-    />
     <div
       v-if="currentlyPlaying"
       class="player"
@@ -23,7 +18,9 @@
         />
       </div>
       <Playlist
+        :current="audioID"
         :tracks="playlist"
+        @add-file="handleFileDrop($event)"
         @select-track="handleTrackSelection($event)"
       />
     </div>
@@ -31,19 +28,33 @@
       @play-next="playNext()"
       @play-previous="playPrevious()"
     />
+    <PlaylistControls
+      @clear-playlist="clearPlaylist()"
+      @open-playlist="openPlaylist()"
+      @save-playlist="savePlaylist()"
+    />
     <div v-if="playbackError">
-      <PlaybackError :message="playbackError" />
+      <PlaybackError
+        :message="playbackError"
+      />
     </div>
   </div>
 </template>
 
 <script>
+import { nextTick } from 'vue';
 import { promises as fs } from 'fs';
 import { lookup } from 'mime-types';
 
 import PlaybackControls from './components/PlaybackControls';
 import PlaybackError from './components/PlaybackError';
 import Playlist from './components/Playlist';
+import PlaylistControls from './components/PlaylistControls';
+
+// default application options
+const defaultOptions = {
+  loopPlaylist: false,
+};
 
 export default {
   name: 'App',
@@ -51,6 +62,7 @@ export default {
     PlaybackControls,
     PlaybackError,
     Playlist,
+    PlaylistControls,
   },
   data() {
     return {
@@ -58,6 +70,7 @@ export default {
       audioPath: '',
       audioType: '',
       audioURL: '',
+      options: null,
       playbackError: '',
       playlist: [],
     };
@@ -68,6 +81,10 @@ export default {
     },
   },
   mounted() {
+    // load application options
+    this.options = JSON.parse(localStorage.getItem('options')) || defaultOptions;
+
+    // load stored playlist
     this.playlist = JSON.parse(localStorage.getItem('playlist')) || [];
   },
   methods: {
@@ -76,27 +93,27 @@ export default {
      * @param {event} event - input event
      * @returns {void}
      */
-    handleFileOpening(event) {
-      event.preventDefault();
+    handleFileDrop(event) {
       this.playbackError = '';
 
+      const file = event.dataTransfer.files[0];
       const id = Date.now();
 
-      this.audioID = id;
-      this.audioPath = event.target.files[0].path;
-      this.audioType = event.target.files[0].type;
-      this.audioURL = URL.createObjectURL(event.target.files[0]);
-      
-      const { player } = this.$refs;
-      return player.onloadedmetadata = () => {
-        this.playlist.push({
-          duration: player.duration,
-          id,
-          path: event.target.files[0].path,
-          type: event.target.files[0].type,
-        });
-        return localStorage.setItem('playlist', JSON.stringify(this.playlist));
-      };
+      return nextTick(() => {
+        const audio = new Audio();
+        audio.src = URL.createObjectURL(file);
+
+        // update the playlist
+        audio.oncanplay = () => {
+          this.playlist.push({
+            duration: audio.duration,
+            id,
+            path: file.path,
+            type: file.type,
+          });
+          return localStorage.setItem('playlist', JSON.stringify(this.playlist));
+        };
+      });
     },
     /**
      * Handle track selection
@@ -118,8 +135,16 @@ export default {
         this.audioURL = URL.createObjectURL(new Blob([buffer], { type: this.audioType }));
 
         // play the track
-        const { player } = this.$refs;
-        return player.onloadedmetadata = () => player.play();
+        return nextTick(() => {
+          const { player } = this.$refs;
+          player.oncanplay = () => {
+            // play the next track when current one ends
+            player.onended = () => this.playNext();
+
+            // play the current track  
+            return player.play();
+          };
+        });
       } catch (error) {
         if (error.code && error.code === 'ENOENT') {
           return this.playbackError = 'File not found!';
@@ -139,6 +164,13 @@ export default {
       this.audioURL = '';
       this.playbackError = '';
       return this.playlist = [];
+    },
+    /**
+     * Open an existing playlist
+     * @returns {Promise<*>}
+     */
+    openPlaylist() {
+      return console.log('open playlist');
     },
     /**
      * Play the next track
@@ -162,6 +194,13 @@ export default {
         return this.handleTrackSelection(previousTrackID);
       }
     },
+    /**
+     * Save current playlist
+     * @returns {Promise<*>}
+     */
+    savePlaylist() {
+      return console.log('save playlist', this.playlist);
+    },
   },
 };
 </script>
@@ -172,8 +211,6 @@ export default {
   -webkit-font-smoothing: antialiased;
   -moz-osx-font-smoothing: grayscale;
   text-align: center;
-  color: #2c3e50;
-  margin-top: 60px;
 }
 .player {
   background-color: black;

@@ -1,11 +1,16 @@
 <template>
-  <div class="playlist">
+  <div
+    v-cloak
+    class="playlist"
+    @drop.prevent="$emit('add-file', $event)"
+    @dragover.prevent
+  >
     <div
       v-for="track in tracks"
       :key="track.id"
     >
       <button
-        class="track"
+        :class="['track', track.id === current ? 'active' : '']"
         type="button"
         @click="$emit('select-track', track.id)"
       >
@@ -24,6 +29,13 @@
 export default {
   name: 'Playlist',
   props: {
+    current: {
+      default() {
+        return null;
+      },
+      required: false,
+      type: [Number, String],
+    },
     tracks: {
       required: true,
       type: Array,
@@ -66,9 +78,13 @@ export default {
   justify-content: flex-start;
   overflow: scroll;
 }
+.track, .track:hover, .active, .active:hover {
+  transition: background-color 125ms ease-in-out;
+}
 .track {
   background-color: transparent;
   border: none;
+  border-radius: 5px;
   color: white;
   display: flex;
   font-size: 16px;
@@ -76,15 +92,19 @@ export default {
   outline: none;
   padding: 8px 16px;
   text-align: left;
-  transition: background-color 125ms ease-in-out;
   width: 100%;
 }
 .track:hover {
   background-color: #555555;
-  border-radius: 3px;
-  transition: background-color 125ms ease-in-out;
 }
 .track-name {
   max-width: 80%;
+}
+.active {
+  background-color: turquoise;
+  color: black;
+}
+.active:hover {
+  background-color: rgb(173, 255, 247);
 }
 </style>

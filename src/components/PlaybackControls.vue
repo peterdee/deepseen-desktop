@@ -31,18 +31,20 @@ export default {
   padding: 16px;
 }
 .control-button {
-  background-color: white;
-  border: none;
+  background-color: black;
+  border: 2px solid white;
   border-radius: 50%;
+  color: white;
   font-size: 16px;
   margin: 0 4px;
   outline: none;
   padding: 16px;
-  transition: background-color 150ms ease-in-out;
+  transition: background-color 200ms ease-in-out, color 200ms ease-in-out;
 }
 .control-button:hover {
-  background-color: #bfbfbf;
+  background-color: white;
+  color: black;
   cursor: pointer;
-  transition: background-color 150ms ease-in-out;
+  transition: background-color 200ms ease-in-out, color 200ms ease-in-out;
 }
 </style>
