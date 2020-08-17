@@ -53,7 +53,7 @@ import PlaylistControls from './components/PlaylistControls';
 
 // default application options
 const defaultOptions = {
-  loopPlaylist: false,
+  loopPlaylist: true,
 };
 
 export default {
@@ -185,6 +185,11 @@ export default {
       if (nextTrackID) {
         return this.handleTrackSelection(nextTrackID);
       }
+
+      // play the first track if playlist loop is enabled
+      if (this.options.loopPlaylist) {
+        return this.handleTrackSelection(this.playlist[0].id);
+      }
     },
     /**
      * Play the previous track
@@ -195,6 +200,11 @@ export default {
       const previousTrackID = playlistIDs[playlistIDs.indexOf(this.audioID) - 1];
       if (previousTrackID) {
         return this.handleTrackSelection(previousTrackID);
+      }
+
+      // play the last track if playlist loop is enabled
+      if (this.options.loopPlaylist) {
+        return this.handleTrackSelection(this.playlist[this.playlist.length - 1].id);
       }
     },
     /**

@@ -6,7 +6,7 @@
     @dragover.prevent
   >
     <div
-      v-for="track in tracks"
+      v-for="(track, index) in tracks"
       :key="track.id"
     >
       <button
@@ -14,8 +14,13 @@
         type="button"
         @click="$emit('select-track', track.id)"
       >
-        <div class="track-name">
-          {{ formatTrackName(track.path) }}
+        <div class="track-left">
+          <div class="track-number">
+            {{ index + 1 }}
+          </div>
+          <div class="track-name">
+            {{ formatTrackName(track.path) }}
+          </div>
         </div>
         <div>
           {{ formatTrackDuration(track.duration || 0) }}
@@ -97,8 +102,15 @@ export default {
 .track:hover {
   background-color: #555555;
 }
-.track-name {
-  max-width: 80%;
+.track-left {
+  display: flex;
+}
+.track-number {
+  margin-right: 8px;
+  max-width: 64px;
+  min-width: 32px;
+  text-align: right;
+  width: 32px;
 }
 .active {
   background-color: turquoise;
