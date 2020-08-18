@@ -50,11 +50,15 @@ import { promises as fs } from 'fs';
 import { lookup } from 'mime-types';
 
 import { deletePlaylist, getPlaylist, savePlaylist } from './utilities/playlist';
+import getFileExtension from './utilities/get-file-extension';
 
 import PlaybackControls from './components/PlaybackControls';
 import PlaybackError from './components/PlaybackError';
 import Playlist from './components/Playlist';
 import PlaylistControls from './components/PlaylistControls';
+
+// allowed audio extensions
+const allowedExtensions = ['aac', 'mp3', 'wav'];
 
 // default application options
 const defaultOptions = {
@@ -78,7 +82,6 @@ export default {
       options: null,
       playbackError: '',
       playlist: [],
-      temp: [],
     };
   },
   computed: {
@@ -119,12 +122,22 @@ export default {
   },
   methods: {
     /**
-     * Handle files drag & drop
+     * Handle drag & drop
      * @param {object} event - drop event
      * @returns {void}
      */
     handleFileDrop(event) {
-      return Array.prototype.forEach.call(event.dataTransfer.files, (file) => {
+      return Array.prototype.forEach.call(event.dataTransfer.files, async (file) => {
+        // check if dropped item is a directory
+        if (!file.type) {
+          console.log('path', file);
+        }
+
+        // leave only the allowed extensions
+        if (!allowedExtensions.includes(getFileExtension(file.name))) {
+          return false;
+        }
+
         const audio = new Audio();
         audio.src = URL.createObjectURL(file);
 
