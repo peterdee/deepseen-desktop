@@ -25,10 +25,12 @@
       />
     </div>
     <PlaybackControls
+      :playlist="playlist"
       @play-next="playNext()"
       @play-previous="playPrevious()"
     />
     <PlaylistControls
+      :playlist="playlist"
       @clear-playlist="clearPlaylist()"
       @open-playlist="openPlaylistFromFS()"
       @save-playlist="savePlaylistToFS()"
@@ -76,6 +78,7 @@ export default {
       options: null,
       playbackError: '',
       playlist: [],
+      temp: [],
     };
   },
   computed: {
@@ -116,31 +119,38 @@ export default {
   },
   methods: {
     /**
-     * Handle file selection
-     * @param {event} event - input event
+     * Handle files drag & drop
+     * @param {object} event - drop event
      * @returns {void}
      */
     handleFileDrop(event) {
-      const file = event.dataTransfer.files[0];
-
-      // make sure that the file is not in the playlist (compare paths)
-      const existingFile = this.playlist.filter(({ path = '' }) => path === file.path);
-      if (existingFile) {
-        return false;
-      }
-
-      return nextTick(() => {
+      return Array.prototype.forEach.call(event.dataTransfer.files, (file) => {
         const audio = new Audio();
         audio.src = URL.createObjectURL(file);
 
-        // update the playlist
-        audio.oncanplay = () => {
-          this.playlist.push({
+        return audio.oncanplay = () => {
+          const track = {
             duration: audio.duration,
             id: Date.now(),
             path: file.path,
+            size: file.size,
             type: file.type,
-          });
+          };
+
+          // check files if playlist is not empty: do not create duplicates
+          if (this.playlist.length > 0) {
+            const [existingTrack = null] = this.playlist.filter(({ path = '' }) => path === track.path);
+            if (existingTrack) {
+              return false;
+            }
+
+            // add file to the playlist  
+            this.playlist = [...this.playlist, track];
+            return savePlaylist(this.playlist);
+          }
+
+          // add file to the playlist  
+          this.playlist = [...this.playlist, track];
           return savePlaylist(this.playlist);
         };
       });
@@ -236,6 +246,10 @@ export default {
      * @returns {*}
      */
     playNext() {
+      if (this.playlist.length === 0) {
+        return false;
+      }
+
       const playlistIDs = this.playlist.map(({ id = null }) => id);
       const nextTrackID = playlistIDs[playlistIDs.indexOf(this.audioID) + 1];
       if (nextTrackID) {
@@ -252,6 +266,10 @@ export default {
      * @returns {*}
      */
     playPrevious() {
+      if (this.playlist.length === 0) {
+        return false;
+      }
+
       const playlistIDs = this.playlist.map(({ id = null }) => id);
       const previousTrackID = playlistIDs[playlistIDs.indexOf(this.audioID) - 1];
       if (previousTrackID) {

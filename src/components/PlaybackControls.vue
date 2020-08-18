@@ -2,6 +2,7 @@
   <div class="controls">
     <button
       class="control-button"
+      :disabled="playlist.length === 0"
       type="button"
       @click="$emit('play-previous')"
     >
@@ -9,6 +10,7 @@
     </button>
     <button
       class="control-button"
+      :disabled="playlist.length === 0"
       type="button"
       @click="$emit('play-next')"
     >
@@ -20,6 +22,15 @@
 <script>
 export default {
   name: 'PlaybackControls',
+  props: {
+    playlist: {
+      default() {
+        return [];
+      },
+      required: false,
+      type: Array,
+    },
+  },
 };
 </script>
 
@@ -45,6 +56,12 @@ export default {
   background-color: white;
   color: black;
   cursor: pointer;
+  transition: background-color 200ms ease-in-out, color 200ms ease-in-out;
+}
+.control-button:disabled {
+  background-color: #696969;
+  color: #d0d0d0;
+  cursor: default;
   transition: background-color 200ms ease-in-out, color 200ms ease-in-out;
 }
 </style>

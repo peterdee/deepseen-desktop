@@ -9,6 +9,7 @@
     </button>
     <button
       class="action-button"
+      :disabled="playlist.length === 0"
       type="button"
       @click="$emit('save-playlist')"
     >
@@ -27,6 +28,15 @@
 <script>
 export default {
   name: 'PlaylistControls',
+  props: {
+    playlist: {
+      default() {
+        return [];
+      },
+      required: false,
+      type: Array,
+    },
+  },
 };
 </script>
 
@@ -49,6 +59,12 @@ export default {
   background-color: white;
   color: black;
   cursor: pointer;
+  transition: background-color 200ms ease-in-out, color 200ms ease-in-out;
+}
+.action-button:disabled {
+  background-color: #696969;
+  color: #d0d0d0;
+  cursor: default;
   transition: background-color 200ms ease-in-out, color 200ms ease-in-out;
 }
 </style>
