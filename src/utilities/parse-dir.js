@@ -1,7 +1,8 @@
-import { lookup } from 'mime-types';
 import { promises as fs } from 'fs';
+import { lookup } from 'mime-types';
 
 import checkPath from './check-path';
+import generateId from './generate-id';
 import getFileExtension from './get-file-extension';
 
 /**
@@ -28,7 +29,7 @@ async function parse(path = '', allowedExtensions = [], results = []) {
       }
 
       arr.push({
-        id: Date.now(),
+        id: generateId(),
         isDirectory: itemTypes[i].isDirectory,
         isFile: itemTypes[i].isFile,
         name: item,

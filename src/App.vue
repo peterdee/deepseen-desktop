@@ -51,6 +51,7 @@ import { lookup } from 'mime-types';
 
 import checkPath from './utilities/check-path';
 import { deletePlaylist, getPlaylist, savePlaylist } from './utilities/playlist';
+import generateId from './utilities/generate-id';
 import getFileExtension from './utilities/get-file-extension';
 import parseDir from './utilities/parse-dir';
 
@@ -135,8 +136,41 @@ export default {
           const { isDirectory = false } = await checkPath(file.path);
           if (isDirectory) {
             const tracks = await parseDir(file.path, allowedExtensions);
-            // TODO: get duration for the tracks
-            return console.log('got tracks', tracks);
+
+            for await (const item of tracks) {
+              const buffer = await fs.readFile(item.path);
+              let audio = new Audio();
+              audio.src = URL.createObjectURL(new Blob([buffer], { type: item.type }));
+
+              audio.oncanplay = () => {
+                const track = {
+                  ...item,
+                  duration: audio.duration,
+                };
+
+                // prevent memory issues
+                URL.revokeObjectURL(audio.src);
+                audio = null;
+
+                // check files if playlist is not empty: do not create duplicates
+                if (this.playlist.length > 0) {
+                  const [existingTrack = null] = this.playlist.filter(
+                    ({ path = '' }) => path === track.path,
+                  );
+                  if (existingTrack) {
+                    return false;
+                  }
+
+                  // add file to the playlist  
+                  this.playlist = [...this.playlist, track];
+                  return savePlaylist(this.playlist);
+                }
+
+                // add file to the playlist  
+                this.playlist = [...this.playlist, track];
+                return savePlaylist(this.playlist);
+              };
+            }
           }
         } catch (error) {
           return this.playbackError = 'Error loading files!';
@@ -153,7 +187,7 @@ export default {
         return audio.oncanplay = () => {
           const track = {
             duration: audio.duration,
-            id: Date.now(),
+            id: generateId(),
             name: file.name,
             path: file.path,
             size: file.size,
@@ -279,7 +313,7 @@ export default {
         return false;
       }
 
-      const playlistIDs = this.playlist.map(({ id = null }) => id);
+      const playlistIDs = this.playlist.map(({ id = '' }) => id);
       const nextTrackID = playlistIDs[playlistIDs.indexOf(this.audioID) + 1];
       if (nextTrackID) {
         return this.handleTrackSelection(nextTrackID);
@@ -299,7 +333,7 @@ export default {
         return false;
       }
 
-      const playlistIDs = this.playlist.map(({ id = null }) => id);
+      const playlistIDs = this.playlist.map(({ id = '' }) => id);
       const previousTrackID = playlistIDs[playlistIDs.indexOf(this.audioID) - 1];
       if (previousTrackID) {
         return this.handleTrackSelection(previousTrackID);

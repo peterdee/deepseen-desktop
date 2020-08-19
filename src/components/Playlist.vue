@@ -10,7 +10,7 @@
       :key="track.id"
     >
       <button
-        :class="['track', Number(track.id) === Number(current) ? 'active' : '']"
+        :class="['track', track.id === current ? 'active' : '']"
         type="button"
         @click="$emit('select-track', track.id)"
       >
