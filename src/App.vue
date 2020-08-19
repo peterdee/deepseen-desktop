@@ -49,8 +49,10 @@ import { nextTick } from 'vue';
 import { promises as fs } from 'fs';
 import { lookup } from 'mime-types';
 
+import checkPath from './utilities/check-path';
 import { deletePlaylist, getPlaylist, savePlaylist } from './utilities/playlist';
 import getFileExtension from './utilities/get-file-extension';
+import parseDir from './utilities/parse-dir';
 
 import PlaybackControls from './components/PlaybackControls';
 import PlaybackError from './components/PlaybackError';
@@ -128,9 +130,16 @@ export default {
      */
     handleFileDrop(event) {
       return Array.prototype.forEach.call(event.dataTransfer.files, async (file) => {
-        // check if dropped item is a directory
-        if (!file.type) {
-          console.log('path', file);
+        // check path to determine if it's a directory or a file
+        try {
+          const { isDirectory = false } = await checkPath(file.path);
+          if (isDirectory) {
+            const tracks = await parseDir(file.path, allowedExtensions);
+            // TODO: get duration for the tracks
+            return console.log('got tracks', tracks);
+          }
+        } catch (error) {
+          return this.playbackError = 'Error loading files!';
         }
 
         // leave only the allowed extensions
@@ -138,21 +147,28 @@ export default {
           return false;
         }
 
-        const audio = new Audio();
+        let audio = new Audio();
         audio.src = URL.createObjectURL(file);
 
         return audio.oncanplay = () => {
           const track = {
             duration: audio.duration,
             id: Date.now(),
+            name: file.name,
             path: file.path,
             size: file.size,
             type: file.type,
           };
 
+          // prevent memory issues
+          URL.revokeObjectURL(audio.src);
+          audio = null;
+
           // check files if playlist is not empty: do not create duplicates
           if (this.playlist.length > 0) {
-            const [existingTrack = null] = this.playlist.filter(({ path = '' }) => path === track.path);
+            const [existingTrack = null] = this.playlist.filter(
+              ({ path = '' }) => path === track.path,
+            );
             if (existingTrack) {
               return false;
             }
@@ -184,7 +200,7 @@ export default {
         // prepare the file and load it
         this.audioID = id;
         this.audioPath = path;
-        this.audioType = lookup(path.split('.').slice(-1)[0]);
+        this.audioType = lookup(getFileExtension(path));
         this.audioURL = URL.createObjectURL(new Blob([buffer], { type: this.audioType }));
 
         localStorage.setItem('last', id);
