@@ -10,9 +10,10 @@
       :key="track.id"
     >
       <button
-        :class="['track', track.id === current ? 'active' : '']"
+        :class="['track noselect', track.id === current ? 'active' : '']"
         type="button"
         @click="$emit('select-track', track.id)"
+        @contextmenu.prevent="$emit('show-context-menu', track.id)"
       >
         <div class="track-left">
           <div class="track-number">
@@ -74,7 +75,7 @@ export default {
 };
 </script>
 
-<style>
+<style scoped>
 .playlist {
   background-color: black;
   display: flex;

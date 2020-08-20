@@ -1,5 +1,13 @@
 <template>
   <div id="app">
+    <div v-if="contextMenu">
+      <ContextMenu
+        :playlist="playlist"
+        :trackId="contextMenuTrackId"
+        @close="closeContextMenu()"
+        @delete-track="deleteTrack($event)"
+      />
+    </div>
     <div
       v-if="currentlyPlaying"
       class="player"
@@ -22,6 +30,7 @@
         :tracks="playlist"
         @add-file="handleFileDrop($event)"
         @select-track="handleTrackSelection($event)"
+        @show-context-menu="showContextMenu($event)"
       />
     </div>
     <PlaybackControls
@@ -55,6 +64,7 @@ import generateId from './utilities/generate-id';
 import getFileExtension from './utilities/get-file-extension';
 import parseDir from './utilities/parse-dir';
 
+import ContextMenu from './components/ContextMenu';
 import PlaybackControls from './components/PlaybackControls';
 import PlaybackError from './components/PlaybackError';
 import Playlist from './components/Playlist';
@@ -71,6 +81,7 @@ const defaultOptions = {
 export default {
   name: 'App',
   components: {
+    ContextMenu,
     PlaybackControls,
     PlaybackError,
     Playlist,
@@ -82,6 +93,8 @@ export default {
       audioPath: '',
       audioType: '',
       audioURL: '',
+      contextMenu: false,
+      contextMenuTrackId: '',
       options: null,
       playbackError: '',
       playlist: [],
@@ -367,6 +380,41 @@ export default {
         return this.playbackError = 'Error saving playlist!';
       }
     },
+    /**
+     * Close context menu for the track
+     * @returns {void}
+     */
+    closeContextMenu() {
+      this.contextMenu = false;
+      return this.contextMenuTrackId = '';
+    },
+    /**
+     * Open context menu for the track
+     * @returns {void}
+     */
+    showContextMenu(trackId = '') {
+      this.contextMenu = true;
+      return this.contextMenuTrackId = trackId;
+    },
+    /**
+     * Delete track from the playlist
+     * @param {string} trackId - track ID
+     * @returns {void}
+     */
+    deleteTrack(trackId = '') {
+      // update the playlist
+      this.playlist = this.playlist.filter(({ id = '' }) => id !== trackId);
+      savePlaylist(this.playlist);
+
+      // if deleted track is currently playing, play the next one or stop
+      // TODO: check if playback is paused
+      if (trackId === this.audioID) {
+        this.playNext();
+      } 
+
+      // close context menu
+      return this.closeContextMenu();
+    },
   },
 };
 </script>
@@ -388,5 +436,12 @@ body, html {
   color: white;
   font-size: 24px;
   padding: 32px;
+}
+.noselect {
+  -webkit-touch-callout: none;
+  -webkit-user-select: none;
+  -moz-user-select: none;
+  -ms-user-select: none;
+  user-select: none;
 }
 </style>
