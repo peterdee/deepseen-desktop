@@ -29,13 +29,16 @@
   "keywords": [
     "Audio player",
     "Electron",
-    "Vue"
+    "Vue",
+    "Vuex"
   ],
   "dependencies": {
     "core-js": "^3.6.5",
     "cuid": "^2.1.8",
     "mime-types": "^2.1.27",
-    "vue": "^3.0.0-0"
+    "vue": "^3.0.0-0",
+    "vuex": "^4.0.0-beta.4",
+    "vuex-persist": "^2.2.0"
   },
   "devDependencies": {
     "@vue/cli-plugin-babel": "~4.5.0",

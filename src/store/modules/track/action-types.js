@@ -1,0 +1,2 @@
+export const TRACK_CLEAR_TRACK = 'TRACK_CLEAR_TRACK';
+export const TRACK_SET_TRACK = 'TRACK_SET_TRACK';

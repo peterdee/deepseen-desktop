@@ -34,9 +34,7 @@
       />
     </div>
     <PlaybackControls
-      :playlist="playlist"
-      @play-next="playNext()"
-      @play-previous="playPrevious()"
+      @handle-track-selection="handleTrackSelection($event)"
     />
     <PlaylistControls
       :playlist="playlist"
@@ -55,6 +53,7 @@
 <script>
 import { remote as electron } from 'electron';
 import { nextTick } from 'vue';
+import { mapActions } from 'vuex';
 import { promises as fs } from 'fs';
 import { lookup } from 'mime-types';
 
@@ -64,8 +63,8 @@ import generateId from './utilities/generate-id';
 import getFileExtension from './utilities/get-file-extension';
 import parseDir from './utilities/parse-dir';
 
-import ContextMenu from './components/ContextMenu';
-import PlaybackControls from './components/PlaybackControls';
+import ContextMenu from './modals/ContextMenu';
+import PlaybackControls from './components/PlaybackControls/PlaybackControls';
 import PlaybackError from './components/PlaybackError';
 import Playlist from './components/Playlist';
 import PlaylistControls from './components/PlaylistControls';
@@ -79,7 +78,7 @@ const defaultOptions = {
 };
 
 export default {
-  name: 'App',
+  name: 'Player',
   components: {
     ContextMenu,
     PlaybackControls,
@@ -137,6 +136,9 @@ export default {
     }
   },
   methods: {
+    ...mapActions({
+      addTrack: 'playlist/addTrack',
+    }),
     /**
      * Handle drag & drop
      * @param {object} event - drop event
@@ -176,12 +178,18 @@ export default {
 
                   // add file to the playlist  
                   this.playlist = [...this.playlist, track];
-                  return savePlaylist(this.playlist);
+                  savePlaylist(this.playlist);
+                  
+                  // store track in Vuex
+                  return this.addTrack(track);
                 }
 
                 // add file to the playlist  
                 this.playlist = [...this.playlist, track];
-                return savePlaylist(this.playlist);
+                savePlaylist(this.playlist);
+
+                // store track in Vuex
+                return this.addTrack(track);
               };
             }
           }
@@ -419,29 +427,4 @@ export default {
 };
 </script>
 
-<style>
-body, html {
-  background-color: black;
-  margin: 0;
-  padding: 0;
-}
-#app {
-  font-family: Avenir, Helvetica, Arial, sans-serif;
-  -webkit-font-smoothing: antialiased;
-  -moz-osx-font-smoothing: grayscale;
-  text-align: center;
-}
-.player {
-  background-color: black;
-  color: white;
-  font-size: 24px;
-  padding: 32px;
-}
-.noselect {
-  -webkit-touch-callout: none;
-  -webkit-user-select: none;
-  -moz-user-select: none;
-  -ms-user-select: none;
-  user-select: none;
-}
-</style>
+<style src="./Player.css" />
