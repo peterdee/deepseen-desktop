@@ -250,6 +250,7 @@ export default {
         this.audioURL = URL.createObjectURL(new Blob([buffer], { type: this.audioType }));
 
         localStorage.setItem('last', id);
+        // setTrack(track);
 
         // play the track
         return nextTick(() => {
@@ -353,7 +354,7 @@ export default {
       // TODO: check if playback is paused
       if (trackId === this.audioID) {
         this.playNext();
-      } 
+      }
 
       // close context menu
       return this.closeContextMenu();

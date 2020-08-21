@@ -11,7 +11,7 @@
       <button
         class="action-button menu-button"
         type="button"
-        @click="$emit('delete-track', trackId)"
+        @click="handleDelete()"
       >
         Delete
       </button>
@@ -34,6 +34,7 @@ export default {
   computed: {
     ...mapState({
       contextTrackId: ({ contextMenu }) => contextMenu.trackId,
+      track: ({ track }) => track.track,
       tracks: ({ playlist }) => playlist.tracks,
     }),
     /**
@@ -46,8 +47,25 @@ export default {
   },
   methods: {
     ...mapActions({
+      clearTrack: 'track/clearTrack',
+      deleteTrackFromPlaylist: 'playlist/deleteTrack',
+      setContextMenuTrackId: 'contextMenu/setTrackId',
       setContextMenuVisibility: 'contextMenu/setVisibility',
     }),
+    /**
+     * Handle track deleting
+     * @returns {Promise<void>}
+     */
+    async handleDelete() {
+      try {
+        await this.clearTrack();
+        await this.deleteTrackFromPlaylist(this.contextTrackId);
+        await this.setContextMenuTrackId('');
+        return this.setContextMenuVisibility(false);
+      } catch (error) {
+        return console.log(error);
+      }
+    },
   },
 };
 </script>
