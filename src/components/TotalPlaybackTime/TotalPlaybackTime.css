@@ -1,0 +1,7 @@
+.wrap {
+  color: white;
+  display: flex;
+  font-size: 14px;
+  justify-content: center;
+  text-align: center;
+}

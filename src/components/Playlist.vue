@@ -10,7 +10,7 @@
       :key="track.id"
     >
       <button
-        :class="['track noselect', track.id === current ? 'active' : '']"
+        :class="['track noselect', track.id === current.id ? 'active' : '']"
         type="button"
         @click="$emit('select-track', track.id)"
         @contextmenu.prevent="$emit('show-context-menu', track.id)"
@@ -20,7 +20,7 @@
             {{ index + 1 }}
           </div>
           <div class="track-name">
-            {{ formatTrackName(track.path) }}
+            {{ track.name }}
           </div>
         </div>
         <div>
@@ -32,20 +32,17 @@
 </template>
 
 <script>
+import { mapState } from 'vuex';
+
+import formatTime from '../utilities/format-time';
+
 export default {
   name: 'Playlist',
-  props: {
-    current: {
-      default() {
-        return null;
-      },
-      required: false,
-      type: [Number, String],
-    },
-    tracks: {
-      required: true,
-      type: Array,
-    },
+  computed: {
+    ...mapState({
+      current: ({ track }) => track.track,
+      tracks: ({ playlist }) => playlist.tracks,
+    }),
   },
   methods: {
     /**
@@ -54,22 +51,7 @@ export default {
      * @returns {string}
      */
     formatTrackDuration(value = 0) {
-      const seconds = Math.round(value);
-      const fullMinutes = Math.floor(seconds / 60);
-      const leftOverSeconds = seconds - (fullMinutes * 60);
-      const formattedMinutes = fullMinutes > 9 ? fullMinutes : `0${fullMinutes}`;
-      const formattedSeconds = leftOverSeconds > 9 ? leftOverSeconds : `0${leftOverSeconds}`;
-      return `${formattedMinutes}:${formattedSeconds}`;
-    },
-    /**
-     * Format track name
-     * @param {string} path - track file path
-     * @returns {string}
-     */
-    formatTrackName(path = '') {
-      const [fileName = ''] = path.split('/').slice(-1);
-      const partials = fileName.split('.');
-      return partials.splice(0, partials.length - 1).join('.');
+      return formatTime(value);
     },
   },
 };

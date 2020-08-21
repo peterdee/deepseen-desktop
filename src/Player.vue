@@ -33,6 +33,7 @@
         @show-context-menu="showContextMenu($event)"
       />
     </div>
+    <TotalPlaybackTime /> 
     <PlaybackControls
       @handle-track-selection="handleTrackSelection($event)"
     />
@@ -63,11 +64,12 @@ import generateId from './utilities/generate-id';
 import getFileExtension from './utilities/get-file-extension';
 import parseDir from './utilities/parse-dir';
 
-import ContextMenu from './modals/ContextMenu';
+import ContextMenu from './modals/ContextMenu/ContextMenu';
 import PlaybackControls from './components/PlaybackControls/PlaybackControls';
 import PlaybackError from './components/PlaybackError';
 import Playlist from './components/Playlist';
 import PlaylistControls from './components/PlaylistControls';
+import TotalPlaybackTime from './components/TotalPlaybackTime/TotalPlaybackTime';
 
 // allowed audio extensions
 const allowedExtensions = ['aac', 'mp3', 'wav'];
@@ -85,6 +87,7 @@ export default {
     PlaybackError,
     Playlist,
     PlaylistControls,
+    TotalPlaybackTime,
   },
   data() {
     return {
@@ -323,46 +326,6 @@ export default {
           return this.playbackError = 'File not found!';
         }
         return this.playbackError = 'Error!';
-      }
-    },
-    /**
-     * Play the next track
-     * @returns {*}
-     */
-    playNext() {
-      if (this.playlist.length === 0) {
-        return false;
-      }
-
-      const playlistIDs = this.playlist.map(({ id = '' }) => id);
-      const nextTrackID = playlistIDs[playlistIDs.indexOf(this.audioID) + 1];
-      if (nextTrackID) {
-        return this.handleTrackSelection(nextTrackID);
-      }
-
-      // play the first track if playlist loop is enabled
-      if (this.options.loopPlaylist) {
-        return this.handleTrackSelection(this.playlist[0].id);
-      }
-    },
-    /**
-     * Play the previous track
-     * @returns {*}
-     */
-    playPrevious() {
-      if (this.playlist.length === 0) {
-        return false;
-      }
-
-      const playlistIDs = this.playlist.map(({ id = '' }) => id);
-      const previousTrackID = playlistIDs[playlistIDs.indexOf(this.audioID) - 1];
-      if (previousTrackID) {
-        return this.handleTrackSelection(previousTrackID);
-      }
-
-      // play the last track if playlist loop is enabled
-      if (this.options.loopPlaylist) {
-        return this.handleTrackSelection(this.playlist[this.playlist.length - 1].id);
       }
     },
     /**
