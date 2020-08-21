@@ -1,40 +1,3 @@
-<template>
-  <div class="controls">
-    <button
-      class="control-button"
-      :disabled="playlist.length === 0"
-      type="button"
-      @click="$emit('play-previous')"
-    >
-      ◄
-    </button>
-    <button
-      class="control-button"
-      :disabled="playlist.length === 0"
-      type="button"
-      @click="$emit('play-next')"
-    >
-      ►
-    </button>
-  </div>
-</template>
-
-<script>
-export default {
-  name: 'PlaybackControls',
-  props: {
-    playlist: {
-      default() {
-        return [];
-      },
-      required: false,
-      type: Array,
-    },
-  },
-};
-</script>
-
-<style>
 .controls {
   background-color: black;
   display: flex;
@@ -64,4 +27,3 @@ export default {
   cursor: default;
   transition: background-color 200ms ease-in-out, color 200ms ease-in-out;
 }
-</style>

@@ -2,9 +2,6 @@
   <div id="app">
     <div v-if="contextMenu">
       <ContextMenu
-        :playlist="playlist"
-        :trackId="contextMenuTrackId"
-        @close="closeContextMenu()"
         @delete-track="deleteTrack($event)"
       />
     </div>
@@ -26,17 +23,14 @@
         />
       </div>
       <Playlist
-        :current="audioID"
-        :tracks="playlist"
         @add-file="handleFileDrop($event)"
         @select-track="handleTrackSelection($event)"
         @show-context-menu="showContextMenu($event)"
       />
     </div>
+    <TotalPlaybackTime /> 
     <PlaybackControls
-      :playlist="playlist"
-      @play-next="playNext()"
-      @play-previous="playPrevious()"
+      @handle-track-selection="handleTrackSelection($event)"
     />
     <PlaylistControls
       :playlist="playlist"
@@ -55,6 +49,7 @@
 <script>
 import { remote as electron } from 'electron';
 import { nextTick } from 'vue';
+import { mapActions, mapState } from 'vuex';
 import { promises as fs } from 'fs';
 import { lookup } from 'mime-types';
 
@@ -64,28 +59,25 @@ import generateId from './utilities/generate-id';
 import getFileExtension from './utilities/get-file-extension';
 import parseDir from './utilities/parse-dir';
 
-import ContextMenu from './components/ContextMenu';
-import PlaybackControls from './components/PlaybackControls';
+import ContextMenu from './modals/ContextMenu/ContextMenu';
+import PlaybackControls from './components/PlaybackControls/PlaybackControls';
 import PlaybackError from './components/PlaybackError';
-import Playlist from './components/Playlist';
+import Playlist from './components/Playlist/Playlist';
 import PlaylistControls from './components/PlaylistControls';
+import TotalPlaybackTime from './components/TotalPlaybackTime/TotalPlaybackTime';
 
 // allowed audio extensions
 const allowedExtensions = ['aac', 'mp3', 'wav'];
 
-// default application options
-const defaultOptions = {
-  loopPlaylist: true,
-};
-
 export default {
-  name: 'App',
+  name: 'Player',
   components: {
     ContextMenu,
     PlaybackControls,
     PlaybackError,
     Playlist,
     PlaylistControls,
+    TotalPlaybackTime,
   },
   data() {
     return {
@@ -93,22 +85,20 @@ export default {
       audioPath: '',
       audioType: '',
       audioURL: '',
-      contextMenu: false,
       contextMenuTrackId: '',
-      options: null,
       playbackError: '',
       playlist: [],
     };
   },
   computed: {
+    ...mapState({
+      contextMenu: ({ contextMenu }) => contextMenu.visibility,
+    }),
     currentlyPlaying() {
       return this.audioPath.split('/').slice(-1)[0] || 'Nothing is playing';
     },
   },
   async mounted() {
-    // load application options
-    this.options = JSON.parse(localStorage.getItem('options')) || defaultOptions;
-
     // load stored playlist
     this.playlist = getPlaylist() || [];
 
@@ -137,6 +127,9 @@ export default {
     }
   },
   methods: {
+    ...mapActions({
+      addTrack: 'playlist/addTrack',
+    }),
     /**
      * Handle drag & drop
      * @param {object} event - drop event
@@ -176,12 +169,18 @@ export default {
 
                   // add file to the playlist  
                   this.playlist = [...this.playlist, track];
-                  return savePlaylist(this.playlist);
+                  savePlaylist(this.playlist);
+                  
+                  // store track in Vuex
+                  return this.addTrack(track);
                 }
 
                 // add file to the playlist  
                 this.playlist = [...this.playlist, track];
-                return savePlaylist(this.playlist);
+                savePlaylist(this.playlist);
+
+                // store track in Vuex
+                return this.addTrack(track);
               };
             }
           }
@@ -251,6 +250,7 @@ export default {
         this.audioURL = URL.createObjectURL(new Blob([buffer], { type: this.audioType }));
 
         localStorage.setItem('last', id);
+        // setTrack(track);
 
         // play the track
         return nextTick(() => {
@@ -318,46 +318,6 @@ export default {
       }
     },
     /**
-     * Play the next track
-     * @returns {*}
-     */
-    playNext() {
-      if (this.playlist.length === 0) {
-        return false;
-      }
-
-      const playlistIDs = this.playlist.map(({ id = '' }) => id);
-      const nextTrackID = playlistIDs[playlistIDs.indexOf(this.audioID) + 1];
-      if (nextTrackID) {
-        return this.handleTrackSelection(nextTrackID);
-      }
-
-      // play the first track if playlist loop is enabled
-      if (this.options.loopPlaylist) {
-        return this.handleTrackSelection(this.playlist[0].id);
-      }
-    },
-    /**
-     * Play the previous track
-     * @returns {*}
-     */
-    playPrevious() {
-      if (this.playlist.length === 0) {
-        return false;
-      }
-
-      const playlistIDs = this.playlist.map(({ id = '' }) => id);
-      const previousTrackID = playlistIDs[playlistIDs.indexOf(this.audioID) - 1];
-      if (previousTrackID) {
-        return this.handleTrackSelection(previousTrackID);
-      }
-
-      // play the last track if playlist loop is enabled
-      if (this.options.loopPlaylist) {
-        return this.handleTrackSelection(this.playlist[this.playlist.length - 1].id);
-      }
-    },
-    /**
      * Save current playlist
      * @returns {Promise<*>}
      */
@@ -381,22 +341,6 @@ export default {
       }
     },
     /**
-     * Close context menu for the track
-     * @returns {void}
-     */
-    closeContextMenu() {
-      this.contextMenu = false;
-      return this.contextMenuTrackId = '';
-    },
-    /**
-     * Open context menu for the track
-     * @returns {void}
-     */
-    showContextMenu(trackId = '') {
-      this.contextMenu = true;
-      return this.contextMenuTrackId = trackId;
-    },
-    /**
      * Delete track from the playlist
      * @param {string} trackId - track ID
      * @returns {void}
@@ -410,7 +354,7 @@ export default {
       // TODO: check if playback is paused
       if (trackId === this.audioID) {
         this.playNext();
-      } 
+      }
 
       // close context menu
       return this.closeContextMenu();
@@ -419,29 +363,4 @@ export default {
 };
 </script>
 
-<style>
-body, html {
-  background-color: black;
-  margin: 0;
-  padding: 0;
-}
-#app {
-  font-family: Avenir, Helvetica, Arial, sans-serif;
-  -webkit-font-smoothing: antialiased;
-  -moz-osx-font-smoothing: grayscale;
-  text-align: center;
-}
-.player {
-  background-color: black;
-  color: white;
-  font-size: 24px;
-  padding: 32px;
-}
-.noselect {
-  -webkit-touch-callout: none;
-  -webkit-user-select: none;
-  -moz-user-select: none;
-  -ms-user-select: none;
-  user-select: none;
-}
-</style>
+<style src="./Player.css" />
