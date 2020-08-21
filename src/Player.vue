@@ -2,9 +2,6 @@
   <div id="app">
     <div v-if="contextMenu">
       <ContextMenu
-        :playlist="playlist"
-        :trackId="contextMenuTrackId"
-        @close="closeContextMenu()"
         @delete-track="deleteTrack($event)"
       />
     </div>
@@ -26,8 +23,6 @@
         />
       </div>
       <Playlist
-        :current="audioID"
-        :tracks="playlist"
         @add-file="handleFileDrop($event)"
         @select-track="handleTrackSelection($event)"
         @show-context-menu="showContextMenu($event)"
@@ -54,7 +49,7 @@
 <script>
 import { remote as electron } from 'electron';
 import { nextTick } from 'vue';
-import { mapActions } from 'vuex';
+import { mapActions, mapState } from 'vuex';
 import { promises as fs } from 'fs';
 import { lookup } from 'mime-types';
 
@@ -67,17 +62,12 @@ import parseDir from './utilities/parse-dir';
 import ContextMenu from './modals/ContextMenu/ContextMenu';
 import PlaybackControls from './components/PlaybackControls/PlaybackControls';
 import PlaybackError from './components/PlaybackError';
-import Playlist from './components/Playlist';
+import Playlist from './components/Playlist/Playlist';
 import PlaylistControls from './components/PlaylistControls';
 import TotalPlaybackTime from './components/TotalPlaybackTime/TotalPlaybackTime';
 
 // allowed audio extensions
 const allowedExtensions = ['aac', 'mp3', 'wav'];
-
-// default application options
-const defaultOptions = {
-  loopPlaylist: true,
-};
 
 export default {
   name: 'Player',
@@ -95,22 +85,20 @@ export default {
       audioPath: '',
       audioType: '',
       audioURL: '',
-      contextMenu: false,
       contextMenuTrackId: '',
-      options: null,
       playbackError: '',
       playlist: [],
     };
   },
   computed: {
+    ...mapState({
+      contextMenu: ({ contextMenu }) => contextMenu.visibility,
+    }),
     currentlyPlaying() {
       return this.audioPath.split('/').slice(-1)[0] || 'Nothing is playing';
     },
   },
   async mounted() {
-    // load application options
-    this.options = JSON.parse(localStorage.getItem('options')) || defaultOptions;
-
     // load stored playlist
     this.playlist = getPlaylist() || [];
 
@@ -350,22 +338,6 @@ export default {
       } catch (error) {
         return this.playbackError = 'Error saving playlist!';
       }
-    },
-    /**
-     * Close context menu for the track
-     * @returns {void}
-     */
-    closeContextMenu() {
-      this.contextMenu = false;
-      return this.contextMenuTrackId = '';
-    },
-    /**
-     * Open context menu for the track
-     * @returns {void}
-     */
-    showContextMenu(trackId = '') {
-      this.contextMenu = true;
-      return this.contextMenuTrackId = trackId;
     },
     /**
      * Delete track from the playlist

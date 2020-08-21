@@ -2,7 +2,7 @@
   <div>
     <div
       class="background"
-      @click="$emit('close')"
+      @click="setContextMenuVisibility(false)"
     />
     <div class="content">
       <div class="title">
@@ -18,7 +18,7 @@
       <button
         class="action-button menu-button"
         type="button"
-        @click="$emit('close')"
+        @click="setContextMenuVisibility(false)"
       >
         Close
       </button>
@@ -27,24 +27,28 @@
 </template>
 
 <script>
+import { mapActions, mapState } from 'vuex';
+
 export default {
   name: 'ContextMenu',
-  props: {
-    playlist: {
-      required: true,
-      type: Array,
-    },
-    trackId: {
-      required: true,
-      type: String,
+  computed: {
+    ...mapState({
+      contextTrackId: ({ contextMenu }) => contextMenu.trackId,
+      tracks: ({ playlist }) => playlist.tracks,
+    }),
+    /**
+     * Get track name by the track ID
+     */
+    trackName() {
+      const [track = {}] = this.tracks.filter((item) => item.id === this.contextTrackId);
+      return track.name;
     },
   },
-  computed: {
-    trackName() {
-      const [track = {}] = this.playlist.filter((item) => item.id === this.trackId);
-      return track.name;
-    }
-  }
+  methods: {
+    ...mapActions({
+      setContextMenuVisibility: 'contextMenu/setVisibility',
+    }),
+  },
 };
 </script>
 
