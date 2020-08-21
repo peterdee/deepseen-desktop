@@ -1,31 +1,26 @@
 <template>
   <div id="app">
-    <div v-if="contextMenu">
-      <ContextMenu
-        @delete-track="deleteTrack($event)"
-      />
-    </div>
-    <div
-      v-if="currentlyPlaying"
-      class="player"
-    >
+    <ContextMenu
+      v-if="contextMenu"
+      @delete-track="deleteTrack($event)"
+    />
+    <div class="player">
       <div>
         {{ currentlyPlaying }}
       </div>
       <div>
         <audio
-          v-if="audioURL"
+          v-if="current.url"
           preload="auto"
           ref="player"
-          :src="audioURL"
-          :type="audioType"
+          :src="current.url"
+          :type="current.type"
           controls
         />
       </div>
       <Playlist
         @add-file="handleFileDrop($event)"
         @select-track="handleTrackSelection($event)"
-        @show-context-menu="showContextMenu($event)"
       />
     </div>
     <TotalPlaybackTime /> 
@@ -48,13 +43,12 @@
 
 <script>
 import { remote as electron } from 'electron';
-import { nextTick } from 'vue';
+// import { nextTick } from 'vue';
 import { mapActions, mapState } from 'vuex';
 import { promises as fs } from 'fs';
-import { lookup } from 'mime-types';
 
 import checkPath from './utilities/check-path';
-import { deletePlaylist, getPlaylist, savePlaylist } from './utilities/playlist';
+import { savePlaylist } from './utilities/playlist';
 import generateId from './utilities/generate-id';
 import getFileExtension from './utilities/get-file-extension';
 import parseDir from './utilities/parse-dir';
@@ -81,11 +75,11 @@ export default {
   },
   data() {
     return {
+      appName: 'Audio Player',
       audioID: null,
       audioPath: '',
       audioType: '',
       audioURL: '',
-      contextMenuTrackId: '',
       playbackError: '',
       playlist: [],
     };
@@ -93,56 +87,42 @@ export default {
   computed: {
     ...mapState({
       contextMenu: ({ contextMenu }) => contextMenu.visibility,
+      current: ({ track }) => track.track,
+      tracks: ({ playlist }) => playlist.tracks,
     }),
+    /**
+     * Currently playing track name
+     */
     currentlyPlaying() {
-      return this.audioPath.split('/').slice(-1)[0] || 'Nothing is playing';
+      return this.current.name || this.appName;
     },
   },
   async mounted() {
-    // load stored playlist
-    this.playlist = getPlaylist() || [];
-
-    // load last played track
-    const lastPlayedID = localStorage.getItem('last') || null;
-    if (lastPlayedID) {
-      try {
-        const [track = {}] = this.playlist.filter(
-          (item) => Number(item.id) === Number(lastPlayedID),
-        );
-        if (track && track.path) {
-          const { path = '' } = track;
-          const buffer = await fs.readFile(path);
-
-          this.audioID = lastPlayedID;
-          this.audioPath = path;
-          this.audioType = lookup(path.split('.').slice(-1)[0]);
-          this.audioURL = URL.createObjectURL(new Blob([buffer], { type: this.audioType }));
-        }
-      } catch (error) {
-        if (error.code && error.code === 'ENOENT') {
-          return this.playbackError = 'File not found!';
-        }
-        return this.playbackError = 'Error!';
-      }
-    }
+    console.log('current', this.current)
   },
   methods: {
     ...mapActions({
       addTrack: 'playlist/addTrack',
+      clearTrack: 'track/clearTrack',
+      emptyPlaylist: 'playlist/clearPlaylist',
+      setTrack: 'track/setTrack',
     }),
     /**
-     * Handle drag & drop
+     * Handle drag & drop TODO: move this to the Playlist
      * @param {object} event - drop event
-     * @returns {void}
+     * @returns {Promise<void>}
      */
     handleFileDrop(event) {
       return Array.prototype.forEach.call(event.dataTransfer.files, async (file) => {
         // check path to determine if it's a directory or a file
         try {
           const { isDirectory = false } = await checkPath(file.path);
+
+          // if this is a directory
           if (isDirectory) {
             const tracks = await parseDir(file.path, allowedExtensions);
 
+            // process files concurrently
             for await (const item of tracks) {
               const buffer = await fs.readFile(item.path);
               let audio = new Audio();
@@ -158,33 +138,25 @@ export default {
                 URL.revokeObjectURL(audio.src);
                 audio = null;
 
-                // check files if playlist is not empty: do not create duplicates
-                if (this.playlist.length > 0) {
-                  const [existingTrack = null] = this.playlist.filter(
-                    ({ path = '' }) => path === track.path,
-                  );
-                  if (existingTrack) {
-                    return false;
-                  }
-
-                  // add file to the playlist  
-                  this.playlist = [...this.playlist, track];
-                  savePlaylist(this.playlist);
-                  
-                  // store track in Vuex
+                // check if playlist is empty
+                if (this.tracks.length === 0) {
                   return this.addTrack(track);
                 }
 
-                // add file to the playlist  
-                this.playlist = [...this.playlist, track];
-                savePlaylist(this.playlist);
-
-                // store track in Vuex
+                // make sure that there are no duplicates (compare paths)
+                const [existingTrack = null] = this.tracks.filter(
+                  ({ path = '' }) => path === track.path,
+                );
+                if (existingTrack) {
+                  return false;
+                }
+                
                 return this.addTrack(track);
               };
             }
           }
         } catch (error) {
+          // TODO: show an error as a modal (?), use Vuex
           return this.playbackError = 'Error loading files!';
         }
 
@@ -210,50 +182,44 @@ export default {
           URL.revokeObjectURL(audio.src);
           audio = null;
 
-          // check files if playlist is not empty: do not create duplicates
-          if (this.playlist.length > 0) {
-            const [existingTrack = null] = this.playlist.filter(
-              ({ path = '' }) => path === track.path,
-            );
-            if (existingTrack) {
-              return false;
-            }
-
-            // add file to the playlist  
-            this.playlist = [...this.playlist, track];
-            return savePlaylist(this.playlist);
+          // check if playlist is empty
+          if (this.tracks.length === 0) {
+            return this.addTrack(track);
           }
 
-          // add file to the playlist  
-          this.playlist = [...this.playlist, track];
-          return savePlaylist(this.playlist);
+          // make sure that there are no duplicates (compare paths)
+          const [existingTrack = null] = this.tracks.filter(
+            ({ path = '' }) => path === track.path,
+          );
+          if (existingTrack) {
+            return false;
+          }
+          
+          return this.addTrack(track);
         };
       });
     },
     /**
      * Handle track selection
-     * @param {number|string} id - track ID
+     * @param {string} id - track ID
      * @returns {Promise<*>}
      */
     async handleTrackSelection(id = '') {
       try {
+        // TODO: error should not be displayed at this point
         this.playbackError = '';
 
         // open a file
-        const [{ path = '' }] = this.playlist.filter((item) => item.id === id);
-        const buffer = await fs.readFile(path);
+        const [track = {}] = this.tracks.filter((item) => item.id === id);
+        const buffer = await fs.readFile(track.path);
+        const url = URL.createObjectURL(new Blob([buffer], { type: track.type }));
+        console.log(url);
+        await this.setTrack({
+          ...track,
+          url,
+        });
 
-        // prepare the file and load it
-        this.audioID = id;
-        this.audioPath = path;
-        this.audioType = lookup(getFileExtension(path));
-        this.audioURL = URL.createObjectURL(new Blob([buffer], { type: this.audioType }));
-
-        localStorage.setItem('last', id);
-        // setTrack(track);
-
-        // play the track
-        return nextTick(() => {
+          console.log('next');
           const { player } = this.$refs;
           player.oncanplay = () => {
             // play the next track when current one ends
@@ -262,7 +228,18 @@ export default {
             // play the current track
             return player.play();
           };
-        });
+        // play the track
+        // return nextTick(() => {
+        //   console.log('next');
+        //   const { player } = this.$refs;
+        //   player.oncanplay = () => {
+        //     // play the next track when current one ends
+        //     player.onended = () => this.playNext();
+
+        //     // play the current track
+        //     return player.play();
+        //   };
+        // });
       } catch (error) {
         if (error.code && error.code === 'ENOENT') {
           return this.playbackError = 'File not found!';
@@ -274,15 +251,15 @@ export default {
      * Clear playlist
      * @returns {void}
      */
-    clearPlaylist() {
+    async clearPlaylist() {
+      // TODO: clear last played in Vuex
       localStorage.removeItem('last');
-      deletePlaylist();
-      this.audioID = '';
-      this.audioPath = '';
-      this.audioType = '';
-      this.audioURL = '';
+      
+      // TODO: this should be done with Vuex
       this.playbackError = '';
-      return this.playlist = [];
+
+      await this.clearTrack();
+      return this.emptyPlaylist();
     },
     /**
      * Open an existing playlist

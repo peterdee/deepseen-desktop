@@ -10,6 +10,7 @@ export const state = {
     path: '',
     size: null,
     type: '',
+    url: '',
   },
 };
 
