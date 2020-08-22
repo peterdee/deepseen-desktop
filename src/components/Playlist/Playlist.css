@@ -2,9 +2,9 @@
   background-color: black;
   display: flex;
   flex-direction: column;
-  min-height: 200px;
+  height: 225px;
   justify-content: flex-start;
-  overflow: scroll;
+  overflow-y: scroll;
 }
 .blur {
   backdrop-filter: blur(4px);

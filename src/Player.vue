@@ -1,6 +1,9 @@
 <template>
   <div id="app">
-    <ContextMenu v-if="contextMenu" />
+    <ContextMenu
+      v-if="contextMenu"
+      @handle-track-selection="handleTrackSelection($event)"
+    />
     <div class="player">
       <div>
         {{ currentlyPlaying }}
@@ -88,6 +91,7 @@ export default {
     ...mapState({
       contextMenu: ({ contextMenu }) => contextMenu.visibility,
       current: ({ track }) => track.track,
+      loop: ({ settings }) => settings.loopPlaylist,
       tracks: ({ playlist }) => playlist.tracks,
     }),
     /**
@@ -304,25 +308,6 @@ export default {
       } catch (error) {
         return this.playbackError = 'Error saving playlist!';
       }
-    },
-    /**
-     * Delete track from the playlist
-     * @param {string} trackId - track ID
-     * @returns {void}
-     */
-    deleteTrack(trackId = '') {
-      // update the playlist
-      this.playlist = this.playlist.filter(({ id = '' }) => id !== trackId);
-      savePlaylist(this.playlist);
-
-      // if deleted track is currently playing, play the next one or stop
-      // TODO: check if playback is paused
-      if (trackId === this.audioID) {
-        this.playNext();
-      }
-
-      // close context menu
-      return this.closeContextMenu();
     },
   },
 };

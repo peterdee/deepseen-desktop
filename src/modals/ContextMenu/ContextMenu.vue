@@ -27,14 +27,21 @@
 </template>
 
 <script>
-import { mapActions, mapState } from 'vuex';
+import { mapActions, mapGetters, mapState } from 'vuex';
+
+import getNextTrackId from '../../utilities/get-next-track';
 
 export default {
   name: 'ContextMenu',
   computed: {
+    ...mapGetters({
+      currentId: 'track/getTrackId',
+      trackIds: 'playlist/getTrackIds',
+    }),
     ...mapState({
       contextTrackId: ({ contextMenu }) => contextMenu.trackId,
-      track: ({ track }) => track.track,
+      current: ({ track }) => track.track,
+      loop: ({ settings }) => settings.loopPlaylist,
       tracks: ({ playlist }) => playlist.tracks,
     }),
     /**
@@ -42,7 +49,7 @@ export default {
      */
     trackName() {
       const [track = {}] = this.tracks.filter((item) => item.id === this.contextTrackId);
-      return track.name;
+      return track.name || '';
     },
   },
   methods: {
@@ -57,15 +64,16 @@ export default {
      * @returns {Promise<void>}
      */
     async handleDelete() {
-      try {
+      // check if track is playing / selected
+      if (this.contextTrackId === this.current.id) {
+        const nextId = getNextTrackId(this.trackIds, this.current.id, this.loop);
         await this.clearTrack();
-        await this.deleteTrackFromPlaylist(this.contextTrackId);
-        await this.setContextMenuTrackId('');
-        return this.setContextMenuVisibility(false);
-      } catch (error) {
-        // TODO: show an error modal
-        return console.log(error);
+        this.$emit('handle-track-selection', nextId);
       }
+
+      await this.deleteTrackFromPlaylist(this.contextTrackId);
+      await this.setContextMenuTrackId('');
+      return await this.setContextMenuVisibility(false);
     },
   },
 };
