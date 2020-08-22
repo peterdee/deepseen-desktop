@@ -1,6 +1,6 @@
 ## vue-electron-audioplayer
 
-A very simple audio player with Vue and Electron
+A very simple audio player with Vue, Vuex and Electron
 
 DEV (browser): http://localhost:8080
 

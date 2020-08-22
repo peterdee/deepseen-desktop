@@ -63,6 +63,7 @@ export default {
         await this.setContextMenuTrackId('');
         return this.setContextMenuVisibility(false);
       } catch (error) {
+        // TODO: show an error modal
         return console.log(error);
       }
     },

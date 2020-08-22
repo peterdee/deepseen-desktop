@@ -1,9 +1,6 @@
 <template>
   <div id="app">
-    <ContextMenu
-      v-if="contextMenu"
-      @delete-track="deleteTrack($event)"
-    />
+    <ContextMenu v-if="contextMenu" />
     <div class="player">
       <div>
         {{ currentlyPlaying }}
@@ -43,7 +40,6 @@
 
 <script>
 import { remote as electron } from 'electron';
-// import { nextTick } from 'vue';
 import { mapActions, mapState } from 'vuex';
 import { promises as fs } from 'fs';
 
@@ -219,27 +215,14 @@ export default {
           url,
         });
 
-          console.log('next');
-          const { player } = this.$refs;
-          player.oncanplay = () => {
-            // play the next track when current one ends
-            player.onended = () => this.playNext();
+        const { player } = this.$refs;
+        player.oncanplay = () => {
+          // play the next track when current one ends
+          player.onended = () => this.playNext();
 
-            // play the current track
-            return player.play();
-          };
-        // play the track
-        // return nextTick(() => {
-        //   console.log('next');
-        //   const { player } = this.$refs;
-        //   player.oncanplay = () => {
-        //     // play the next track when current one ends
-        //     player.onended = () => this.playNext();
-
-        //     // play the current track
-        //     return player.play();
-        //   };
-        // });
+          // play the current track
+          return player.play();
+        };
       } catch (error) {
         if (error.code && error.code === 'ENOENT') {
           return this.playbackError = 'File not found!';
