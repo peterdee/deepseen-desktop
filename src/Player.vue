@@ -40,13 +40,14 @@
 
 <script>
 import { remote as electron } from 'electron';
-import { mapActions, mapState } from 'vuex';
+import { mapActions, mapGetters, mapState } from 'vuex';
 import { promises as fs } from 'fs';
 
 import checkPath from './utilities/check-path';
 import { savePlaylist } from './utilities/playlist';
 import generateId from './utilities/generate-id';
 import getFileExtension from './utilities/get-file-extension';
+import getNextTrackId from './utilities/get-next-track';
 import parseDir from './utilities/parse-dir';
 
 import ContextMenu from './modals/ContextMenu/ContextMenu';
@@ -81,6 +82,9 @@ export default {
     };
   },
   computed: {
+    ...mapGetters({
+      trackIds: 'playlist/getTrackIds',
+    }),
     ...mapState({
       contextMenu: ({ contextMenu }) => contextMenu.visibility,
       current: ({ track }) => track.track,
@@ -94,7 +98,10 @@ export default {
     },
   },
   async mounted() {
-    console.log('current', this.current)
+    // load the file but do not play it
+    if (this.current.id) {
+      this.handleTrackSelection(this.current.id, false);
+    }
   },
   methods: {
     ...mapActions({
@@ -197,19 +204,21 @@ export default {
     },
     /**
      * Handle track selection
-     * @param {string} id - track ID
+     * @param {string} id - selected track ID
+     * @param {boolean} play - start playing the selected track
      * @returns {Promise<*>}
      */
-    async handleTrackSelection(id = '') {
+    async handleTrackSelection(id = '', play = true) {
       try {
-        // TODO: error should not be displayed at this point
-        this.playbackError = '';
+        // stop the playback if there's no ID
+        if (!id) {
+          return this.clearTrack();
+        }
 
         // open a file
         const [track = {}] = this.tracks.filter((item) => item.id === id);
         const buffer = await fs.readFile(track.path);
         const url = URL.createObjectURL(new Blob([buffer], { type: track.type }));
-        console.log(url);
         await this.setTrack({
           ...track,
           url,
@@ -218,10 +227,12 @@ export default {
         const { player } = this.$refs;
         player.oncanplay = () => {
           // play the next track when current one ends
-          player.onended = () => this.playNext();
+          player.onended = () => this.handleTrackSelection(
+            getNextTrackId(this.trackIds, this.current.id, this.loop),
+          );
 
           // play the current track
-          return player.play();
+          return play && player.play();
         };
       } catch (error) {
         if (error.code && error.code === 'ENOENT') {
@@ -232,15 +243,9 @@ export default {
     },
     /**
      * Clear playlist
-     * @returns {void}
+     * @returns {Promise<void>}
      */
     async clearPlaylist() {
-      // TODO: clear last played in Vuex
-      localStorage.removeItem('last');
-      
-      // TODO: this should be done with Vuex
-      this.playbackError = '';
-
       await this.clearTrack();
       return this.emptyPlaylist();
     },

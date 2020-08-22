@@ -22,13 +22,16 @@
 <script>
 import { mapGetters, mapState } from 'vuex';
 
+import getNextTrackId from '../../utilities/get-next-track';
+import getPreviousTrackId from '../../utilities/get-previous-track';
+
 export default {
   name: 'PlaybackControls',
   computed: {
     ...mapGetters({ trackIds: 'playlist/getTrackIds' }),
     ...mapState({
+      current: ({ track }) => track.track,
       loop: ({ settings }) => settings.loopPlaylist,
-      track: ({ track }) => track.track,
     }),
   },
   methods: {
@@ -37,38 +40,24 @@ export default {
      * @returns {*}
      */
     playNext() {
-      if (this.trackIds.length === 0) {
+      const nextId = getNextTrackId(this.trackIds, this.current.id, this.loop);
+      if (!nextId) {
         return false;
       }
 
-      const nextTrackID = this.trackIds[this.trackIds.indexOf(this.track.id) + 1];
-      if (nextTrackID) {
-        return this.$emit('handle-track-selection', nextTrackID);
-      }
-
-      // play the first track if playlist loop is enabled
-      if (this.loop) {
-        return this.$emit('handle-track-selection', this.trackIds[0]);
-      }
+      return this.$emit('handle-track-selection', nextId);
     },
     /**
      * Play the previous track
      * @returns {*}
      */
     playPrevious() {
-      if (this.trackIds.length === 0) {
+      const previousId = getPreviousTrackId(this.trackIds, this.current.id, this.loop);
+      if (!previousId) {
         return false;
       }
 
-      const previousTrackID = this.trackIds[this.trackIds.indexOf(this.track.id) - 1];
-      if (previousTrackID) {
-        return this.$emit('handle-track-selection', previousTrackID);
-      }
-
-      // play the last track if playlist loop is enabled
-      if (this.loop) {
-        return this.$emit('handle-track-selection', this.trackIds[this.trackIds.length - 1]);
-      }
+      return this.$emit('handle-track-selection', previousId);
     },
   },
 };
