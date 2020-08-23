@@ -47,7 +47,6 @@ import { mapActions, mapGetters, mapState } from 'vuex';
 import { promises as fs } from 'fs';
 
 import checkPath from './utilities/check-path';
-import { savePlaylist } from './utilities/playlist';
 import generateId from './utilities/generate-id';
 import getFileExtension from './utilities/get-file-extension';
 import getNextTrackId from './utilities/get-next-track';
@@ -76,12 +75,7 @@ export default {
   data() {
     return {
       appName: 'Audio Player',
-      audioID: null,
-      audioPath: '',
-      audioType: '',
-      audioURL: '',
       playbackError: '',
-      playlist: [],
     };
   },
   computed: {
@@ -272,13 +266,13 @@ export default {
         const string = await buffer.toString('utf8');
 
         // update the playlist
-        this.playlist = JSON.parse(string);
-        savePlaylist(this.playlist);
+        // this.playlist = JSON.parse(string);
+        // savePlaylist(this.playlist);
 
         // play the first file if playlist is not empty
-        if (this.playlist.length > 0) {
-          return this.handleTrackSelection(this.playlist[0].id);
-        }
+        // if (this.playlist.length > 0) {
+        //   return this.handleTrackSelection(this.playlist[0].id);
+        // }
       } catch (error) {
         if (error.code && error.code === 'ENOENT') {
           return this.playbackError = 'File not found!';
@@ -304,7 +298,7 @@ export default {
           return false;
         }
         
-        return fs.writeFile(`${filePath}.spl`, JSON.stringify(this.playlist));
+        // return fs.writeFile(`${filePath}.spl`, JSON.stringify(this.playlist));
       } catch (error) {
         return this.playbackError = 'Error saving playlist!';
       }

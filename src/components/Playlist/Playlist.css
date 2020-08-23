@@ -6,9 +6,6 @@
   justify-content: flex-start;
   overflow-y: scroll;
 }
-.blur {
-  backdrop-filter: blur(4px);
-}
 .track, .track:hover, .active, .active:hover {
   transition: background-color 125ms ease-in-out;
 }
