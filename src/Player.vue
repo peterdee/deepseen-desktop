@@ -42,7 +42,7 @@
 </template>
 
 <script>
-import { remote as electron } from 'electron';
+// import { remote as electron } from 'electron';
 import { mapActions, mapGetters, mapState } from 'vuex';
 import { promises as fs } from 'fs';
 
@@ -105,6 +105,7 @@ export default {
     ...mapActions({
       addTrack: 'playlist/addTrack',
       clearTrack: 'track/clearTrack',
+      deleteTrack: 'playlist/deleteTrack',
       emptyPlaylist: 'playlist/clearPlaylist',
       setTrack: 'track/setTrack',
     }),
@@ -233,9 +234,14 @@ export default {
           return play && player.play();
         };
       } catch (error) {
-        if (error.code && error.code === 'ENOENT') {
-          return this.playbackError = 'File not found!';
+        // handle the case with missing file (skip it)
+        const { code = '' } = error;
+        if (code && code === 'ENOENT') {
+          const nextId = getNextTrackId(this.trackIds, id, this.loop);
+          return this.handleTrackSelection(nextId);
         }
+
+        // in any other case show an error TODO: error modal 
         return this.playbackError = 'Error!';
       }
     },
@@ -253,17 +259,17 @@ export default {
      */
     async openPlaylistFromFS() {
       try {
-        const {
-          canceled = false,
-          filePaths = [],
-        } = await electron.dialog.showOpenDialog(null, ['openFile']);
-        if (canceled) {
-          return false;
-        }
+        // const {
+        //   canceled = false,
+        //   filePaths = [],
+        // } = await electron.dialog.showOpenDialog(null, ['openFile']);
+        // if (canceled) {
+        //   return false;
+        // }
 
         // open the file and convert it
-        const buffer = await fs.readFile(filePaths[0]);
-        const string = await buffer.toString('utf8');
+        // const buffer = await fs.readFile(filePaths[0]);
+        // const string = await buffer.toString('utf8');
 
         // update the playlist
         // this.playlist = JSON.parse(string);
@@ -286,17 +292,17 @@ export default {
      */
     async savePlaylistToFS() {
       try {
-        const { canceled = false, filePath = '' } = await electron.dialog.showSaveDialog(
-          null,
-          {
-            title: 'Save playlist',
-            buttonLabel: 'Save',
-            message: 'Please provide the playlist name',
-          },
-        );
-        if (canceled) {
-          return false;
-        }
+        // const { canceled = false, filePath = '' } = await electron.dialog.showSaveDialog(
+        //   null,
+        //   {
+        //     title: 'Save playlist',
+        //     buttonLabel: 'Save',
+        //     message: 'Please provide the playlist name',
+        //   },
+        // );
+        // if (canceled) {
+        //   return false;
+        // }
         
         // return fs.writeFile(`${filePath}.spl`, JSON.stringify(this.playlist));
       } catch (error) {

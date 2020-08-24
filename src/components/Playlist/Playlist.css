@@ -1,5 +1,7 @@
 .playlist {
   background-color: black;
+  border: 1px solid white;
+  border-radius: 5px;
   display: flex;
   flex-direction: column;
   height: 225px;

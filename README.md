@@ -1,5 +1,7 @@
 ## vue-electron-audioplayer
 
+[![Known Vulnerabilities](https://snyk.io/test/github/peterdee/vue-electron-audioplayer/badge.svg?targetFile=package.json)](https://snyk.io/test/github/peterdee/vue-electron-audioplayer?targetFile=package.json)
+
 A very simple audio player with Vue, Vuex and Electron
 
 DEV (browser): http://localhost:8080
