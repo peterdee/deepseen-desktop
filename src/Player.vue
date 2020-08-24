@@ -28,7 +28,6 @@
       @handle-track-selection="handleTrackSelection($event)"
     />
     <PlaylistControls
-      :playlist="playlist"
       @clear-playlist="clearPlaylist()"
       @open-playlist="openPlaylistFromFS()"
       @save-playlist="savePlaylistToFS()"

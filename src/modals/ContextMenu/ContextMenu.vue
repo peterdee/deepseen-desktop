@@ -6,7 +6,51 @@
     />
     <div class="content">
       <div class="title">
-        {{ trackName }}
+        {{ track.name }}
+      </div>
+      <div class="data-group">
+        <div class="data-line">
+          <div class="data-name">
+            Added
+          </div>
+          <div class="data-value">
+            {{ formatDate(track.added) }}
+          </div>
+        </div>
+        <div class="data-line">
+          <div class="data-name">
+            Full path
+          </div>
+          <div class="data-value">
+            <input
+              class="data-input"
+              name="path"
+              readonly="true"
+              type="text"
+              :value="track.path"
+            />
+          </div>
+        </div>
+        <div class="data-line">
+          <div class="data-name">
+            File size
+          </div>
+          <div class="data-value">
+            {{ formatSize(track.size) }}
+          </div>
+        </div>
+      </div>
+      <div v-if="current.id === contextTrackId">
+        File is playing
+      </div>
+      <div v-else>
+        <button
+          class="action-button menu-button"
+          type="button"
+          @click="handlePlay()"
+        >
+          Play
+        </button>
       </div>
       <button
         class="action-button menu-button"
@@ -30,12 +74,12 @@
 import { mapActions, mapGetters, mapState } from 'vuex';
 
 import getNextTrackId from '../../utilities/get-next-track';
+import months from '../../utilities/months';
 
 export default {
   name: 'ContextMenu',
   computed: {
     ...mapGetters({
-      currentId: 'track/getTrackId',
       trackIds: 'playlist/getTrackIds',
     }),
     ...mapState({
@@ -45,11 +89,11 @@ export default {
       tracks: ({ playlist }) => playlist.tracks,
     }),
     /**
-     * Get track name by the track ID
+     * Get track data
      */
-    trackName() {
+    track() {
       const [track = {}] = this.tracks.filter((item) => item.id === this.contextTrackId);
-      return track.name || '';
+      return track;
     },
   },
   methods: {
@@ -60,7 +104,7 @@ export default {
       setContextMenuVisibility: 'contextMenu/setVisibility',
     }),
     /**
-     * Handle track deleting
+     * Handle the 'Delete' button
      * @returns {Promise<void>}
      */
     async handleDelete() {
@@ -73,7 +117,56 @@ export default {
 
       await this.deleteTrackFromPlaylist(this.contextTrackId);
       await this.setContextMenuTrackId('');
-      return await this.setContextMenuVisibility(false);
+      return this.setContextMenuVisibility(false);
+    },
+    /**
+     * Handle the 'Play' button
+     * @returns {Promise<void>}
+     */
+    async handlePlay() {
+      await this.clearTrack();
+      this.$emit('handle-track-selection', this.contextTrackId);
+      await this.setContextMenuTrackId('');
+      return this.setContextMenuVisibility(false);
+    },
+    /**
+     * Format date
+     * @param {number} stamp - timestamp
+     * @returns {string}
+     */
+    formatDate(stamp = 0) {
+      const date = new Date(stamp);
+      const year = date.getFullYear();
+      const month = months[date.getMonth() + 1];
+      const day = date.getDate() > 9
+        ? date.getDate()
+        : `0${date.getDate()}`;
+      const hours = date.getHours() > 9
+        ? date.getHours()
+        : `0${date.getHours()}`;
+      const minutes = date.getMinutes() > 9 
+        ? date.getMinutes()
+        : `0${date.getMinutes()}`;
+      return `${month} ${day}, ${year}, at ${hours}:${minutes}`;
+    },
+    /**
+     * Format file size
+     * @param {number} size - file size in bytes
+     * @returns {string}
+     */
+    formatSize(size = 0) {
+      // bytes  
+      if (size < 1024) {
+        return `${size}B`;
+      }
+
+      // kilobytes
+      if (size < (1024 * 1024)) {
+        return `${(size / 1024).toFixed(1)}KB`
+      }
+
+      // megabytes
+      return `${(size / 1024 / 1024).toFixed(1)}MB`
     },
   },
 };

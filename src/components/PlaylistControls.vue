@@ -9,7 +9,6 @@
     </button>
     <button
       class="action-button"
-      :disabled="playlist.length === 0"
       type="button"
       @click="$emit('save-playlist')"
     >
@@ -28,15 +27,6 @@
 <script>
 export default {
   name: 'PlaylistControls',
-  props: {
-    playlist: {
-      default() {
-        return [];
-      },
-      required: false,
-      type: Array,
-    },
-  },
 };
 </script>
 
