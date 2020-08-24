@@ -172,6 +172,7 @@ export default {
 
         return audio.oncanplay = () => {
           const track = {
+            added: Date.now(),
             duration: audio.duration,
             id: generateId(),
             name: file.name,
