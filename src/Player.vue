@@ -41,7 +41,6 @@
 </template>
 
 <script>
-// import { remote as electron } from 'electron';
 import { mapActions, mapGetters, mapState } from 'vuex';
 import { promises as fs } from 'fs';
 
@@ -243,70 +242,6 @@ export default {
 
         // in any other case show an error TODO: error modal 
         return this.playbackError = 'Error!';
-      }
-    },
-    /**
-     * Clear playlist
-     * @returns {Promise<void>}
-     */
-    async clearPlaylist() {
-      await this.clearTrack();
-      return this.emptyPlaylist();
-    },
-    /**
-     * Open an existing playlist
-     * @returns {Promise<*>}
-     */
-    async openPlaylistFromFS() {
-      try {
-        // const {
-        //   canceled = false,
-        //   filePaths = [],
-        // } = await electron.dialog.showOpenDialog(null, ['openFile']);
-        // if (canceled) {
-        //   return false;
-        // }
-
-        // open the file and convert it
-        // const buffer = await fs.readFile(filePaths[0]);
-        // const string = await buffer.toString('utf8');
-
-        // update the playlist
-        // this.playlist = JSON.parse(string);
-        // savePlaylist(this.playlist);
-
-        // play the first file if playlist is not empty
-        // if (this.playlist.length > 0) {
-        //   return this.handleTrackSelection(this.playlist[0].id);
-        // }
-      } catch (error) {
-        if (error.code && error.code === 'ENOENT') {
-          return this.playbackError = 'File not found!';
-        }
-        return this.playbackError = 'Error!';
-      }
-    },
-    /**
-     * Save current playlist
-     * @returns {Promise<*>}
-     */
-    async savePlaylistToFS() {
-      try {
-        // const { canceled = false, filePath = '' } = await electron.dialog.showSaveDialog(
-        //   null,
-        //   {
-        //     title: 'Save playlist',
-        //     buttonLabel: 'Save',
-        //     message: 'Please provide the playlist name',
-        //   },
-        // );
-        // if (canceled) {
-        //   return false;
-        // }
-        
-        // return fs.writeFile(`${filePath}.spl`, JSON.stringify(this.playlist));
-      } catch (error) {
-        return this.playbackError = 'Error saving playlist!';
       }
     },
   },
