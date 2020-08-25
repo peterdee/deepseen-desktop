@@ -1,6 +1,9 @@
 import * as actionTypes from './action-types';
 
 export default {
+  [actionTypes.PLAYLIST_ADD_MULTIPLE_TRACKS](state, tracks = []) {
+    state.tracks = [...tracks];
+  },
   [actionTypes.PLAYLIST_ADD_TRACK](state, track = {}) {
     state.tracks = [...state.tracks, track];
   },

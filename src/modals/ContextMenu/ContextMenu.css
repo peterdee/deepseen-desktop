@@ -25,6 +25,9 @@
   width: 700px;
   z-index: 15;
 }
+.title {
+  font-size: 18px;
+}
 .menu-button {
   margin: 0 auto;
   width: 160px;

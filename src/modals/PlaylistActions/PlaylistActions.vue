@@ -1,20 +1,54 @@
 <template>
   <div>
-    Modal
+    <div
+      class="background"
+      @click="setPlaylistActionsVisibility(false)"
+    />
+    <div class="content">
+      <div class="title">
+        Playlist Actions
+      </div>
+      <button
+        class="action-button menu-button"
+        type="button"
+        @click="openPlaylist()"
+      >
+        Open playlist
+      </button>
+      <button
+        class="action-button menu-button"
+        :disabled="this.tracks.length === 0"
+        type="button"
+        @click="savePlaylist()"
+      >
+        Save playlist
+      </button>
+      <button
+        class="action-button menu-button"
+        type="button"
+        @click="clearPlaylist()"
+      >
+        Clear playlist
+      </button>
+      <button
+        class="action-button menu-button"
+        type="button"
+        @click="setPlaylistActionsVisibility(false)"
+      >
+        Close
+      </button>
+    </div>
   </div>
 </template>
 
 <script>
 import { remote as electron } from 'electron';
-import { mapActions, mapGetters, mapState } from 'vuex';
+import { mapActions, mapState } from 'vuex';
 import { promises as fs } from 'fs';
 
 export default {
   name: 'PlaylistActions',
   computed: {
-    ...mapGetters({
-      trackIds: 'playlist/getTrackIds',
-    }),
     ...mapState({
       current: ({ track }) => track.track,
       loop: ({ settings }) => settings.loopPlaylist,
@@ -23,6 +57,7 @@ export default {
   },
   methods: {
     ...mapActions({
+      addMultipleTracks: 'playlist/addMultipleTracks',
       clearTrack: 'track/clearTrack',
       emptyPlaylist: 'playlist/clearPlaylist',
       setPlaylistActionsVisibility: 'playlistActions/setVisibility',
@@ -59,14 +94,29 @@ export default {
         const buffer = await fs.readFile(filePaths[0]);
         const string = await buffer.toString('utf8');
 
-        // update the playlist
-        this.playlist = JSON.parse(string);
+        // validate the string
+        let tracks = [];
+        try {
+          tracks = JSON.parse(string);
+        } catch (error) {
+          // TODO: show an error
+          return console.log('-- saving error', error);
+        }
 
-        // play the first file if playlist is not empty
-        if (this.playlist.length > 0) {
-          return this.handleTrackSelection(this.playlist[0].id);
+        // close the modal
+        await this.setPlaylistActionsVisibility(false);
+
+        if (tracks.length > 0) {
+          // update the playlist
+          await this.addMultipleTracks(tracks);
+          
+          // play the first track
+          return this.$emit('handle-track-selection', tracks[0].id);
         }
       } catch (error) {
+        // close the modal
+        await this.setPlaylistActionsVisibility(false);
+
         // TODO: error modal via Vuex
         if (error.code && error.code === 'ENOENT') {
           return console.log('-- opening error: ENOENT', error);
@@ -89,17 +139,23 @@ export default {
             message: 'Please provide the playlist name',
           },
         );
+
+        // close the modal
+        await this.setPlaylistActionsVisibility(false);
+
         if (canceled) {
           return false;
         }
-        
+
         return fs.writeFile(`${filePath}.spl`, JSON.stringify(this.tracks));
       } catch (error) {
+        // close the modal
+        await this.setPlaylistActionsVisibility(false);
+
         // TODO: error modal via Vuex
         return console.log('-- saving error', error);
       }
     },
-
   },
 };
 </script>

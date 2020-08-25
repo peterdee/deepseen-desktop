@@ -4,6 +4,10 @@
       v-if="contextMenu"
       @handle-track-selection="handleTrackSelection($event)"
     />
+    <PlaylistActions
+      v-if="playlistActions"
+      @handle-track-selection="handleTrackSelection($event)"
+    />
     <div class="player">
       <div>
         {{ currentlyPlaying }}
@@ -27,11 +31,13 @@
     <PlaybackControls
       @handle-track-selection="handleTrackSelection($event)"
     />
-    <PlaylistControls
-      @clear-playlist="clearPlaylist()"
-      @open-playlist="openPlaylistFromFS()"
-      @save-playlist="savePlaylistToFS()"
-    />
+    <button
+      class="action-button"
+      type="button"
+      @click="setPlaylistActionsVisibility(true)"
+    >
+      Playlist Actions
+    </button>
     <div v-if="playbackError">
       <PlaybackError
         :message="playbackError"
@@ -54,7 +60,7 @@ import ContextMenu from './modals/ContextMenu/ContextMenu';
 import PlaybackControls from './components/PlaybackControls/PlaybackControls';
 import PlaybackError from './components/PlaybackError';
 import Playlist from './components/Playlist/Playlist';
-import PlaylistControls from './components/PlaylistControls';
+import PlaylistActions from './modals/PlaylistActions/PlaylistActions';
 import TotalPlaybackTime from './components/TotalPlaybackTime/TotalPlaybackTime';
 
 // allowed audio extensions
@@ -67,7 +73,7 @@ export default {
     PlaybackControls,
     PlaybackError,
     Playlist,
-    PlaylistControls,
+    PlaylistActions,
     TotalPlaybackTime,
   },
   data() {
@@ -84,6 +90,7 @@ export default {
       contextMenu: ({ contextMenu }) => contextMenu.visibility,
       current: ({ track }) => track.track,
       loop: ({ settings }) => settings.loopPlaylist,
+      playlistActions: ({ playlistActions }) => playlistActions.visibility,
       tracks: ({ playlist }) => playlist.tracks,
     }),
     /**
@@ -105,6 +112,7 @@ export default {
       clearTrack: 'track/clearTrack',
       deleteTrack: 'playlist/deleteTrack',
       emptyPlaylist: 'playlist/clearPlaylist',
+      setPlaylistActionsVisibility: 'playlistActions/setVisibility',
       setTrack: 'track/setTrack',
     }),
     /**
