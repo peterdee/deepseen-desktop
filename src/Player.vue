@@ -8,6 +8,7 @@
       v-if="playlistActions"
       @handle-track-selection="handleTrackSelection($event)"
     />
+    <PlaybackError v-if="playbackError" />
     <div class="player">
       <div>
         {{ currentlyPlaying }}
@@ -35,11 +36,6 @@
     >
       Playlist Actions
     </button>
-    <div v-if="playbackError">
-      <PlaybackError
-        :message="playbackError"
-      />
-    </div>
   </div>
 </template>
 
@@ -51,7 +47,7 @@ import getNextTrackId from './utilities/get-next-track';
 
 import ContextMenu from './modals/ContextMenu/ContextMenu';
 import PlaybackControls from './components/PlaybackControls/PlaybackControls';
-import PlaybackError from './components/PlaybackError';
+import PlaybackError from './modals/PlaybackError/PlaybackError';
 import Playlist from './components/Playlist/Playlist';
 import PlaylistActions from './modals/PlaylistActions/PlaylistActions';
 import TotalPlaybackTime from './components/TotalPlaybackTime/TotalPlaybackTime';
@@ -69,7 +65,6 @@ export default {
   data() {
     return {
       appName: 'Audio Player',
-      playbackError: '',
     };
   },
   computed: {
@@ -80,6 +75,7 @@ export default {
       contextMenu: ({ contextMenu }) => contextMenu.visibility,
       current: ({ track }) => track.track,
       loop: ({ settings }) => settings.loopPlaylist,
+      playbackError: ({ playbackError }) => playbackError.message,
       playlistActions: ({ playlistActions }) => playlistActions.visibility,
       tracks: ({ playlist }) => playlist.tracks,
     }),
@@ -100,6 +96,7 @@ export default {
     ...mapActions({
       addTrack: 'playlist/addTrack',
       clearTrack: 'track/clearTrack',
+      setPlaybackError: 'playbackError/setError',
       setPlaylistActionsVisibility: 'playlistActions/setVisibility',
       setTrack: 'track/setTrack',
     }),
@@ -143,8 +140,8 @@ export default {
           return this.handleTrackSelection(nextId);
         }
 
-        // in any other case show an error TODO: error modal 
-        return this.playbackError = 'Error!';
+        // in any other case show an error
+        return this.setPlaybackError('Error playing a file!');
       }
     },
   },

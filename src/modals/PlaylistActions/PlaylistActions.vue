@@ -60,6 +60,7 @@ export default {
       addMultipleTracks: 'playlist/addMultipleTracks',
       clearTrack: 'track/clearTrack',
       emptyPlaylist: 'playlist/clearPlaylist',
+      setPlaybackError: 'playbackError/setError',
       setPlaylistActionsVisibility: 'playlistActions/setVisibility',
     }),
     /**
@@ -99,8 +100,7 @@ export default {
         try {
           tracks = JSON.parse(string);
         } catch (error) {
-          // TODO: show an error
-          return console.log('-- saving error', error);
+          return this.setPlaybackError('Playlist has invalid format!');
         }
 
         // close the modal
@@ -114,15 +114,13 @@ export default {
           return this.$emit('handle-track-selection', tracks[0].id);
         }
       } catch (error) {
-        // close the modal
         await this.setPlaylistActionsVisibility(false);
 
-        // TODO: error modal via Vuex
         if (error.code && error.code === 'ENOENT') {
-          return console.log('-- opening error: ENOENT', error);
+          return this.setPlaybackError('Playlist not found!');
         }
 
-        return console.log('-- saving error', error);
+        return this.setPlaybackError('Could not open the playlist!');
       }
     },
     /**
@@ -149,11 +147,8 @@ export default {
 
         return fs.writeFile(`${filePath}.spl`, JSON.stringify(this.tracks));
       } catch (error) {
-        // close the modal
         await this.setPlaylistActionsVisibility(false);
-
-        // TODO: error modal via Vuex
-        return console.log('-- saving error', error);
+        return this.setPlaybackError('Could not save the playlist!');
       }
     },
   },

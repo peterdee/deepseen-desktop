@@ -57,6 +57,7 @@ export default {
       addTrack: 'playlist/addTrack',
       setContextMenuTrackId: 'contextMenu/setTrackId',
       setContextMenuVisibility: 'contextMenu/setVisibility',
+      setPlaybackError: 'playbackError/setError',
     }),
     /**
      * Format track duration
@@ -115,8 +116,7 @@ export default {
             }
           }
         } catch (error) {
-          // TODO: show an error as a modal, use Vuex
-          return console.log('Error loading files!', error);
+          return this.setPlaybackError('Could not add the file!');
         }
 
         // leave only the allowed extensions
