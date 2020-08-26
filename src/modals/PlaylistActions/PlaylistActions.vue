@@ -8,6 +8,11 @@
       <div class="title">
         Playlist Actions
       </div>
+      <Switch
+        label="Loop playlist"
+        :value="loop"
+        @handle-switch="handleLoopSwitch"
+      />
       <button
         class="action-button menu-button"
         type="button"
@@ -46,12 +51,17 @@ import { remote as electron } from 'electron';
 import { mapActions, mapState } from 'vuex';
 import { promises as fs } from 'fs';
 
+import Switch from '../../elements/Switch';
+
 export default {
   name: 'PlaylistActions',
+  components: {
+    Switch,
+  },
   computed: {
     ...mapState({
       current: ({ track }) => track.track,
-      loop: ({ settings }) => settings.loopPlaylist,
+      loop: ({ settings }) => settings.loop,
       tracks: ({ playlist }) => playlist.tracks,
     }),
   },
@@ -60,9 +70,14 @@ export default {
       addMultipleTracks: 'playlist/addMultipleTracks',
       clearTrack: 'track/clearTrack',
       emptyPlaylist: 'playlist/clearPlaylist',
+      setLoopPlaylist: 'settings/setLoopPlaylist',
       setPlaybackError: 'playbackError/setError',
       setPlaylistActionsVisibility: 'playlistActions/setVisibility',
     }),
+    handleLoopSwitch(event) {
+      console.log('checkbox', event.target.checked, 'loop', this.loop);
+      return this.setLoopPlaylist(event.target.checked);
+    },
     /**
      * Clear playlist
      * @returns {Promise<void>}

@@ -31,7 +31,7 @@ export default {
     ...mapGetters({ trackIds: 'playlist/getTrackIds' }),
     ...mapState({
       current: ({ track }) => track.track,
-      loop: ({ settings }) => settings.loopPlaylist,
+      loop: ({ settings }) => settings.loop,
     }),
   },
   methods: {

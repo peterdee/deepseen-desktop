@@ -3,7 +3,7 @@ import mutations from './mutations';
 
 // initial state
 export const state = {
-  loop: true,
+  loop: false,
 };
 
 export default {

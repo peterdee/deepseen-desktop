@@ -74,7 +74,7 @@ export default {
     ...mapState({
       contextMenu: ({ contextMenu }) => contextMenu.visibility,
       current: ({ track }) => track.track,
-      loop: ({ settings }) => settings.loopPlaylist,
+      loop: ({ settings }) => settings.loop,
       playbackError: ({ playbackError }) => playbackError.message,
       playlistActions: ({ playlistActions }) => playlistActions.visibility,
       tracks: ({ playlist }) => playlist.tracks,
