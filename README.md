@@ -15,6 +15,12 @@ nvm use 14
 npm i
 ```
 
+### Environment variables
+
+The `.env` file is required
+
+See the [.env.example](.env.example) for more information
+
 ### Launch
 
 Browser:

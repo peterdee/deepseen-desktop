@@ -13,6 +13,7 @@ export const state = {
     type: '',
     url: '',
   },
+  volume: 1,
 };
 
 export default {

@@ -55,7 +55,7 @@
 }
 
 .form-switch input:checked + i {
-  background-color: #4BD763;
+  background-color: turquoise;
 }
 
 .form-switch input:checked + i::before {
