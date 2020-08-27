@@ -23,6 +23,7 @@
           controls
         />
       </div>
+      <Audio />
       <Playlist @select-track="handleTrackSelection($event)" />
     </div>
     <TotalPlaybackTime /> 
@@ -48,6 +49,7 @@ import getNextTrackId from './utilities/get-next-track';
 import ContextMenu from './modals/ContextMenu/ContextMenu';
 import PlaybackControls from './components/PlaybackControls/PlaybackControls';
 import PlaybackError from './modals/PlaybackError/PlaybackError';
+import Audio from './components/Audio/Audio';
 import Playlist from './components/Playlist/Playlist';
 import PlaylistActions from './modals/PlaylistActions/PlaylistActions';
 import TotalPlaybackTime from './components/TotalPlaybackTime/TotalPlaybackTime';
@@ -55,6 +57,7 @@ import TotalPlaybackTime from './components/TotalPlaybackTime/TotalPlaybackTime'
 export default {
   name: 'Player',
   components: {
+    Audio,
     ContextMenu,
     PlaybackControls,
     PlaybackError,

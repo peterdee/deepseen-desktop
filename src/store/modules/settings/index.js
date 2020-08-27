@@ -4,6 +4,7 @@ import mutations from './mutations';
 // initial state
 export const state = {
   loop: false,
+  shuffle: false,
 };
 
 export default {
