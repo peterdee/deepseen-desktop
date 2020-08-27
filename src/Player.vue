@@ -13,17 +13,17 @@
       <div>
         {{ currentlyPlaying }}
       </div>
-      <div>
-        <audio
-          v-if="current.url"
-          preload="auto"
-          ref="player"
-          :src="current.url"
-          :type="current.type"
-          controls
-        />
-      </div>
-      <Audio />
+      <audio
+        v-if="current.url"
+        preload="auto"
+        ref="player"
+        :src="current.url"
+        :type="current.type"
+      />
+      <Audio
+        :volume="volume"
+        @handle-volume="handleVolume($event)"
+      />
       <Playlist @select-track="handleTrackSelection($event)" />
     </div>
     <TotalPlaybackTime /> 
@@ -81,6 +81,7 @@ export default {
       playbackError: ({ playbackError }) => playbackError.message,
       playlistActions: ({ playlistActions }) => playlistActions.visibility,
       tracks: ({ playlist }) => playlist.tracks,
+      volume: ({ track }) => track.volume,
     }),
     /**
      * Currently playing track name
@@ -94,6 +95,17 @@ export default {
     if (this.current.id) {
       this.handleTrackSelection(this.current.id, false);
     }
+
+    // update the audio playback time
+    // const { player } = this.$refs;
+    // player.ontimeupdate = () => {
+    //   this.audioTime = player.currentTime;
+    //   if (!this.progressClicked) {
+    //     this.$refs.progress.value = Math.round(
+    //       this.audioTime / (this.current.duration / 200),
+    //     );
+    //   }
+    // };
   },
   methods: {
     ...mapActions({
@@ -102,7 +114,18 @@ export default {
       setPlaybackError: 'playbackError/setError',
       setPlaylistActionsVisibility: 'playlistActions/setVisibility',
       setTrack: 'track/setTrack',
+      setVolume: 'track/setVolume',
     }),
+    /**
+     * Handle player volume
+     * @returns {void}
+     */
+    handleVolume(event) {
+      const { player } = this.$refs;
+      const { value = 0 } = event.target;
+      player.volume = value;
+      return this.setVolume(value);
+    },
     /**
      * Handle track selection
      * @param {string} id - selected track ID

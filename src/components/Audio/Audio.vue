@@ -1,12 +1,5 @@
 <template>
   <div class="controls">
-    <audio
-      v-if="current.url"
-      preload="auto"
-      ref="audio"
-      :src="current.url"
-      :type="current.type"
-    />
     <button
       type="button"
       @click="handlePlay()"
@@ -29,13 +22,10 @@
       ref="volume"
       step="0.01"
       type="range"
-      @input="handleVolume($event)"
+      :value="volume"
+      @input="$emit('handle-volume', $event)"
     />
-  </div>
-  <div class="controls">
-    <div>
-      {{ formatTime(audioTime) }} / {{ formatTime(current.duration) }}
-    </div>
+    {{ formatTime(audioTime) }} / {{ formatTime(current.duration) }}
   </div>
 </template>
 
@@ -53,6 +43,12 @@ export default {
       progressClicked: false,
     };
   },
+  props: {
+    volume: {
+      required: true,
+      type: [Number, String],
+    },
+  },
   computed: {
     ...mapState({
       current: ({ track }) => track.track,
@@ -60,20 +56,6 @@ export default {
     }),
   },
   mounted() {
-    const { audio } = this.$refs;
-
-    // update the audio playback time
-    audio.ontimeupdate = () => {
-      this.audioTime = audio.currentTime;
-      if (!this.progressClicked) {
-        this.$refs.progress.value = Math.round(
-          this.audioTime / (this.current.duration / 200),
-        );
-      }
-    }
-
-    // set audio volume from the Vuex
-    audio.volume = this.volume;
     this.$refs.volume.value = this.volume;
   },
   methods: {
@@ -92,7 +74,7 @@ export default {
      * @returns {void}
      */
     handlePlay() {
-      const { audio } = this.$refs;
+      const { player: audio } = this;
       // TODO: fix an issue with paused / unpaused state
       if (audio.paused) {
         this.paused = false;
@@ -107,18 +89,8 @@ export default {
      * @returns {void}
      */
     handleProgress(event) {
-      const { audio } = this.$refs;
+      const { player: audio } = this;
       return audio.currentTime = (this.current.duration / 200) * event.target.value;
-    },
-    /**
-     * Handle player volume
-     * @returns {void}
-     */
-    handleVolume(event) {
-      const { audio } = this.$refs;
-      const { value = 0 } = event.target;
-      audio.volume = value;
-      return this.setVolume(value);
     },
   },
 };
