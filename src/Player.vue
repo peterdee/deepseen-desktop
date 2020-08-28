@@ -2,11 +2,11 @@
   <div id="app">
     <ContextMenu
       v-if="contextMenu"
-      @handle-track-selection="handleTrackSelection($event)"
+      @handle-track-selection="handleTrackSelection"
     />
     <PlaylistActions
       v-if="playlistActions"
-      @handle-track-selection="handleTrackSelection($event)"
+      @handle-track-selection="handleTrackSelection"
     />
     <PlaybackError v-if="playbackError" />
     <div class="player">
@@ -14,21 +14,26 @@
         {{ currentlyPlaying }}
       </div>
       <audio
-        v-if="current.url"
         preload="auto"
         ref="player"
         :src="current.url"
         :type="current.type"
       />
-      <Audio
+      <AudioControls
+        :elapsed="elapsed"
+        :paused="paused"
+        :progress="progress"
         :volume="volume"
-        @handle-volume="handleVolume($event)"
+        @handle-play="handlePlay"
+        @handle-progress="handleProgress"
+        @handle-progress-clicked="handleProgressClicked"
+        @handle-volume="handleVolume"
       />
-      <Playlist @select-track="handleTrackSelection($event)" />
+      <Playlist @select-track="handleTrackSelection" />
     </div>
     <TotalPlaybackTime /> 
     <PlaybackControls
-      @handle-track-selection="handleTrackSelection($event)"
+      @handle-track-selection="handleTrackSelection"
     />
     <button
       class="action-button"
@@ -46,10 +51,10 @@ import { promises as fs } from 'fs';
 
 import getNextTrackId from './utilities/get-next-track';
 
+import AudioControls from './components/AudioControls/AudioControls';
 import ContextMenu from './modals/ContextMenu/ContextMenu';
 import PlaybackControls from './components/PlaybackControls/PlaybackControls';
 import PlaybackError from './modals/PlaybackError/PlaybackError';
-import Audio from './components/Audio/Audio';
 import Playlist from './components/Playlist/Playlist';
 import PlaylistActions from './modals/PlaylistActions/PlaylistActions';
 import TotalPlaybackTime from './components/TotalPlaybackTime/TotalPlaybackTime';
@@ -57,7 +62,7 @@ import TotalPlaybackTime from './components/TotalPlaybackTime/TotalPlaybackTime'
 export default {
   name: 'Player',
   components: {
-    Audio,
+    AudioControls,
     ContextMenu,
     PlaybackControls,
     PlaybackError,
@@ -68,6 +73,10 @@ export default {
   data() {
     return {
       appName: 'Audio Player',
+      elapsed: 0,
+      paused: true,
+      progress: 0,
+      progressClicked: false,
     };
   },
   computed: {
@@ -96,16 +105,17 @@ export default {
       this.handleTrackSelection(this.current.id, false);
     }
 
-    // update the audio playback time
-    // const { player } = this.$refs;
-    // player.ontimeupdate = () => {
-    //   this.audioTime = player.currentTime;
-    //   if (!this.progressClicked) {
-    //     this.$refs.progress.value = Math.round(
-    //       this.audioTime / (this.current.duration / 200),
-    //     );
-    //   }
-    // };
+    // update the elapsed time
+    const { player } = this.$refs;
+    player.ontimeupdate = () => {
+      this.elapsed = player.currentTime;
+      if (!this.progressClicked) {
+        console.log('hit')
+        this.progress = Math.round(
+          this.elapsed / (this.current.duration / 200),
+        );
+      }
+    };
   },
   methods: {
     ...mapActions({
@@ -117,14 +127,45 @@ export default {
       setVolume: 'track/setVolume',
     }),
     /**
-     * Handle player volume
+     * Handle Play button
      * @returns {void}
      */
-    handleVolume(event) {
+    handlePlay() {
       const { player } = this.$refs;
-      const { value = 0 } = event.target;
-      player.volume = value;
-      return this.setVolume(value);
+
+      if (!(player && player.src && player.src[player.src.length - 1] !== '/')) {
+        return false;
+      }
+
+      if (player.paused) {
+        this.paused = false;
+        return player.play();
+      }
+
+      this.paused = true;
+      return player.pause();
+    },
+    /**
+     * Handle track progress
+     * @returns {void}
+     */
+    handleProgress(event) {
+      const { player } = this.$refs;
+
+      if (!(player && player.src && player.src[player.src.length - 1] !== '/')) {
+        return false;
+      }
+
+      console.log('hit 2')
+      this.elapsed = (this.current.duration / 200) * event.target.value;
+      return player.currentTime = this.elapsed;
+    },
+    /**
+     * Handle track progress bar click
+     * @returns {void}
+     */
+    handleProgressClicked(clicked) {
+      this.progressClicked = clicked;
     },
     /**
      * Handle track selection
@@ -155,6 +196,9 @@ export default {
             getNextTrackId(this.trackIds, this.current.id, this.loop),
           );
 
+          // make sure that the volume is correct
+          player.volume = this.volume;
+
           // play the current track
           return play && player.play();
         };
@@ -169,6 +213,22 @@ export default {
         // in any other case show an error
         return this.setPlaybackError('Error playing a file!');
       }
+    },
+    /**
+     * Handle player volume
+     * @param {*} event - input event
+     * @returns {void}
+     */
+    handleVolume(event) {
+      const { player } = this.$refs;
+      const { value = 0 } = event.target;
+
+      // update the player volume only if player has a source
+      if (player && player.volume) {
+        player.volume = value;
+      }
+
+      return this.setVolume(value);
     },
   },
 };
