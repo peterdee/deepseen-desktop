@@ -36,24 +36,17 @@ import formatTime from '../../utilities/format-time';
 
 export default {
   name: 'Audio',
+  data() {
+    return {
+      elapsed: 0,
+      progress: 0,
+      progressClicked: false,
+    };
+  },
   props: {
-    elapsed: {
-      default() {
-        return 0;
-      },
-      required: false,
-      type: [Number, String],
-    },
     paused: {
       required: true,
       type: Boolean,
-    },
-    progress: {
-      default() {
-        return 0;
-      },
-      required: false,
-      type: [Number, String],
     },
     volume: {
       required: true,
@@ -74,6 +67,18 @@ export default {
   mounted() {
     // set the volume on mount
     this.$refs.volume.value = this.volume;
+
+    // update elapsed time and progress bar
+    const { player } = this.$parent.$refs;
+    player.ontimeupdate = () => {
+      this.elapsed = player.currentTime;
+      if (!this.progressClicked) {
+        console.log('hit')
+        this.progress = Math.round(
+          this.elapsed / (this.current.duration / 200),
+        );
+      }
+    };
   },
   methods: {
     /**
