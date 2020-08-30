@@ -73,7 +73,6 @@ export default {
     player.ontimeupdate = () => {
       this.elapsed = player.currentTime;
       if (!this.progressClicked) {
-        console.log('hit')
         this.progress = Math.round(
           this.elapsed / (this.current.duration / 200),
         );

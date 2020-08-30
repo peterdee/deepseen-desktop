@@ -12,7 +12,7 @@
       <button
         :class="['track noselect', track.id === current.id ? 'active' : '']"
         type="button"
-        @click="$emit('select-track', track.id)"
+        @click="$emit('handle-track-selection', track.id)"
         @contextmenu.prevent="showContextMenu(track.id)"
       >
         <div class="track-left">

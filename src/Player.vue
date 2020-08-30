@@ -20,16 +20,12 @@
         :type="current.type"
       />
       <AudioControls
-        :elapsed="elapsed"
         :paused="paused"
-        :progress="progress"
         :volume="volume"
         @handle-play="handlePlay"
-        @handle-progress="handleProgress"
-        @handle-progress-clicked="handleProgressClicked"
         @handle-volume="handleVolume"
       />
-      <Playlist @select-track="handleTrackSelection" />
+      <Playlist @handle-track-selection="handleTrackSelection" />
     </div>
     <TotalPlaybackTime /> 
     <PlaybackControls
@@ -104,18 +100,6 @@ export default {
     if (this.current.id) {
       this.handleTrackSelection(this.current.id, false);
     }
-
-    // update the elapsed time
-    const { player } = this.$refs;
-    player.ontimeupdate = () => {
-      this.elapsed = player.currentTime;
-      if (!this.progressClicked) {
-        console.log('hit')
-        this.progress = Math.round(
-          this.elapsed / (this.current.duration / 200),
-        );
-      }
-    };
   },
   methods: {
     ...mapActions({
@@ -144,28 +128,6 @@ export default {
 
       this.paused = true;
       return player.pause();
-    },
-    /**
-     * Handle track progress
-     * @returns {void}
-     */
-    handleProgress(event) {
-      const { player } = this.$refs;
-
-      if (!(player && player.src && player.src[player.src.length - 1] !== '/')) {
-        return false;
-      }
-
-      console.log('hit 2')
-      this.elapsed = (this.current.duration / 200) * event.target.value;
-      return player.currentTime = this.elapsed;
-    },
-    /**
-     * Handle track progress bar click
-     * @returns {void}
-     */
-    handleProgressClicked(clicked) {
-      this.progressClicked = clicked;
     },
     /**
      * Handle track selection
