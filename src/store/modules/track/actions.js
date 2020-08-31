@@ -10,6 +10,15 @@ export default {
     return commit(actionTypes.TRACK_CLEAR_TRACK);
   },
   /**
+   * Set muted state
+   * @param {*} commit - commit function
+   * @param {boolean} payload - muted state
+   * @returns {void}
+   */
+  setMuted({ commit }, payload) {
+    return commit(actionTypes.TRACK_SET_MUTED, payload);
+  },
+  /**
    * Set current track
    * @param {*} commit - commit function
    * @param {object} payload - track object
