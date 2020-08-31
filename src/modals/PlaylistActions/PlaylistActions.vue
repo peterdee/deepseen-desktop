@@ -74,8 +74,12 @@ export default {
       setPlaybackError: 'playbackError/setError',
       setPlaylistActionsVisibility: 'playlistActions/setVisibility',
     }),
+    /**
+     * Handle loop switch click
+     * @param {*} event - click event
+     * @returns {void}
+     */
     handleLoopSwitch(event) {
-      console.log('checkbox', event.target.checked, 'loop', this.loop);
       return this.setLoopPlaylist(event.target.checked);
     },
     /**

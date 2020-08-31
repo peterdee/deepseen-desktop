@@ -26,14 +26,12 @@
         @handle-mute="handleMute"
         @handle-play="handlePlay"
         @handle-stop="handleStop"
+        @handle-track-selection="handleTrackSelection"
         @handle-volume="handleVolume"
       />
       <Playlist @handle-track-selection="handleTrackSelection" />
     </div>
     <TotalPlaybackTime /> 
-    <PlaybackControls
-      @handle-track-selection="handleTrackSelection"
-    />
     <button
       class="action-button"
       type="button"
@@ -52,7 +50,6 @@ import getNextTrackId from './utilities/get-next-track';
 
 import AudioControls from './components/AudioControls/AudioControls';
 import ContextMenu from './modals/ContextMenu/ContextMenu';
-import PlaybackControls from './components/PlaybackControls/PlaybackControls';
 import PlaybackError from './modals/PlaybackError/PlaybackError';
 import Playlist from './components/Playlist/Playlist';
 import PlaylistActions from './modals/PlaylistActions/PlaylistActions';
@@ -63,7 +60,6 @@ export default {
   components: {
     AudioControls,
     ContextMenu,
-    PlaybackControls,
     PlaybackError,
     Playlist,
     PlaylistActions,
@@ -101,6 +97,9 @@ export default {
     if (this.current.id) {
       this.handleTrackSelection(this.current.id, false);
     }
+
+    const { player } = this.$refs;
+    player.oncanplaythrough = () => console.log('can play through')
   },
   methods: {
     ...mapActions({
@@ -149,15 +148,11 @@ export default {
      * @returns {void}
      */
     handleStop() {
+      console.log('here')
       const { player } = this.$refs;
-
-      if (!(player && player.src && player.src[player.src.length - 1] !== '/')) {
-        return false;
-      }
-
-      this.paused = true;
-      player.pause()
-      return player.currentTime = 0;
+      player.src = this.current.url;
+      player.pause();
+      return this.paused = true;
     },
     /**
      * Handle track selection
@@ -192,7 +187,12 @@ export default {
           player.volume = this.volume;
 
           // play the current track
-          return play && player.play();
+          if (play) {
+            player.play();
+            return this.paused = false;
+          }
+
+          return false;
         };
       } catch (error) {
         // handle the case with missing file (skip it)
