@@ -25,6 +25,7 @@
         :volume="volume"
         @handle-mute="handleMute"
         @handle-play="handlePlay"
+        @handle-stop="handleStop"
         @handle-volume="handleVolume"
       />
       <Playlist @handle-track-selection="handleTrackSelection" />
@@ -71,10 +72,7 @@ export default {
   data() {
     return {
       appName: 'Audio Player',
-      elapsed: 0,
       paused: true,
-      progress: 0,
-      progressClicked: false,
     };
   },
   computed: {
@@ -145,6 +143,21 @@ export default {
 
       this.paused = true;
       return player.pause();
+    },
+    /**
+     * Handle Stop button
+     * @returns {void}
+     */
+    handleStop() {
+      const { player } = this.$refs;
+
+      if (!(player && player.src && player.src[player.src.length - 1] !== '/')) {
+        return false;
+      }
+
+      this.paused = true;
+      player.pause()
+      return player.currentTime = 0;
     },
     /**
      * Handle track selection
