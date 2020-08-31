@@ -20,8 +20,10 @@
         :type="current.type"
       />
       <AudioControls
+        :muted="muted"
         :paused="paused"
         :volume="volume"
+        @handle-mute="handleMute"
         @handle-play="handlePlay"
         @handle-volume="handleVolume"
       />
@@ -83,6 +85,7 @@ export default {
       contextMenu: ({ contextMenu }) => contextMenu.visibility,
       current: ({ track }) => track.track,
       loop: ({ settings }) => settings.loop,
+      muted: ({ track }) => track.muted,
       playbackError: ({ playbackError }) => playbackError.message,
       playlistActions: ({ playlistActions }) => playlistActions.visibility,
       tracks: ({ playlist }) => playlist.tracks,
@@ -105,11 +108,25 @@ export default {
     ...mapActions({
       addTrack: 'playlist/addTrack',
       clearTrack: 'track/clearTrack',
+      setMuted: 'track/setMuted',
       setPlaybackError: 'playbackError/setError',
       setPlaylistActionsVisibility: 'playlistActions/setVisibility',
       setTrack: 'track/setTrack',
       setVolume: 'track/setVolume',
     }),
+    /**
+     * Handle Mute button
+     * @returns {void}
+     */
+    handleMute() {
+      const { player } = this.$refs;
+      if (!this.muted) {
+        player.volume = 0;
+      } else {
+        player.volume = this.volume;
+      }
+      return this.setMuted(!this.muted);
+    },
     /**
      * Handle Play button
      * @returns {void}
@@ -181,13 +198,18 @@ export default {
      * @param {*} event - input event
      * @returns {void}
      */
-    handleVolume(event) {
+    async handleVolume(event) {
       const { player } = this.$refs;
-      const { value = 0 } = event.target;
+      const { value } = event.target;
 
       // update the player volume only if player has a source
-      if (player && player.volume) {
+      if (player && (player.volume || player.volume === 0)) {
         player.volume = value;
+      }
+
+      // unmute if it was muted
+      if (this.muted) {
+        await this.setMuted(false);
       }
 
       return this.setVolume(value);

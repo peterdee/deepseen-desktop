@@ -11,6 +11,15 @@ export default {
     state.track = { ...initialState.track };
   },
   /**
+   * Commit muted state change
+   * @param {*} state - Track state 
+   * @param {boolean} muted - muted state
+   * @returns {void}
+   */
+  [actionTypes.TRACK_SET_MUTED](state, muted = false) {
+    state.muted = muted;
+  },
+  /**
    * Commit new track
    * @param {*} state - Track state 
    * @param {*} track - track to set

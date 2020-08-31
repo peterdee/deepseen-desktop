@@ -4,7 +4,7 @@
       type="button"
       @click="$emit('handle-play')"
     >
-      {{ this.paused ? 'Play' : 'Pause' }}
+      {{ paused ? 'Play' : 'Pause' }}
     </button>
     <input
       min="0"
@@ -12,9 +12,9 @@
       ref="progress"
       step="1"
       type="range"
-      @change="$emit('handle-progress', $event)"
-      @mousedown="$emit('handle-progress-clicked', true)"
-      @mouseup="$emit('handle-progress-clicked', false)"
+      @change="handleProgress"
+      @mousedown="progressClicked = true"
+      @mouseup="progressClicked = false"
     />
     <input
       min="0"
@@ -22,10 +22,16 @@
       ref="volume"
       step="0.01"
       type="range"
-      :value="volume"
+      :value="muted ? 0 : volume"
       @input="$emit('handle-volume', $event)"
     />
     {{ formatTime(elapsed) }} / {{ formatTime(current.duration) }}
+    <button
+      type="button"
+      @click="$emit('handle-mute')"
+    >
+      {{ muted ? 'Unmute' : 'Mute' }}
+    </button>
   </div>
 </template>
 
@@ -44,6 +50,10 @@ export default {
     };
   },
   props: {
+    muted: {
+      required: true,
+      type: Boolean,
+    },
     paused: {
       required: true,
       type: Boolean,
@@ -57,23 +67,17 @@ export default {
     ...mapState({
       current: ({ track }) => track.track,
     }),
-    progressBar() {
-      console.log
-      const { progress } = this.$refs;
-      progress.value = this.progress;
-      return false;
-    },
   },
   mounted() {
     // set the volume on mount
-    this.$refs.volume.value = this.volume;
+    this.$refs.volume.value = this.muted ? 0 : this.volume;
 
     // update elapsed time and progress bar
     const { player } = this.$parent.$refs;
     player.ontimeupdate = () => {
       this.elapsed = player.currentTime;
       if (!this.progressClicked) {
-        this.progress = Math.round(
+        this.$refs.progress.value = Math.round(
           this.elapsed / (this.current.duration / 200),
         );
       }
@@ -87,6 +91,15 @@ export default {
      */
     formatTime(value) {
       return formatTime(value);
+    },
+    /**
+     * Handle track progress click
+     * @param {*} event - click event
+     * @returns {void}
+     */
+    handleProgress(event) {
+      const { player } = this.$parent.$refs;
+      return player.currentTime = (this.current.duration / 200) * event.target.value;
     },
   },
 };
