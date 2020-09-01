@@ -92,19 +92,28 @@ export default {
     },
   },
   async mounted() {
+    const { player } = this.$refs;
+
     // load the file but do not play it
     if (this.current.id) {
-      this.handleTrackSelection(this.current.id, false);
+      this.handleTrackSelection(this.current.id, true);
     }
 
-    const { player } = this.$refs;
-    player.oncanplaythrough = () => {
-      console.log('here', this.paused);
-      if (this.paused) {
-              console.log('paused');
-        return player.pause();
+    // play the next track when current one ends
+    player.onended = () => this.handleTrackSelection(
+      getNextTrackId(this.trackIds, this.current.id, this.loop),
+    );
+
+    // handle the 'can play' event
+    player.oncanplay = () => {
+      // make sure that the volume is correct
+      player.volume = this.volume;
+
+      // play the current track if playback is not paused
+      if (!this.paused) {
+        return player.play();
       }
-    }
+    };
   },
   methods: {
     ...mapActions({
@@ -154,7 +163,7 @@ export default {
      * @param {boolean} play - start playing the selected track
      * @returns {Promise<*>}
      */
-    async handleTrackSelection(id = '', play = true) {
+    async handleTrackSelection(id = '', paused = false) {
       try {
         // stop the playback if there's no ID
         if (!id) {
@@ -170,24 +179,12 @@ export default {
           url,
         });
 
-        const { player } = this.$refs;
-        player.oncanplay = () => {
-          // play the next track when current one ends
-          player.onended = () => this.handleTrackSelection(
-            getNextTrackId(this.trackIds, this.current.id, this.loop),
-          );
+        // keep the playback paused if necessary
+        if (paused) {
+          return this.paused = true;
+        }
 
-          // make sure that the volume is correct
-          player.volume = this.volume;
-
-          // play the current track
-          if (play) {
-            player.play();
-            return this.paused = false;
-          }
-
-          return false;
-        };
+        return this.paused = false;
       } catch (error) {
         // handle the case with missing file (skip it)
         const { code = '' } = error;
