@@ -2,6 +2,12 @@
   <div class="controls">
     <button
       type="button"
+      @click="handleStop"
+    >
+      Stop
+    </button>
+    <button
+      type="button"
       @click="$emit('handle-play')"
     >
       {{ paused ? 'Play' : 'Pause' }}
@@ -110,6 +116,15 @@ export default {
      */
     formatTime(value) {
       return formatTime(value);
+    },
+    /**
+     * Handle track stop
+     * @returns {void}
+     */
+    handleStop() {
+      this.elapsed = 0;
+      this.$refs.progress.value = 0;
+      return this.$emit('handle-stop');
     },
     /**
      * Handle track progress click

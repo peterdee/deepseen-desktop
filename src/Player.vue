@@ -25,6 +25,7 @@
         :volume="volume"
         @handle-mute="handleMute"
         @handle-play="handlePlay"
+        @handle-stop="handleStop"
         @handle-track-selection="handleTrackSelection"
         @handle-volume="handleVolume"
       />
@@ -66,7 +67,7 @@ export default {
   },
   data() {
     return {
-      appName: 'Audio Player',
+      appName: 'DeepSeen',
       paused: true,
     };
   },
@@ -158,9 +159,19 @@ export default {
       return player.pause();
     },
     /**
+     * Handle track stop
+     * @returns {void}
+     */
+    handleStop() {
+      const { player } = this.$refs;
+      player.currentTime = 0;
+      player.pause();
+      return this.paused = true;
+    },
+    /**
      * Handle track selection
      * @param {string} id - selected track ID
-     * @param {boolean} play - start playing the selected track
+     * @param {boolean} paused - paused value determines if the playback should be paused
      * @returns {Promise<*>}
      */
     async handleTrackSelection(id = '', paused = false) {

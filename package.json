@@ -1,13 +1,13 @@
 {
-  "name": "vue-electron-audioplayer",
+  "name": "deepseen-desktop",
   "version": "1.0.0",
   "private": true,
   "author": {
     "name": "Peter Dyumin",
     "url": "https://github.com/peterdee"
   },
-  "description": "A very simple audio player with Vue and Electron",
-  "homepage": "https://github.com/peterdee/vue-electron-audioplayer",
+  "description": "Deepseen is a simple desktop audio player with Electron, Vue and Vuex",
+  "homepage": "https://github.com/peterdee/deepseen-desktop",
   "main": "background.js",
   "scripts": {
     "build": "vue-cli-service build",
@@ -19,12 +19,12 @@
     "serve": "vue-cli-service serve"
   },
   "engines": {
-    "node": "14.4.0",
-    "npm": "6.14.5"
+    "node": "14.9.0",
+    "npm": "6.14.8"
   },
   "repository": {
     "type": "git",
-    "url": "git+https://github.com/peterdee/vue-electron-audioplayer"
+    "url": "git+https://github.com/peterdee/deepseen-desktop"
   },
   "keywords": [
     "Audio player",

@@ -1,4 +1,4 @@
-## vue-electron-audioplayer
+## deepseen-desktop
 
 [![Known Vulnerabilities](https://snyk.io/test/github/peterdee/vue-electron-audioplayer/badge.svg?targetFile=package.json)](https://snyk.io/test/github/peterdee/vue-electron-audioplayer?targetFile=package.json)
 
@@ -9,8 +9,8 @@ DEV (browser): http://localhost:8080
 ### Deploy
 
 ```shell script
-git clone https://github.com/peterdee/vue-electron-audioplayer
-cd ./vue-electron-audioplayer
+git clone https://github.com/peterdee/deepseen-desktop
+cd ./deepseen-desktop
 nvm use 14
 npm i
 ```
