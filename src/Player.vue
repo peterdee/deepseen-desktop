@@ -25,7 +25,6 @@
         :volume="volume"
         @handle-mute="handleMute"
         @handle-play="handlePlay"
-        @handle-stop="handleStop"
         @handle-track-selection="handleTrackSelection"
         @handle-volume="handleVolume"
       />
@@ -99,7 +98,13 @@ export default {
     }
 
     const { player } = this.$refs;
-    player.oncanplaythrough = () => console.log('can play through')
+    player.oncanplaythrough = () => {
+      console.log('here', this.paused);
+      if (this.paused) {
+              console.log('paused');
+        return player.pause();
+      }
+    }
   },
   methods: {
     ...mapActions({
@@ -142,17 +147,6 @@ export default {
 
       this.paused = true;
       return player.pause();
-    },
-    /**
-     * Handle Stop button
-     * @returns {void}
-     */
-    handleStop() {
-      console.log('here')
-      const { player } = this.$refs;
-      player.src = this.current.url;
-      player.pause();
-      return this.paused = true;
     },
     /**
      * Handle track selection

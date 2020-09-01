@@ -2,12 +2,6 @@
   <div class="controls">
     <button
       type="button"
-      @click="handleStop"
-    >
-      Stop
-    </button>
-    <button
-      type="button"
       @click="$emit('handle-play')"
     >
       {{ paused ? 'Play' : 'Pause' }}
@@ -125,25 +119,6 @@ export default {
     handleProgress(event) {
       const { player } = this.$parent.$refs;
       return player.currentTime = (this.current.duration / 200) * event.target.value;
-    },
-    /**
-     * Handle Stop button
-     * @returns {void}
-     */
-    async handleStop() {
-      const { player } = this.$parent.$refs;
-
-      if (!(player && player.src && player.src[player.src.length - 1] !== '/')) {
-        return false;
-      }
-
-      player.pause();
-      player.currentTime = 0;
-      player.src = null;
-
-      this.$refs.progress.value = 0;
-      this.elapsed = 0;
-      return this.$emit('handle-stop');
     },
     /**
      * Play the next track

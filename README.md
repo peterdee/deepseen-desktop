@@ -2,7 +2,7 @@
 
 [![Known Vulnerabilities](https://snyk.io/test/github/peterdee/vue-electron-audioplayer/badge.svg?targetFile=package.json)](https://snyk.io/test/github/peterdee/vue-electron-audioplayer?targetFile=package.json)
 
-A very simple audio player with Vue, Vuex and Electron
+Deepseen is a simple desktop audio player with Electron, Vue and Vuex
 
 DEV (browser): http://localhost:8080
 
