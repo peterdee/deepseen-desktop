@@ -1,11 +1,9 @@
 <template>
-  <label
-    class="form-switch"
-  >
+  <label class="form-switch">
     <input
+      :checked="value"
       @input="$emit('handle-switch', $event)"
       type="checkbox"
-      :checked="value"
     >
     <i></i>
     {{ label }}
@@ -26,7 +24,7 @@ export default {
       },
       required: false,
       type: Boolean,
-    }
+    },
   },
 };
 </script>

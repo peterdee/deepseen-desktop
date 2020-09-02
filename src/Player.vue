@@ -1,5 +1,5 @@
 <template>
-  <div id="app">
+  <div>
     <ContextMenu
       v-if="contextMenu"
       @handle-track-selection="handleTrackSelection"

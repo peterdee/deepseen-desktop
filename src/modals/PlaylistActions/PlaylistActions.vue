@@ -15,6 +15,14 @@
       />
       <button
         class="action-button menu-button"
+        :disabled="this.tracks.length === 0"
+        type="button"
+        @click="randomizeTracks()"
+      >
+        Randomize tracks
+      </button>
+      <button
+        class="action-button menu-button"
         type="button"
         @click="openPlaylist()"
       >
@@ -70,6 +78,7 @@ export default {
       addMultipleTracks: 'playlist/addMultipleTracks',
       clearTrack: 'track/clearTrack',
       emptyPlaylist: 'playlist/clearPlaylist',
+      randomizePlaylist: 'playlist/randomizeTracks',
       setLoopPlaylist: 'settings/setLoopPlaylist',
       setPlaybackError: 'playbackError/setError',
       setPlaylistActionsVisibility: 'playlistActions/setVisibility',
@@ -141,6 +150,13 @@ export default {
 
         return this.setPlaybackError('Could not open the playlist!');
       }
+    },
+    async randomizeTracks() {
+      // clear the playlist
+      await this.randomizePlaylist();
+
+      // close the modal
+      return this.setPlaylistActionsVisibility(false);
     },
     /**
      * Save current playlist to the disk
