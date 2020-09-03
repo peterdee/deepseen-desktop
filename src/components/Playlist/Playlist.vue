@@ -42,7 +42,13 @@ import getFileExtension from '../../utilities/get-file-extension';
 import parseDir from '../../utilities/parse-dir';
 
 // allowed audio extensions
-const allowedExtensions = ['aac', 'mp3', 'wav'];
+const allowedExtensions = [
+  'aac',
+  'flac',
+  'mp3',
+  'ogg',
+  'wav',
+];
 
 export default {
   name: 'Playlist',

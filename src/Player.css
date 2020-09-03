@@ -13,13 +13,6 @@ body, html {
   font-size: 24px;
   padding: 32px;
 }
-.noselect {
-  -webkit-touch-callout: none;
-  -webkit-user-select: none;
-  -moz-user-select: none;
-  -ms-user-select: none;
-  user-select: none;
-}
 .action-button {
   background-color: black;
   border: 2px solid white;
@@ -43,7 +36,30 @@ body, html {
   transition: background-color 200ms ease-in-out, color 200ms ease-in-out;
 }
 
+/* Scrollbar styling */
+::-webkit-scrollbar {
+  width: 10px;
+}
+::-webkit-scrollbar-track {
+  background-color: #3f3f3f;
+  border-radius: 3px;
+}
+::-webkit-scrollbar-thumb {
+  background-color: white;
+  border-radius: 3px;
+}
+::-webkit-scrollbar-thumb:hover {
+  background-color: turquoise;
+}
+
 /* Commonly used classes */
 .pointer {
   cursor: pointer;
+}
+.noselect {
+  -webkit-touch-callout: none;
+  -webkit-user-select: none;
+  -moz-user-select: none;
+  -ms-user-select: none;
+  user-select: none;
 }

@@ -1,5 +1,5 @@
 <template>
-  <div class="controls">
+  <div class="controls noselect">
     <button
       class="button pointer"
       @click="handleStop"

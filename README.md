@@ -54,3 +54,7 @@ npm run electron:build
 ```shell script
 npm run lint
 ```
+
+### License
+
+[MIT](./LICENSE)
