@@ -1,31 +1,60 @@
 .controls {
+  align-items: center;
   background-color: black;
   display: flex;
   justify-content: center;
   padding: 16px;
 }
-.control-button, .control-button:disabled, .control-button:hover {
+.button, .button:disabled, .button:hover {
   transition: background-color 200ms ease-in-out, color 200ms ease-in-out;
 }
-.control-button {
-  background-color: black;
-  border: 2px solid white;
+.button, .icon {
+  height: 40px;
+  width: 40px;
+}
+.button {
+  background-color: transparent;
+  border: none;
   border-radius: 50%;
-  color: white;
-  font-size: 16px;
-  height: 32px;
   margin: 0 4px;
   outline: none;
-  text-align: center;
-  width: 32px;
+  padding: 0;
 }
-.control-button:hover {
-  background-color: white;
-  color: black;
-  cursor: pointer;
+.icon {
+  color: white;
 }
-.control-button:disabled {
-  background-color: #696969;
-  color: #d0d0d0;
+.button:hover {
+  background-color: turquoise;
+}
+.button:disabled {
+  background-color: teal;
   cursor: default;
+}
+input[type='range'] {
+  -webkit-appearance: none;
+  background-color: white;
+  border-radius: 3px;
+  cursor: pointer;
+  height: 10px;
+  margin: 0 8px;
+  outline: none;
+  overflow: hidden;
+}
+input[type='range']::-webkit-slider-runnable-track {
+  -webkit-appearance: none;
+  height: 10px;
+}
+input[type='range']::-webkit-slider-thumb {
+  -webkit-appearance: none;
+  background: turquoise;
+  border: 0;
+  box-shadow: -1000px 0 0 1000px turquoise;
+  height: 20px;
+  width: 1px;
+}
+.progress {
+  width: 400px;
+}
+.volume {
+  width: 160px;
 }

@@ -13,6 +13,11 @@
         :value="loop"
         @handle-switch="handleLoopSwitch"
       />
+      <Switch
+        label="Shuffle playlist"
+        :value="shuffle"
+        @handle-switch="handleShuffleSwitch"
+      />
       <button
         class="action-button menu-button"
         :disabled="this.tracks.length === 0"
@@ -70,6 +75,7 @@ export default {
     ...mapState({
       current: ({ track }) => track.track,
       loop: ({ settings }) => settings.loop,
+      shuffle: ({ settings }) => settings.shuffle,
       tracks: ({ playlist }) => playlist.tracks,
     }),
   },
@@ -82,6 +88,7 @@ export default {
       setLoopPlaylist: 'settings/setLoopPlaylist',
       setPlaybackError: 'playbackError/setError',
       setPlaylistActionsVisibility: 'playlistActions/setVisibility',
+      setPlaylistShuffling: 'settings/setPlaylistShuffling',
     }),
     /**
      * Handle loop switch click
@@ -90,6 +97,14 @@ export default {
      */
     handleLoopSwitch(event) {
       return this.setLoopPlaylist(event.target.checked);
+    },
+    /**
+     * Handle shuffle switch click
+     * @param {*} event - click event
+     * @returns {void}
+     */
+    handleShuffleSwitch(event) {
+      return this.setPlaylistShuffling(event.target.checked);
     },
     /**
      * Clear playlist

@@ -1,34 +1,53 @@
 <template>
   <div class="controls">
     <button
-      type="button"
+      class="button pointer"
       @click="handleStop"
+      type="button"
     >
-      Stop
+      <img
+        alt="Stop"
+        class="icon pointer"
+        :src="stopIcon"
+      />
     </button>
     <button
-      type="button"
+      class="button pointer"
       @click="$emit('handle-play')"
+      type="button"
     >
-      {{ paused ? 'Play' : 'Pause' }}
+      <img
+        :alt="paused ? 'Play' : 'Pause'"
+        class="icon pointer"
+        :src="paused ? playIcon : pauseIcon"
+      />
     </button>
     <button
-      class="control-button"
-      :disabled="trackIds.length === 0"
-      type="button"
+      class="button pointer"
       @click="playPrevious()"
-    >
-      ◄
-    </button>
-    <button
-      class="control-button"
       :disabled="trackIds.length === 0"
       type="button"
-      @click="playNext()"
     >
-      ►
+      <img
+        alt="Previous"
+        class="icon pointer"
+        :src="previousIcon"
+      />
+    </button>
+    <button
+      class="button pointer"
+      @click="playNext()"
+      :disabled="trackIds.length === 0"
+      type="button"
+    >
+      <img
+        alt="Next"
+        class="icon pointer"
+        :src="nextIcon"
+      />
     </button>
     <input
+      class="progress"
       min="0"
       max="200"
       ref="progress"
@@ -38,7 +57,9 @@
       @mousedown="progressClicked = true"
       @mouseup="progressClicked = false"
     />
+    {{ formatTime(elapsed) }} / {{ formatTime(current.duration) }}
     <input
+      class="volume"
       min="0"
       max="1"
       ref="volume"
@@ -47,12 +68,17 @@
       :value="muted ? 0 : volume"
       @input="$emit('handle-volume', $event)"
     />
-    {{ formatTime(elapsed) }} / {{ formatTime(current.duration) }}
     <button
-      type="button"
+      class="button pointer"
       @click="$emit('handle-mute')"
+      :disabled="volume === 0"
+      type="button"
     >
-      {{ muted ? 'Unmute' : 'Mute' }}
+      <img
+        :alt="muted ? 'Unmute' : 'Mute'"
+        class="icon pointer"
+        :src="muted ? mutedIcon : volumeIcon"
+      />
     </button>
   </div>
 </template>
@@ -69,7 +95,14 @@ export default {
   data() {
     return {
       elapsed: 0,
+      mutedIcon: require('../../assets/muted.svg'),
+      nextIcon: require('../../assets/next.svg'),
+      pauseIcon: require('../../assets/pause.svg'),
+      playIcon: require('../../assets/play.svg'),
+      previousIcon: require('../../assets/previous.svg'),
       progressClicked: false,
+      stopIcon: require('../../assets/stop.svg'),
+      volumeIcon: require('../../assets/volume.svg'),
     };
   },
   props: {
@@ -94,7 +127,8 @@ export default {
     }),
   },
   mounted() {
-    // set the volume on mount
+    // set values on mount
+    this.$refs.progress.value = 0;
     this.$refs.volume.value = this.muted ? 0 : this.volume;
 
     // update elapsed time and progress bar

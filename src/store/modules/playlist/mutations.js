@@ -45,4 +45,13 @@ export default {
   [actionTypes.PLAYLIST_RANDOMIZE_TRACKS](state, tracks = []) {
     state.tracks = [...tracks];
   },
+  /**
+   * Commit changes
+   * @param {*} state - Playlist state 
+   * @param {string[]} ids - payload
+   * @returns {void}
+   */
+  [actionTypes.PLAYLIST_SET_SHUFFLED](state, ids = []) {
+    state.shuffled = ids;
+  },
 };

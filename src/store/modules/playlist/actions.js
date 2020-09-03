@@ -40,10 +40,19 @@ export default {
   /**
    * Randomize playlist tracks: place them in a random order
    * @param {*} commit - commit function
-   * @param {*} state - playlist state
+   * @param {*} state - Playlist state
    * @returns {void}
    */
   randomizeTracks({ commit, state }) {
     return commit(actionTypes.PLAYLIST_RANDOMIZE_TRACKS, randomize(state.tracks));
+  },
+  /**
+   * Set shuffled track IDs
+   * @param {*} commit - commit function
+   * @param {string[]} payload - shuffled track IDs
+   * @returns {void}
+   */
+  setShuffled({ commit }, payload = []) {
+    return commit(actionTypes.PLAYLIST_SET_SHUFFLED, payload);
   },
 };

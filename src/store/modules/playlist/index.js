@@ -4,6 +4,7 @@ import mutations from './mutations';
 
 // initial state
 export const state = {
+  shuffled: [],
   tracks: [],
 };
 

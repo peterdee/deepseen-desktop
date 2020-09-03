@@ -1,7 +1,7 @@
 export default {
   /**
    * Get a single track by track ID
-   * @param {string} trackId - track ID
+   * @param {*} trackId - track ID
    * @returns {object|null}
    */
   getTrack: ({ tracks = [] }) => (trackId = '') => {
@@ -14,6 +14,7 @@ export default {
   },
   /**
    * Get track IDs
+   * @param {*} tracks - available tracks
    * @returns {string[]}
    */
   getTrackIds: ({ tracks = [] }) => tracks.map(({ id = '' }) => id),

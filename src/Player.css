@@ -42,3 +42,8 @@ body, html {
   cursor: default;
   transition: background-color 200ms ease-in-out, color 200ms ease-in-out;
 }
+
+/* Commonly used classes */
+.pointer {
+  cursor: pointer;
+}
