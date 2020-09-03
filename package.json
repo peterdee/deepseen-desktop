@@ -9,6 +9,7 @@
   "description": "Deepseen is a simple desktop audio player with Electron, Vue and Vuex",
   "homepage": "https://github.com/peterdee/deepseen-desktop",
   "main": "background.js",
+  "license": "MIT",
   "scripts": {
     "build": "vue-cli-service build",
     "electron:build": "vue-cli-service electron:build",
