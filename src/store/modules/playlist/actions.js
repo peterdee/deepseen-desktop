@@ -47,6 +47,16 @@ export default {
     return commit(actionTypes.PLAYLIST_RANDOMIZE_TRACKS, randomize(state.tracks));
   },
   /**
+   * Reshuffle tracks
+   * @param {*} commit - commit function
+   * @param {string[]} payload - track IDs
+   * @returns {void}
+   */
+  reshuffle({ commit }, payload = []) {
+    const reshuffled = randomize(payload);
+    return commit(actionTypes.PLAYLIST_RESHUFFLE, reshuffled);
+  },
+  /**
    * Set shuffled track IDs
    * @param {*} commit - commit function
    * @param {string[]} payload - shuffled track IDs

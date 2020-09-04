@@ -1,9 +1,17 @@
-'use strict'
+'use strict';
 
-import { app, protocol, BrowserWindow } from 'electron'
-import { createProtocol } from 'vue-cli-plugin-electron-builder/lib'
-import installExtension, { VUEJS_DEVTOOLS } from 'electron-devtools-installer'
-const isDevelopment = process.env.NODE_ENV !== 'production'
+import {
+  app,
+  protocol,
+  BrowserWindow,
+  Menu,
+} from 'electron';
+import { createProtocol } from 'vue-cli-plugin-electron-builder/lib';
+import installExtension, { VUEJS_DEVTOOLS } from 'electron-devtools-installer';
+
+import buildMenuTemplate from './utilities/app-menu';
+
+const isDevelopment = process.env.NODE_ENV !== 'production';
 
 // Keep a global reference of the window object, if you don't, the window will
 // be closed automatically when the JavaScript object is garbage collected.
@@ -73,8 +81,14 @@ app.on('ready', async () => {
       console.error('Vue Devtools failed to install:', e.toString())
     }
   }
-  createWindow()
-})
+  createWindow();
+
+  // set application menu
+  const appMenu = Menu.buildFromTemplate(
+    buildMenuTemplate(app, process.platform === 'darwin'),
+  );
+  Menu.setApplicationMenu(appMenu);
+});
 
 // Exit cleanly on request from parent process in development mode.
 if (isDevelopment) {

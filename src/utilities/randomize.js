@@ -1,7 +1,7 @@
 /**
  * Randomize array elements (Durstenfeld shuffle)
- * @param {object[]} array - array of objects
- * @returns {object[]}
+ * @param {*[]} array - array of objects
+ * @returns {*[]}
  */
 export default (array = []) => {
   const mutable = [...array];

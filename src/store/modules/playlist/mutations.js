@@ -51,6 +51,15 @@ export default {
    * @param {string[]} ids - payload
    * @returns {void}
    */
+  [actionTypes.PLAYLIST_RESHUFFLE](state, ids = []) {
+    state.shuffled = ids;
+  },
+  /**
+   * Commit changes
+   * @param {*} state - Playlist state 
+   * @param {string[]} ids - payload
+   * @returns {void}
+   */
   [actionTypes.PLAYLIST_SET_SHUFFLED](state, ids = []) {
     state.shuffled = ids;
   },

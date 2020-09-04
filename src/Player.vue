@@ -82,6 +82,8 @@ export default {
       muted: ({ track }) => track.muted,
       playbackError: ({ playbackError }) => playbackError.message,
       playlistActions: ({ playlistActions }) => playlistActions.visibility,
+      shuffle: ({ settings }) => settings.shuffle,
+      shuffled: ({ playlist }) => playlist.shuffled,
       tracks: ({ playlist }) => playlist.tracks,
       volume: ({ track }) => track.volume,
     }),
@@ -98,6 +100,12 @@ export default {
     // load the file but do not play it
     if (this.current.id) {
       this.handleTrackSelection(this.current.id, true);
+    }
+
+    // reshuffle the tracks
+    if (this.shuffle) {
+      await this.reshuffle(this.trackIds);
+      console.log(this.shuffled)
     }
 
     // play the next track when current one ends
@@ -120,6 +128,7 @@ export default {
     ...mapActions({
       addTrack: 'playlist/addTrack',
       clearTrack: 'track/clearTrack',
+      reshuffle: 'playlist/reshuffle',
       setMuted: 'track/setMuted',
       setPlaybackError: 'playbackError/setError',
       setPlaylistActionsVisibility: 'playlistActions/setVisibility',

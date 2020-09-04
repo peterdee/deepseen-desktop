@@ -12,8 +12,9 @@ export default (trackIds = [], currentId = '', loop = false) => {
   }
 
   // if there's no currently playing track
+  const lastId = trackIds[trackIds.length - 1];
   if (!currentId) {
-    return trackIds[trackIds.length - 1];
+    return lastId;
   }
 
   // find the next track ID
@@ -24,7 +25,7 @@ export default (trackIds = [], currentId = '', loop = false) => {
 
   // get the ID of the last track in the playlist if loop is enabled
   if (loop) {
-    return trackIds[trackIds.length - 1];
+    return lastId;
   }
 
   return null;

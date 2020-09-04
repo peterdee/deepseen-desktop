@@ -124,6 +124,8 @@ export default {
     ...mapState({
       current: ({ track }) => track.track,
       loop: ({ settings }) => settings.loop,
+      shuffle: ({ settings }) => settings.shuffle,
+      shuffled: ({ playlist }) => playlist.shuffled,
     }),
   },
   mounted() {
@@ -174,7 +176,13 @@ export default {
      * @returns {*}
      */
     playNext() {
-      const nextId = getNextTrackId(this.trackIds, this.current.id, this.loop);
+      const nextId = getNextTrackId(
+        this.trackIds,
+        this.current.id,
+        this.loop,
+        this.shuffle,
+        this.shuffled,
+      );
       if (!nextId) {
         return false;
       }
@@ -186,7 +194,13 @@ export default {
      * @returns {*}
      */
     playPrevious() {
-      const previousId = getPreviousTrackId(this.trackIds, this.current.id, this.loop);
+      const previousId = getPreviousTrackId(
+        this.trackIds,
+        this.current.id,
+        this.loop,
+        this.shuffle,
+        this.shuffled,
+      );
       if (!previousId) {
         return false;
       }
