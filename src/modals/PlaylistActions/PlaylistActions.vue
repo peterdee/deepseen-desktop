@@ -204,7 +204,7 @@ export default {
           return false;
         }
 
-        return fs.writeFile(`${filePath}.spl`, JSON.stringify(this.tracks));
+        return fs.writeFile(`${filePath}.dpsn`, JSON.stringify(this.tracks));
       } catch (error) {
         await this.setPlaylistActionsVisibility(false);
         return this.setPlaybackError('Could not save the playlist!');
