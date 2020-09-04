@@ -25,7 +25,7 @@
     <button
       class="button pointer"
       @click="playPrevious()"
-      :disabled="trackIds.length === 0"
+      :disabled="trackIds.length === 0 || shuffle"
       type="button"
     >
       <img
@@ -84,7 +84,7 @@
 </template>
 
 <script>
-import { mapGetters, mapState } from 'vuex';
+import { mapActions, mapGetters, mapState } from 'vuex';
 
 import formatTime from '../../utilities/format-time';
 import getNextTrackId from '../../utilities/get-next-track';
@@ -145,6 +145,10 @@ export default {
     };
   },
   methods: {
+    ...mapActions({
+      reshuffle: 'playlist/reshuffle',
+      setShuffledTrackAsPlayed: 'playlist/setShuffledTrackAsPlayed',
+    }),
     /**
      * Format time
      * @param {number} value - time value in seconds
@@ -175,7 +179,7 @@ export default {
      * Play the next track
      * @returns {*}
      */
-    playNext() {
+    async playNext() {
       const nextId = getNextTrackId(
         this.trackIds,
         this.current.id,
@@ -183,8 +187,20 @@ export default {
         this.shuffle,
         this.shuffled,
       );
+
       if (!nextId) {
         return false;
+      }
+
+      // handle the reshuffle
+      if (nextId === 'reshuffle') {
+        await this.reshuffle(this.trackIds);
+        return this.playNext();
+      }
+
+      // update an item in the shuffled array
+      if (this.shuffle) {
+        await this.setShuffledTrackAsPlayed(nextId);
       }
 
       return this.$emit('handle-track-selection', nextId);
@@ -194,13 +210,7 @@ export default {
      * @returns {*}
      */
     playPrevious() {
-      const previousId = getPreviousTrackId(
-        this.trackIds,
-        this.current.id,
-        this.loop,
-        this.shuffle,
-        this.shuffled,
-      );
+      const previousId = getPreviousTrackId(this.trackIds, this.current.id, this.loop);
       if (!previousId) {
         return false;
       }

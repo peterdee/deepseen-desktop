@@ -25,6 +25,7 @@ export default {
    * @returns {void}
    */
   [actionTypes.PLAYLIST_CLEAR_PLAYLIST](state) {
+    state.shuffled = [];
     state.tracks = [];
   },
   /**
@@ -34,6 +35,7 @@ export default {
    * @returns {void}
    */
   [actionTypes.PLAYLIST_DELETE_TRACK](state, trackId = '') {
+    state.shuffled = state.shuffled.filter(({ id = '' }) => id !== trackId);
     state.tracks = state.tracks.filter(({ id = '' }) => id !== trackId);
   },
   /**
@@ -48,19 +50,19 @@ export default {
   /**
    * Commit changes
    * @param {*} state - Playlist state 
-   * @param {string[]} ids - payload
+   * @param {object[]} items - payload
    * @returns {void}
    */
-  [actionTypes.PLAYLIST_RESHUFFLE](state, ids = []) {
-    state.shuffled = ids;
+  [actionTypes.PLAYLIST_RESHUFFLE](state, items = []) {
+    state.shuffled = items;
   },
   /**
    * Commit changes
    * @param {*} state - Playlist state 
-   * @param {string[]} ids - payload
+   * @param {object[]} items - payload
    * @returns {void}
    */
-  [actionTypes.PLAYLIST_SET_SHUFFLED](state, ids = []) {
-    state.shuffled = ids;
+  [actionTypes.PLAYLIST_SET_SHUFFLED](state, items = []) {
+    state.shuffled = items;
   },
 };

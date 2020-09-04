@@ -1,5 +1,3 @@
-// import randomize from './randomize';
-
 /**
  * Get the next track ID
  * @param {string[]} trackIds - track IDs
@@ -13,35 +11,33 @@ export default (
   trackIds = [],
   currentId = '',
   loop = false,
-  // shuffle = false,
-  // shuffled = [],
+  shuffle = false,
+  shuffled = [],
 ) => {
-  // check the array of available IDs
+  // check if there are any tracks
   if (trackIds.length === 0) {
     return null;
   }
 
   // if shuffle is enabled
-  // if (shuffle) {
-  //   // if there's no currently playing track
-  //   const [firstShuffled] = randomize(trackIds);
-  //   if (!currentId) {
-  //     return firstShuffled;
-  //   }
+  if (shuffle) {
+    // check if there are any tracks in the shuffled array
+    if (shuffled.length === 0) {
+      return 'reshuffle';
+    }
 
-  //   // find the next shufled track ID
-  //   const nextShuffledID = shuffled[shuffled.indexOf(currentId) + 1];
-  //   if (nextShuffledID) {
-  //     return nextShuffledID;
-  //   }
+    // check if there are any non-played tracks in the shuffled array
+    const nonPlayed = shuffled.filter(({ played = false }) => !played);
+    if (nonPlayed.length === 0) {
+      if (loop) {
+        return 'reshuffle';
+      }
+      return null;
+    }
 
-  //   // get the ID of the first track in the playlist if loop is enabled
-  //   if (loop) {
-  //     return firstShuffled;
-  //   }
-
-  //   return null;
-  // }
+    // return the ID of the first non-played track
+    return nonPlayed[0].id;
+  }
 
   // if there's no currently playing track
   const [firstId] = trackIds; 

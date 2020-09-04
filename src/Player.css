@@ -47,9 +47,11 @@ body, html {
 ::-webkit-scrollbar-thumb {
   background-color: white;
   border-radius: 3px;
+  transition: background-color 200ms ease-in-out;
 }
 ::-webkit-scrollbar-thumb:hover {
   background-color: turquoise;
+  transition: background-color 200ms ease-in-out;
 }
 
 /* Commonly used classes */

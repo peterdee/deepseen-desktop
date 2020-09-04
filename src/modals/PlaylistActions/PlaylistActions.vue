@@ -61,7 +61,7 @@
 
 <script>
 import { remote as electron } from 'electron';
-import { mapActions, mapState } from 'vuex';
+import { mapActions, mapGetters, mapState } from 'vuex';
 import { promises as fs } from 'fs';
 
 import Switch from '../../elements/Switch';
@@ -72,6 +72,9 @@ export default {
     Switch,
   },
   computed: {
+    ...mapGetters({
+      trackIds: 'playlist/getTrackIds',
+    }),
     ...mapState({
       current: ({ track }) => track.track,
       loop: ({ settings }) => settings.loop,
@@ -84,6 +87,7 @@ export default {
       addMultipleTracks: 'playlist/addMultipleTracks',
       clearTrack: 'track/clearTrack',
       emptyPlaylist: 'playlist/clearPlaylist',
+      reshuffle: 'playlist/reshuffle',
       randomizePlaylist: 'playlist/randomizeTracks',
       setLoopPlaylist: 'settings/setLoopPlaylist',
       setPlaybackError: 'playbackError/setError',
@@ -101,9 +105,10 @@ export default {
     /**
      * Handle shuffle switch click
      * @param {*} event - click event
-     * @returns {void}
+     * @returns {Promise<void>}
      */
-    handleShuffleSwitch(event) {
+    async handleShuffleSwitch(event) {
+      await this.reshuffle(this.trackIds);
       return this.setPlaylistShuffling(event.target.checked);
     },
     /**
@@ -166,6 +171,10 @@ export default {
         return this.setPlaybackError('Could not open the playlist!');
       }
     },
+    /**
+     * Randomize track order
+     * @returns {Promise<void>}
+     */
     async randomizeTracks() {
       // clear the playlist
       await this.randomizePlaylist();

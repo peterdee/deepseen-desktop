@@ -3,7 +3,7 @@ import randomize from '../../../utilities/randomize';
 
 export default {
   /**
-   * Add multiple tracks to the playlist
+   * Add multiple tracks to the playlist via 'Open playlist'
    * @param {*} commit - commit function
    * @param {*} payload - payload
    * @returns {void}
@@ -14,10 +14,13 @@ export default {
   /**
    * Add a single track to the playlist
    * @param {*} commit - commit function
+   * @param {*} state - Playlist state
    * @param {*} payload - payload
    * @returns {void}
    */
   addTrack({ commit }, payload) {
+    // const { shuffled = [] } = state;
+    // TODO: add a new track to the shuffled array and randomize it
     return commit(actionTypes.PLAYLIST_ADD_TRACK, payload);
   },
   /**
@@ -54,15 +57,34 @@ export default {
    */
   reshuffle({ commit }, payload = []) {
     const reshuffled = randomize(payload);
-    return commit(actionTypes.PLAYLIST_RESHUFFLE, reshuffled);
+    return commit(
+      actionTypes.PLAYLIST_RESHUFFLE,
+      reshuffled.map((id) => ({
+        id,
+        played: false,
+      })),
+    );
   },
   /**
-   * Set shuffled track IDs
+   * Set shuffled track as played
    * @param {*} commit - commit function
-   * @param {string[]} payload - shuffled track IDs
+   * @param {*} state - Playlist state
+   * @param {string} payload - track ID
    * @returns {void}
    */
-  setShuffled({ commit }, payload = []) {
-    return commit(actionTypes.PLAYLIST_SET_SHUFFLED, payload);
+  setShuffledTrackAsPlayed({ commit, state }, payload = '') {
+    const { shuffled = [] } = state;
+    const updated = shuffled.reduce((arr, item) => {
+      if (item.id === payload) {
+        arr.push({
+          ...item,
+          played: true,
+        });
+        return arr;
+      }
+      arr.push(item);
+      return arr;
+    }, []);
+    return commit(actionTypes.PLAYLIST_SET_SHUFFLED, updated);
   },
 };

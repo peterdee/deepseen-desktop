@@ -105,13 +105,10 @@ export default {
     // reshuffle the tracks
     if (this.shuffle) {
       await this.reshuffle(this.trackIds);
-      console.log(this.shuffled)
     }
 
     // play the next track when current one ends
-    player.onended = () => this.handleTrackSelection(
-      getNextTrackId(this.trackIds, this.current.id, this.loop),
-    );
+    player.onended = () => this.handleTrackSwitchOnEnd();
 
     // handle the 'can play' event
     player.oncanplay = () => {
@@ -132,6 +129,7 @@ export default {
       setMuted: 'track/setMuted',
       setPlaybackError: 'playbackError/setError',
       setPlaylistActionsVisibility: 'playlistActions/setVisibility',
+      setShuffledTrackAsPlayed: 'playlist/setShuffledTrackAsPlayed',
       setTrack: 'track/setTrack',
       setVolume: 'track/setVolume',
     }),
@@ -178,6 +176,33 @@ export default {
       return this.paused = true;
     },
     /**
+     * Handle track switch on track end
+     * @returns {void}
+     */
+    async handleTrackSwitchOnEnd() {
+      // get the next track ID
+      const nextId = getNextTrackId(
+        this.trackIds,
+        this.current.id,
+        this.loop,
+        this.shuffle,
+        this.shuffled,
+      );
+
+      // handle the reshuffle
+      if (nextId && nextId === 'reshuffle') {
+        await this.reshuffle(this.trackIds);
+        return this.handleTrackSwitchOnEnd();
+      }
+
+      // update an item in the shuffled array
+      if (nextId && this.shuffle) {
+        await this.setShuffledTrackAsPlayed(nextId);
+      }
+
+      return this.handleTrackSelection(nextId);
+    },
+    /**
      * Handle track selection
      * @param {string} id - selected track ID
      * @param {boolean} paused - paused value determines if the playback should be paused
@@ -209,7 +234,11 @@ export default {
         // handle the case with missing file (skip it)
         const { code = '' } = error;
         if (code && code === 'ENOENT') {
-          const nextId = getNextTrackId(this.trackIds, id, this.loop);
+          const nextId = getNextTrackId(
+            this.trackIds,
+            id,
+            this.loop,
+          );
           return this.handleTrackSelection(nextId);
         }
 
