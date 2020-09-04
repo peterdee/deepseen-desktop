@@ -108,7 +108,7 @@ export default {
     // handle the 'can play' event
     player.oncanplay = () => {
       // make sure that the volume is correct
-      player.volume = this.volume;
+      player.volume = this.muted ? 0 : this.volume;
 
       // play the current track if playback is not paused
       if (!this.paused) {
