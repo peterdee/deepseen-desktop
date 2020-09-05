@@ -10,7 +10,11 @@
       :key="track.id"
     >
       <button
-        :class="['track noselect', track.id === current.id ? 'active' : '']"
+        :class="[
+          'track noselect',
+          checkQueue(track.id) ? 'queued' : '',
+          track.id === current.id ? 'active' : '',
+        ]"
         type="button"
         @click="$emit('handle-track-selection', track.id)"
         @contextmenu.prevent="showContextMenu(track.id)"
@@ -23,8 +27,13 @@
             {{ track.name }}
           </div>
         </div>
-        <div>
-          {{ formatTrackDuration(track.duration || 0) }}
+        <div class="flex">
+          <div class="m-r">
+            {{ checkQueue(track.id) ? `[${playbackQueue.indexOf(track.id) + 1}]` : '' }}
+          </div>
+          <div>
+            {{ formatTrackDuration(track.duration || 0) }}
+          </div>
         </div>
       </button>
     </div>
@@ -55,6 +64,7 @@ export default {
   computed: {
     ...mapState({
       current: ({ track }) => track.track,
+      playbackQueue: ({ playbackQueue }) => playbackQueue.queue,
       tracks: ({ playlist }) => playlist.tracks,
     }),
   },
@@ -65,6 +75,14 @@ export default {
       setContextMenuVisibility: 'contextMenu/setVisibility',
       setPlaybackError: 'playbackError/setError',
     }),
+    /**
+     * Check if playback queue includes the track
+     * @param {string} trackId - track ID
+     * @returns {boolean}
+     */
+    checkQueue(trackId = '') {
+      return this.playbackQueue.includes(trackId);
+    },
     /**
      * Format track duration
      * @param {number} value - duration value

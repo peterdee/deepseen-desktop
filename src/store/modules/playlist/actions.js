@@ -19,8 +19,6 @@ export default {
    * @returns {void}
    */
   addTrack({ commit }, payload) {
-    // const { shuffled = [] } = state;
-    // TODO: add a new track to the shuffled array and randomize it
     return commit(actionTypes.PLAYLIST_ADD_TRACK, payload);
   },
   /**

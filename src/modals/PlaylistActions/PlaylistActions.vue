@@ -86,6 +86,7 @@ export default {
     ...mapActions({
       addMultipleTracks: 'playlist/addMultipleTracks',
       clearTrack: 'track/clearTrack',
+      clearPlaybackQueue: 'playbackQueue/clearQueue',
       emptyPlaylist: 'playlist/clearPlaylist',
       reshuffle: 'playlist/reshuffle',
       randomizePlaylist: 'playlist/randomizeTracks',
@@ -116,6 +117,9 @@ export default {
      * @returns {Promise<void>}
      */
     async clearPlaylist() {
+      // clear the playback queue
+      await this.clearPlaybackQueue();
+
       // clear the current track
       await this.clearTrack();
 

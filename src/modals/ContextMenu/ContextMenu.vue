@@ -47,15 +47,31 @@
         <button
           class="action-button menu-button"
           type="button"
-          @click="handlePlay()"
+          @click="handlePlay"
         >
           Play
         </button>
       </div>
       <button
+        v-if="!inQueue"
         class="action-button menu-button"
         type="button"
-        @click="handleDelete()"
+        @click="handleAddToQueue"
+      >
+        Add to queue
+      </button>
+      <button
+        v-else
+        class="action-button menu-button"
+        type="button"
+        @click="handleRemoveFromQueue"
+      >
+        Remove from queue
+      </button>
+      <button
+        class="action-button menu-button"
+        type="button"
+        @click="handleDelete"
       >
         Delete
       </button>
@@ -85,9 +101,13 @@ export default {
     ...mapState({
       contextTrackId: ({ contextMenu }) => contextMenu.trackId,
       current: ({ track }) => track.track,
-      loop: ({ settings }) => settings.loopPlaylist,
+      loop: ({ settings }) => settings.loop,
+      playbackQueue: ({ playbackQueue }) => playbackQueue.queue,
       tracks: ({ playlist }) => playlist.tracks,
     }),
+    inQueue() {
+      return this.playbackQueue.includes(this.contextTrackId);
+    },
     /**
      * Get track data
      */
@@ -98,11 +118,22 @@ export default {
   },
   methods: {
     ...mapActions({
+      addToQueue: 'playbackQueue/addTrack',
       clearTrack: 'track/clearTrack',
       deleteTrackFromPlaylist: 'playlist/deleteTrack',
+      removeFromQueue: 'playbackQueue/deleteTrack',
       setContextMenuTrackId: 'contextMenu/setTrackId',
       setContextMenuVisibility: 'contextMenu/setVisibility',
     }),
+    /**
+     * Handle adding track to the playback queue
+     * @returns {Promise<void>}
+     */
+    async handleAddToQueue() {
+      await this.addToQueue(this.contextTrackId);
+      await this.setContextMenuTrackId('');
+      return this.setContextMenuVisibility(false);
+    },
     /**
      * Handle the 'Delete' button
      * @returns {Promise<void>}
@@ -116,6 +147,7 @@ export default {
       }
 
       await this.deleteTrackFromPlaylist(this.contextTrackId);
+      await this.removeFromQueue(this.contextTrackId);
       await this.setContextMenuTrackId('');
       return this.setContextMenuVisibility(false);
     },
@@ -126,6 +158,15 @@ export default {
     async handlePlay() {
       await this.clearTrack();
       this.$emit('handle-track-selection', this.contextTrackId);
+      await this.setContextMenuTrackId('');
+      return this.setContextMenuVisibility(false);
+    },
+    /**
+     * Handle removing track from the playback queue
+     * @returns {Promise<void>}
+     */
+    async handleRemoveFromQueue() {
+      await this.removeFromQueue(this.contextTrackId);
       await this.setContextMenuTrackId('');
       return this.setContextMenuVisibility(false);
     },

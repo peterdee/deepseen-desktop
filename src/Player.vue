@@ -81,6 +81,7 @@ export default {
       loop: ({ settings }) => settings.loop,
       muted: ({ track }) => track.muted,
       playbackError: ({ playbackError }) => playbackError.message,
+      playbackQueue: ({ playbackQueue }) => playbackQueue.queue,
       playlistActions: ({ playlistActions }) => playlistActions.visibility,
       shuffle: ({ settings }) => settings.shuffle,
       shuffled: ({ playlist }) => playlist.shuffled,
@@ -125,6 +126,7 @@ export default {
     ...mapActions({
       addTrack: 'playlist/addTrack',
       clearTrack: 'track/clearTrack',
+      removeFromQueue: 'playbackQueue/deleteTrack',
       reshuffle: 'playlist/reshuffle',
       setMuted: 'track/setMuted',
       setPlaybackError: 'playbackError/setError',
@@ -180,6 +182,13 @@ export default {
      * @returns {void}
      */
     async handleTrackSwitchOnEnd() {
+      // check the playback queue first
+      if (this.playbackQueue.length > 0) {
+        const [nextId = ''] = this.playbackQueue;
+        await this.removeFromQueue(nextId);
+        return this.handleTrackSelection(nextId);
+      }
+
       // get the next track ID
       const nextId = getNextTrackId(
         this.trackIds,
@@ -212,6 +221,7 @@ export default {
       try {
         // stop the playback if there's no ID
         if (!id) {
+          this.paused = true;
           return this.clearTrack();
         }
 
@@ -234,12 +244,7 @@ export default {
         // handle the case with missing file (skip it)
         const { code = '' } = error;
         if (code && code === 'ENOENT') {
-          const nextId = getNextTrackId(
-            this.trackIds,
-            id,
-            this.loop,
-          );
-          return this.handleTrackSelection(nextId);
+          return this.handleTrackSwitchOnEnd();
         }
 
         // in any other case show an error

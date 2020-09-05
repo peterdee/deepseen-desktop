@@ -48,6 +48,7 @@
     </button>
     <input
       class="progress"
+      :disabled="trackIds.length === 0"
       min="0"
       max="200"
       ref="progress"
@@ -124,21 +125,23 @@ export default {
     ...mapState({
       current: ({ track }) => track.track,
       loop: ({ settings }) => settings.loop,
+      playbackQueue: ({ playbackQueue }) => playbackQueue.queue,
       shuffle: ({ settings }) => settings.shuffle,
       shuffled: ({ playlist }) => playlist.shuffled,
     }),
   },
   mounted() {
     // set values on mount
-    this.$refs.progress.value = 0;
-    this.$refs.volume.value = this.muted ? 0 : this.volume;
+    const { progress, volume } = this.$refs;
+    progress.value = 0;
+    volume.value = this.muted ? 0 : this.volume;
 
     // update elapsed time and progress bar
     const { player } = this.$parent.$refs;
     player.ontimeupdate = () => {
       this.elapsed = player.currentTime;
       if (!this.progressClicked) {
-        this.$refs.progress.value = Math.round(
+        progress.value = Math.round(
           this.elapsed / (this.current.duration / 200),
         );
       }
@@ -146,6 +149,7 @@ export default {
   },
   methods: {
     ...mapActions({
+      removeFromQueue: 'playbackQueue/deleteTrack',
       reshuffle: 'playlist/reshuffle',
       setShuffledTrackAsPlayed: 'playlist/setShuffledTrackAsPlayed',
     }),
@@ -180,6 +184,14 @@ export default {
      * @returns {*}
      */
     async playNext() {
+      // check the playback queue first
+      if (this.playbackQueue.length > 0) {
+        const [nextId = ''] = this.playbackQueue;
+        await this.removeFromQueue(nextId);
+        return this.$emit('handle-track-selection', nextId);
+      }
+
+      // get the next track ID
       const nextId = getNextTrackId(
         this.trackIds,
         this.current.id,

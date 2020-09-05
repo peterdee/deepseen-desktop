@@ -4,11 +4,19 @@ export default {
   /**
    * Add track to the playback queue
    * @param {*} commit - commit function
+   * @param {*} state - Playback Queue state
    * @param {string} payload - payload
    * @returns {void}
    */
-  addTrack({ commit }, payload = '') {
-    return commit(actionTypes.PLAYBACK_QUEUE_ADD_TRACK, payload);
+  addTrack({ commit, state }, payload = '') {
+    const { queue = [] } = state;
+    return commit(
+      actionTypes.PLAYBACK_QUEUE_SET_QUEUE,
+      [
+        ...queue,
+        payload,
+      ],
+    );
   },
   /**
    * Clear playback queue
@@ -16,15 +24,20 @@ export default {
    * @returns {void}
    */
   clearQueue({ commit }) {
-    return commit(actionTypes.PLAYBACK_QUEUE_CLEAR_QUEUE);
+    return commit(actionTypes.PLAYBACK_QUEUE_SET_QUEUE, []);
   },
   /**
    * Delete track from the playback queue
    * @param {*} commit - commit function
+   * @param {*} state - Playback Queue state
    * @param {string} payload - payload
    * @returns {void}
    */
-  deleteTrack({ commit }, payload = '') {
-    return commit(actionTypes.PLAYBACK_QUEUE_DELETE_TRACK, payload);
+  deleteTrack({ commit, state }, payload = '') {
+    const { queue = [] } = state;
+    return commit(
+      actionTypes.PLAYBACK_QUEUE_SET_QUEUE,
+      queue.filter((id) => id !== payload),
+    );
   },
 };

@@ -38,6 +38,7 @@ body, html {
 
 /* Scrollbar styling */
 ::-webkit-scrollbar {
+  cursor: pointer;
   width: 10px;
 }
 ::-webkit-scrollbar-track {
@@ -55,6 +56,12 @@ body, html {
 }
 
 /* Commonly used classes */
+.flex {
+  display: flex;
+}
+.m-r {
+  margin-right: 8px;
+}
 .pointer {
   cursor: pointer;
 }
