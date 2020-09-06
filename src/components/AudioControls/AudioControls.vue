@@ -141,9 +141,9 @@ export default {
     player.ontimeupdate = () => {
       this.elapsed = player.currentTime;
       if (!this.progressClicked) {
-        progress.value = Math.round(
-          this.elapsed / (this.current.duration / 200),
-        );
+        progress.value = this.elapsed === 0
+          ? 0
+          : Math.round(this.elapsed / (this.current.duration / 200));
       }
     };
   },
