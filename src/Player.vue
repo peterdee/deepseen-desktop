@@ -10,9 +10,14 @@
     />
     <PlaybackError v-if="playbackError" />
     <div class="player">
-      <div>
-        {{ currentlyPlaying }}
-      </div>
+      <button
+        class="title"
+        @contextmenu="openContextMenuForCurrent"
+        @dblclick="openContextMenuForCurrent"
+        type="button"
+      >
+        {{ currentlyPlaying || appName }}
+      </button>
       <audio
         preload="auto"
         ref="player"
@@ -34,8 +39,8 @@
     <TotalPlaybackTime /> 
     <button
       class="action-button"
-      type="button"
       @click="setPlaylistActionsVisibility(true)"
+      type="button"
     >
       Playlist Actions
     </button>
@@ -92,7 +97,7 @@ export default {
      * Currently playing track name
      */
     currentlyPlaying() {
-      return this.current.name || this.appName;
+      return this.current.name || '';
     },
   },
   async mounted() {
@@ -128,6 +133,8 @@ export default {
       clearTrack: 'track/clearTrack',
       removeFromQueue: 'playbackQueue/deleteTrack',
       reshuffle: 'playlist/reshuffle',
+      setContextMenuTrackId: 'contextMenu/setTrackId',
+      setContextMenuVisibility: 'contextMenu/setVisibility',
       setMuted: 'track/setMuted',
       setPlaybackError: 'playbackError/setError',
       setPlaylistActionsVisibility: 'playlistActions/setVisibility',
@@ -271,6 +278,18 @@ export default {
       }
 
       return this.setVolume(value);
+    },
+    /**
+     * Open a context menu for the currently playing track
+     * @returns {Promise<void>}
+     */
+    async openContextMenuForCurrent() {
+      if (!this.currentlyPlaying) {
+        return false;
+      }
+
+      await this.setContextMenuTrackId(this.current.id);
+      return this.setContextMenuVisibility(true);
     },
   },
 };
