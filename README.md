@@ -1,5 +1,7 @@
 ## deepseen-desktop
 
+[![Build Status](https://travis-ci.org/peterdee/deepseen-desktop.svg?branch=develop)](https://travis-ci.org/peterdee/deepseen-desktop)
+
 [![Known Vulnerabilities](https://snyk.io/test/github/peterdee/deepseen-desktop/badge.svg?targetFile=package.json)](https://snyk.io/test/github/peterdee/deepseen-desktop?targetFile=package.json)
 
 Deepseen is a simple desktop audio player with Electron, Vue and Vuex
