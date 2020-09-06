@@ -1,5 +1,5 @@
 .form-switch {
-  display: inline-block;
+  display: inline-flex;
   cursor: pointer;
   -webkit-tap-highlight-color: transparent;
 }
@@ -9,7 +9,7 @@
   margin-right: .5rem;
   width: 46px;
   height: 26px;
-  background-color: #e6e6e6;
+  background-color: #d6d6d6;
   border-radius: 23px;
   vertical-align: text-bottom;
   transition: all 0.3s linear;

@@ -8,50 +8,70 @@
       <div class="title">
         Playlist Actions
       </div>
-      <Switch
-        label="Loop playlist"
-        :value="loop"
-        @handle-switch="handleLoopSwitch"
-      />
-      <Switch
-        label="Shuffle playlist"
-        :value="shuffle"
-        @handle-switch="handleShuffleSwitch"
-      />
+      <div class="flex justify-content-start menu-button">
+        <Switch
+          @handle-switch="handleLoopSwitch"
+          label="Loop playlist"
+          :value="loop"
+        />
+      </div>
+      <div class="flex justify-content-start menu-button">
+        <Switch
+          @handle-switch="handleShuffleSwitch"
+          label="Shuffle playlist"
+          :value="shuffle"
+        />
+      </div>
       <button
         class="action-button menu-button"
+        @click="handleSortByDate"
         :disabled="this.tracks.length === 0"
         type="button"
-        @click="randomizeTracks()"
+      >
+        Sort by date
+      </button>
+      <button
+        class="action-button menu-button"
+        @click="handleSortByName"
+        :disabled="this.tracks.length === 0"
+        type="button"
+      >
+        Sort by name
+      </button>
+      <button
+        class="action-button menu-button"
+        @click="randomizeTracks"
+        :disabled="this.tracks.length === 0"
+        type="button"
       >
         Randomize tracks
       </button>
       <button
         class="action-button menu-button"
+        @click="openPlaylist"
         type="button"
-        @click="openPlaylist()"
       >
         Open playlist
       </button>
       <button
         class="action-button menu-button"
+        @click="savePlaylist"
         :disabled="this.tracks.length === 0"
         type="button"
-        @click="savePlaylist()"
       >
         Save playlist
       </button>
       <button
         class="action-button menu-button"
+        @click="clearPlaylist"
         type="button"
-        @click="clearPlaylist()"
       >
         Clear playlist
       </button>
       <button
         class="action-button menu-button"
-        type="button"
         @click="setPlaylistActionsVisibility(false)"
+        type="button"
       >
         Close
       </button>
@@ -94,7 +114,25 @@ export default {
       setPlaybackError: 'playbackError/setError',
       setPlaylistActionsVisibility: 'playlistActions/setVisibility',
       setPlaylistShuffling: 'settings/setPlaylistShuffling',
+      sortByDate: 'playlist/sortByDate',
+      sortByName: 'playlist/sortByName',
     }),
+    /**
+     * Handle playlist sorting by date
+     * @returns {Promise<void>}
+     */
+    async handleSortByDate() {
+      await this.sortByDate();
+      return this.setPlaylistActionsVisibility(false);
+    },
+    /**
+     * Handle playlist sorting by name
+     * @returns {Promise<void>}
+     */
+    async handleSortByName() {
+      await this.sortByName();
+      return this.setPlaylistActionsVisibility(false);
+    },
     /**
      * Handle loop switch click
      * @param {*} event - click event

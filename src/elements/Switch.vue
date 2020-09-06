@@ -1,5 +1,5 @@
 <template>
-  <label class="form-switch">
+  <label class="form-switch align-items-center">
     <input
       :checked="value"
       @input="$emit('handle-switch', $event)"

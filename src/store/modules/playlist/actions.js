@@ -85,4 +85,28 @@ export default {
     }, []);
     return commit(actionTypes.PLAYLIST_SET_SHUFFLED, updated);
   },
+  /**
+   * Sort playlist tracks by date
+   * @param {*} commit - commit function
+   * @param {*} state - Playlist state
+   * @returns {void}
+   */
+  sortByDate({ commit, state }) {
+    return commit(
+      actionTypes.PLAYLIST_SET_TRACKS,
+      state.tracks.sort((a, b) => a.added - b.added),
+    );
+  },
+  /**
+   * Sort playlist tracks by name
+   * @param {*} commit - commit function
+   * @param {*} state - Playlist state
+   * @returns {void}
+   */
+  sortByName({ commit, state }) {
+    return commit(
+      actionTypes.PLAYLIST_SET_TRACKS,
+      state.tracks.sort((a, b) => a.name.localeCompare(b.name)),
+    );
+  },
 };
