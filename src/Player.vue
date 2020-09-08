@@ -1,5 +1,5 @@
 <template>
-  <div>
+  <div class="player">
     <ContextMenu
       v-if="contextMenu"
       @handle-track-selection="handleTrackSelection"
@@ -9,34 +9,34 @@
       @handle-track-selection="handleTrackSelection"
     />
     <PlaybackError v-if="playbackError" />
-    <div class="player">
-      <button
-        class="title noselect"
-        @contextmenu="openContextMenuForCurrent"
-        @dblclick="openContextMenuForCurrent"
-        type="button"
-      >
-        {{ currentlyPlaying || appName }}
-      </button>
-      <audio
-        preload="auto"
-        ref="player"
-        :src="current.url"
-        :type="current.type"
-      />
-      <AudioControls
-        :muted="muted"
-        :paused="paused"
-        :volume="volume"
-        @handle-mute="handleMute"
-        @handle-play="handlePlay"
-        @handle-stop="handleStop"
-        @handle-track-selection="handleTrackSelection"
-        @handle-volume="handleVolume"
-      />
-      <Playlist @handle-track-selection="handleTrackSelection" />
-    </div>
-    <TotalPlaybackTime /> 
+    <button
+      class="title noselect"
+      @contextmenu="openContextMenuForCurrent"
+      @dblclick="openContextMenuForCurrent"
+      type="button"
+    >
+      {{ currentlyPlaying || appName }}
+    </button>
+    <audio
+      preload="auto"
+      ref="player"
+      :src="current.url"
+      :type="current.type"
+    />
+    <AudioControls
+      :muted="muted"
+      :paused="paused"
+      :volume="volume"
+      @handle-mute="handleMute"
+      @handle-play="handlePlay"
+      @handle-stop="handleStop"
+      @handle-track-selection="handleTrackSelection"
+      @handle-volume="handleVolume"
+    />
+    <Playlist @handle-track-selection="handleTrackSelection" />
+    <div class="flex justify-content-space-between">
+      <TotalPlaybackTime />
+    </div> 
   </div>
 </template>
 

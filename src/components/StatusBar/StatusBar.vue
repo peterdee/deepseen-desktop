@@ -9,7 +9,7 @@ import { mapState } from 'vuex';
 import formatTime from '../../utilities/format-time';
 
 export default {
-  name: 'TotalPlaybackTime',
+  name: 'StatusBar',
   computed: {
     ...mapState({
       tracks: ({ playlist }) => playlist.tracks,
@@ -25,4 +25,4 @@ export default {
 };
 </script>
 
-<style src="./TotalPlaybackTime.css" />
+<style src="./StatusBar.css" />

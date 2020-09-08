@@ -89,6 +89,9 @@ body, html {
 .pointer {
   cursor: pointer;
 }
+.text-center {
+  text-align: center;
+}
 .noselect {
   -webkit-touch-callout: none;
   -webkit-user-select: none;
