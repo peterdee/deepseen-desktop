@@ -77,18 +77,18 @@
         >
           <img
             :alt="muted ? 'Unmute' : 'Mute'"
-            class="icon big-icon pointer"
+            class="icon pointer"
             :src="muted ? mutedIcon : volumeIcon"
           />
         </button>
         <button
           class="button pointer"
-          @click="$emit('handle-playlist')"
+          @click="setPlaylistActionsVisibility(true)"
           type="button"
         >
           <img
             alt="Playlist actions"
-            class="icon big-icon pointer"
+            class="icon pointer"
             :src="playlistIcon"
           />
         </button>
@@ -175,6 +175,7 @@ export default {
     ...mapActions({
       removeFromQueue: 'playbackQueue/deleteTrack',
       reshuffle: 'playlist/reshuffle',
+      setPlaylistActionsVisibility: 'playlistActions/setVisibility',
       setShuffledTrackAsPlayed: 'playlist/setShuffledTrackAsPlayed',
     }),
     /**

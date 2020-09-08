@@ -37,13 +37,6 @@
       <Playlist @handle-track-selection="handleTrackSelection" />
     </div>
     <TotalPlaybackTime /> 
-    <button
-      class="action-button"
-      @click="setPlaylistActionsVisibility(true)"
-      type="button"
-    >
-      Playlist Actions
-    </button>
   </div>
 </template>
 
