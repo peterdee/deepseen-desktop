@@ -1,86 +1,109 @@
 <template>
-  <div class="controls noselect">
-    <button
-      class="button pointer"
-      @click="handleStop"
-      type="button"
-    >
-      <img
-        alt="Stop"
-        class="icon pointer"
-        :src="stopIcon"
+  <div class="flex justify-content-space-between controls noselect">
+    <div class="flex direction-column">
+      <div class="flex justify-content-space-between align-items-center buttons-block">
+        <div class="flex align-items-center">
+          <button
+            class="button pointer"
+            @click="playPrevious()"
+            :disabled="trackIds.length === 0 || shuffle"
+            type="button"
+          >
+            <img
+              alt="Previous"
+              class="icon pointer"
+              :src="previousIcon"
+            />
+          </button>
+          <button
+            class="button pointer"
+            @click="handleStop"
+            type="button"
+          >
+            <img
+              alt="Stop"
+              class="icon pointer"
+              :src="stopIcon"
+            />
+          </button>
+          <button
+            class="button pointer"
+            @click="$emit('handle-play')"
+            type="button"
+          >
+            <img
+              :alt="paused ? 'Play' : 'Pause'"
+              class="icon pointer"
+              :src="paused ? playIcon : pauseIcon"
+            />
+          </button>
+          <button
+            class="button pointer"
+            @click="playNext()"
+            :disabled="trackIds.length === 0"
+            type="button"
+          >
+            <img
+              alt="Next"
+              class="icon pointer"
+              :src="nextIcon"
+            />
+          </button>
+        </div>
+        <div>
+          {{ formatTime(elapsed) }} / {{ formatTime(current.duration) }}
+        </div>
+      </div>
+      <input
+        class="progress"
+        :disabled="trackIds.length === 0"
+        min="0"
+        max="200"
+        ref="progress"
+        step="1"
+        type="range"
+        @change="handleProgress"
+        @mousedown="progressClicked = true"
+        @mouseup="progressClicked = false"
       />
-    </button>
-    <button
-      class="button pointer"
-      @click="$emit('handle-play')"
-      type="button"
-    >
-      <img
-        :alt="paused ? 'Play' : 'Pause'"
-        class="icon pointer"
-        :src="paused ? playIcon : pauseIcon"
+    </div>
+    <div class="flex direction-column">
+      <div class="flex justify-content-space-between align-items-center buttons-block">
+        <button
+          class="button pointer"
+          @click="$emit('handle-mute')"
+          :disabled="volume === 0"
+          type="button"
+        >
+          <img
+            :alt="muted ? 'Unmute' : 'Mute'"
+            class="icon big-icon pointer"
+            :src="muted ? mutedIcon : volumeIcon"
+          />
+        </button>
+        <button
+          class="button pointer"
+          @click="$emit('handle-playlist')"
+          type="button"
+        >
+          <img
+            alt="Playlist actions"
+            class="icon big-icon pointer"
+            :src="playlistIcon"
+          />
+        </button>
+      </div>
+      <input
+        class="volume"
+        min="0"
+        max="1"
+        ref="volume"
+        step="0.01"
+        type="range"
+        :value="muted ? 0 : volume"
+        @input="$emit('handle-volume', $event)"
       />
-    </button>
-    <button
-      class="button pointer"
-      @click="playPrevious()"
-      :disabled="trackIds.length === 0 || shuffle"
-      type="button"
-    >
-      <img
-        alt="Previous"
-        class="icon pointer"
-        :src="previousIcon"
-      />
-    </button>
-    <button
-      class="button pointer"
-      @click="playNext()"
-      :disabled="trackIds.length === 0"
-      type="button"
-    >
-      <img
-        alt="Next"
-        class="icon pointer"
-        :src="nextIcon"
-      />
-    </button>
-    <input
-      class="progress"
-      :disabled="trackIds.length === 0"
-      min="0"
-      max="200"
-      ref="progress"
-      step="1"
-      type="range"
-      @change="handleProgress"
-      @mousedown="progressClicked = true"
-      @mouseup="progressClicked = false"
-    />
-    {{ formatTime(elapsed) }} / {{ formatTime(current.duration) }}
-    <input
-      class="volume"
-      min="0"
-      max="1"
-      ref="volume"
-      step="0.01"
-      type="range"
-      :value="muted ? 0 : volume"
-      @input="$emit('handle-volume', $event)"
-    />
-    <button
-      class="button pointer"
-      @click="$emit('handle-mute')"
-      :disabled="volume === 0"
-      type="button"
-    >
-      <img
-        :alt="muted ? 'Unmute' : 'Mute'"
-        class="icon pointer"
-        :src="muted ? mutedIcon : volumeIcon"
-      />
-    </button>
+    </div>
   </div>
 </template>
 
@@ -100,6 +123,7 @@ export default {
       nextIcon: require('../../assets/next.svg'),
       pauseIcon: require('../../assets/pause.svg'),
       playIcon: require('../../assets/play.svg'),
+      playlistIcon: require('../../assets/playlist.svg'),
       previousIcon: require('../../assets/previous.svg'),
       progressClicked: false,
       stopIcon: require('../../assets/stop.svg'),

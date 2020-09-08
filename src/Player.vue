@@ -11,7 +11,7 @@
     <PlaybackError v-if="playbackError" />
     <div class="player">
       <button
-        class="title"
+        class="title noselect"
         @contextmenu="openContextMenuForCurrent"
         @dblclick="openContextMenuForCurrent"
         type="button"
