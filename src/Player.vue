@@ -45,6 +45,7 @@
 import { mapActions, mapGetters, mapState } from 'vuex';
 import { promises as fs } from 'fs';
 
+import formatTrackName from './utilities/format-track-name';
 import getNextTrackId from './utilities/get-next-track';
 
 import AudioControls from './components/AudioControls/AudioControls';
@@ -93,7 +94,10 @@ export default {
      * Currently playing track name
      */
     currentlyPlaying() {
-      return this.current.name || '';
+      if (this.current.name) {
+        return formatTrackName(this.current.name);
+      }
+      return '';
     },
   },
   async mounted() {

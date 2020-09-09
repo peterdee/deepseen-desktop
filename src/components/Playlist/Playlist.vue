@@ -25,7 +25,7 @@
             {{ index + 1 }}
           </div>
           <div class="track-name">
-            {{ track.name }}
+            {{ formatName(track.name) }}
           </div>
         </div>
         <div class="flex">
@@ -47,6 +47,7 @@ import { mapActions, mapState } from 'vuex';
 
 import checkPath from '../../utilities/check-path';
 import formatTime from '../../utilities/format-time';
+import formatTrackName from '../../utilities/format-track-name';
 import generateId from '../../utilities/generate-id';
 import getFileExtension from '../../utilities/get-file-extension';
 import parseDir from '../../utilities/parse-dir';
@@ -91,6 +92,14 @@ export default {
      */
     formatTrackDuration(value = 0) {
       return formatTime(value);
+    },
+    /**
+     * Format track name
+     * @param {string} name - track name
+     * @returns {string}
+     */
+    formatName(name = '') {
+      return formatTrackName(name);
     },
     /**
      * Handle drag & drop

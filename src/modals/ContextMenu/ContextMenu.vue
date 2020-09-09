@@ -6,7 +6,7 @@
     />
     <div class="content">
       <div class="title">
-        {{ track.name }}
+        {{ formatName(track.name) }}
       </div>
       <div class="data-group">
         <div class="data-line">
@@ -96,6 +96,7 @@
 <script>
 import { mapActions, mapGetters, mapState } from 'vuex';
 
+import formatTrackName from '../../utilities/format-track-name';
 import getNextTrackId from '../../utilities/get-next-track';
 import months from '../../utilities/months';
 
@@ -132,6 +133,14 @@ export default {
       setContextMenuTrackId: 'contextMenu/setTrackId',
       setContextMenuVisibility: 'contextMenu/setVisibility',
     }),
+    /**
+     * Format track name
+     * @param {string} name - track name
+     * @returns {string}
+     */
+    formatName(name = '') {
+      return formatTrackName(name);
+    },
     /**
      * Handle adding track to the playback queue
      * @returns {Promise<void>}
