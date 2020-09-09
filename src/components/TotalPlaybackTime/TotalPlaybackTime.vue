@@ -1,5 +1,5 @@
 <template>
-  <div class="wrap">
+  <div class="fs-14 wrap">
     Total playlist length: {{ totalTime }}
   </div>
 </template>

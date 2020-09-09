@@ -4,12 +4,12 @@
       class="background"
       @click="setContextMenuVisibility(false)"
     />
-    <div class="content">
-      <div class="title">
+    <div class="flex direction-column justify-content-space-between content">
+      <div class="fs-18">
         {{ formatName(track.name) }}
       </div>
-      <div class="data-group">
-        <div class="data-line">
+      <div class="flex direction-column justify-content-start text-left fs-16">
+        <div class="flex justify-content-space-between data-line">
           <div class="data-name">
             Added
           </div>

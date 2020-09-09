@@ -4,8 +4,8 @@
       class="background"
       @click="handleClose()"
     />
-    <div class="content">
-      <div class="title">
+    <div class="flex direction-column justify-content-space-between content">
+      <div class="title fs-18">
         Error!
       </div>
       <div class="message">

@@ -4,8 +4,8 @@
       class="background"
       @click="setPlaylistActionsVisibility(false)"
     />
-    <div class="content">
-      <div class="title">
+    <div class="flex direction-column justify-content-space-between content">
+      <div class="fs-18">
         Playlist Actions
       </div>
       <div class="flex justify-content-start menu-button">

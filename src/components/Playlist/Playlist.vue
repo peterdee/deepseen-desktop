@@ -1,7 +1,7 @@
 <template>
   <div
     v-cloak
-    class="playlist noselect"
+    class="flex direction-column justify-content-start playlist noselect"
     @drop.prevent="handleFileDrop($event)"
     @dragover.prevent
   >
@@ -11,7 +11,7 @@
     >
       <button
         :class="[
-          'track',
+          'flex justify-content-space-between fs-16 track text-left',
           checkQueue(track.id) && track.id !== current.id ? 'queued' : '',
           track.id === current.id ? 'active' : '',
           !track.available ? 'unavailable' : '',
@@ -20,8 +20,8 @@
         @click="$emit('handle-track-selection', track.id)"
         @contextmenu.prevent="showContextMenu(track.id)"
       >
-        <div class="track-left">
-          <div class="track-number">
+        <div class="flex">
+          <div class="track-number text-left">
             {{ index + 1 }}
           </div>
           <div class="track-name">
