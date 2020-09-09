@@ -6,6 +6,7 @@
 
 <script>
 import { mapState } from 'vuex';
+
 import formatTime from '../../utilities/format-time';
 
 export default {

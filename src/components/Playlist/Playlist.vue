@@ -12,7 +12,7 @@
       <button
         :class="[
           'track noselect',
-          checkQueue(track.id) ? 'queued' : '',
+          checkQueue(track.id) && track.id !== current.id ? 'queued' : '',
           track.id === current.id ? 'active' : '',
         ]"
         type="button"

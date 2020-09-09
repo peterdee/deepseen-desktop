@@ -1,6 +1,7 @@
 .form-switch {
   display: inline-flex;
   cursor: pointer;
+  font-size: 16px;
   -webkit-tap-highlight-color: transparent;
 }
 .form-switch i {

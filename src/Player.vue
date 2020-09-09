@@ -34,8 +34,9 @@
       @handle-volume="handleVolume"
     />
     <Playlist @handle-track-selection="handleTrackSelection" />
-    <div class="flex justify-content-space-between">
+    <div class="flex justify-content-space-between align-items-center status-bar">
       <TotalPlaybackTime />
+      <StatusBar />
     </div> 
   </div>
 </template>
@@ -51,6 +52,7 @@ import ContextMenu from './modals/ContextMenu/ContextMenu';
 import PlaybackError from './modals/PlaybackError/PlaybackError';
 import Playlist from './components/Playlist/Playlist';
 import PlaylistActions from './modals/PlaylistActions/PlaylistActions';
+import StatusBar from './components/StatusBar/StatusBar';
 import TotalPlaybackTime from './components/TotalPlaybackTime/TotalPlaybackTime';
 
 export default {
@@ -61,6 +63,7 @@ export default {
     PlaybackError,
     Playlist,
     PlaylistActions,
+    StatusBar,
     TotalPlaybackTime,
   },
   data() {

@@ -4,7 +4,7 @@
   border-radius: 5px;
   display: flex;
   flex-direction: column;
-  height: 375px;
+  height: 380px;
   justify-content: flex-start;
   overflow-y: scroll;
 }

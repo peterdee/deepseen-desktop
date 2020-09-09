@@ -22,6 +22,9 @@ body, html {
   outline: none;
   padding: 0;
 }
+.status-bar {
+  margin-top: 8px;
+}
 .action-button {
   background-color: black;
   border: 2px solid white;
@@ -70,6 +73,9 @@ body, html {
 }
 .direction-column {
   flex-direction: column;
+}
+.justify-content-center {
+  justify-content: center;
 }
 .justify-content-end {
   justify-content: flex-end;
