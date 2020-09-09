@@ -8,7 +8,10 @@
   justify-content: flex-start;
   overflow-y: scroll;
 }
-.track, .track:hover, .active, .active:hover, .queued, .queued:hover {
+.track, .track:hover,
+.active, .active:hover,
+.queued, .queued:hover,
+.unavailable, .unavailable:hover {
   transition: background-color 125ms ease-in-out;
 }
 .track {
@@ -50,4 +53,11 @@
 }
 .queued:hover {
   background-color: yellowgreen;
+}
+.unavailable {
+  background-color: rgb(56, 34, 0);
+  color: white;
+}
+.unavailable:hover {
+  background-color: rgb(206, 74, 38);
 }

@@ -64,6 +64,24 @@ export default {
     );
   },
   /**
+   * Set track availability
+   * @param {*} commit - commit function
+   * @param {*} state - Playlist state
+   * @param {*} payload - availability state
+   * @returns {void}
+   */
+  setAvailability({ commit, state }, payload = {}) {
+    const updated = state.tracks.reduce((arr, track) => {
+      const mutable = { ...track };
+      if (mutable.id === payload.id) {
+        mutable.available = payload.available;
+      }
+      arr.push(mutable);
+      return arr;
+    }, []);
+    return commit(actionTypes.PLAYLIST_SET_TRACKS, updated);
+  },
+  /**
    * Set shuffled track as played
    * @param {*} commit - commit function
    * @param {*} state - Playlist state

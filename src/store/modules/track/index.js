@@ -6,6 +6,8 @@ import mutations from './mutations';
 export const state = {
   muted: false,
   track: {
+    added: '',
+    available: false,
     duration: null,
     id: '',
     name: '',

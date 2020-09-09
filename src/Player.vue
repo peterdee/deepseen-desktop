@@ -129,6 +129,7 @@ export default {
       clearTrack: 'track/clearTrack',
       removeFromQueue: 'playbackQueue/deleteTrack',
       reshuffle: 'playlist/reshuffle',
+      setAvailability: 'playlist/setAvailability',
       setContextMenuTrackId: 'contextMenu/setTrackId',
       setContextMenuVisibility: 'contextMenu/setVisibility',
       setMuted: 'track/setMuted',
@@ -182,9 +183,10 @@ export default {
     },
     /**
      * Handle track switch on track end
+     * @param {string} previousId - previous Track ID (optional)
      * @returns {void}
      */
-    async handleTrackSwitchOnEnd() {
+    async handleTrackSwitchOnEnd(previousId = '') {
       // check the playback queue first
       if (this.playbackQueue.length > 0) {
         const [nextId = ''] = this.playbackQueue;
@@ -195,7 +197,7 @@ export default {
       // get the next track ID
       const nextId = getNextTrackId(
         this.trackIds,
-        this.current.id,
+        previousId || this.current.id,
         this.loop,
         this.shuffle,
         this.shuffled,
@@ -236,6 +238,11 @@ export default {
           ...track,
           url,
         });
+        
+        // fix track availability
+        if (!track.available) {
+          await this.setAvailability({ available: true, id });
+        }
 
         // keep the playback paused if necessary
         if (paused) {
@@ -247,7 +254,8 @@ export default {
         // handle the case with missing file (skip it)
         const { code = '' } = error;
         if (code && code === 'ENOENT') {
-          return this.handleTrackSwitchOnEnd();
+          await this.setAvailability({ available: false, id });
+          return this.handleTrackSwitchOnEnd(id);
         }
 
         // in any other case show an error

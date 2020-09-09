@@ -1,7 +1,7 @@
 <template>
   <div
     v-cloak
-    class="playlist"
+    class="playlist noselect"
     @drop.prevent="handleFileDrop($event)"
     @dragover.prevent
   >
@@ -11,9 +11,10 @@
     >
       <button
         :class="[
-          'track noselect',
+          'track',
           checkQueue(track.id) && track.id !== current.id ? 'queued' : '',
           track.id === current.id ? 'active' : '',
+          !track.available ? 'unavailable' : '',
         ]"
         type="button"
         @click="$emit('handle-track-selection', track.id)"
@@ -154,6 +155,7 @@ export default {
         return audio.oncanplay = () => {
           const track = {
             added: Date.now(),
+            available: true,
             duration: audio.duration,
             id: generateId(),
             name: file.name,

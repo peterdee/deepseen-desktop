@@ -30,6 +30,7 @@ async function parse(path = '', allowedExtensions = [], results = []) {
 
       arr.push({
         added: Date.now(),
+        available: true,
         id: generateId(),
         isDirectory: itemTypes[i].isDirectory,
         isFile: itemTypes[i].isFile,

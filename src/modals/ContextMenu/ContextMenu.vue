@@ -43,11 +43,17 @@
       <div v-if="current.id === contextTrackId">
         File is playing
       </div>
+      <div
+        v-else-if="!track.available"
+        class="error"
+      >
+        Track is not available!
+      </div>
       <div v-else>
         <button
           class="action-button menu-button"
-          type="button"
           @click="handlePlay"
+          type="button"
         >
           Play
         </button>
@@ -55,30 +61,31 @@
       <button
         v-if="!inQueue"
         class="action-button menu-button"
-        type="button"
         @click="handleAddToQueue"
+        :disabled="!track.available"
+        type="button"
       >
         Add to queue
       </button>
       <button
         v-else
         class="action-button menu-button"
-        type="button"
         @click="handleRemoveFromQueue"
+        type="button"
       >
         Remove from queue
       </button>
       <button
         class="action-button menu-button"
-        type="button"
         @click="handleDelete"
+        type="button"
       >
         Delete
       </button>
       <button
         class="action-button menu-button"
-        type="button"
         @click="setContextMenuVisibility(false)"
+        type="button"
       >
         Close
       </button>
