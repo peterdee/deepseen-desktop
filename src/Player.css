@@ -1,5 +1,21 @@
+/* CSS variables */
+:root {
+  --currently-playing-text: white;
+  --player-background: black;
+  --player-text: white;
+  --modal-background: black;
+  --modal-text: white;
+  --modal-border: white;
+  --accent: turquoise;
+  --accent-highlighted: rgb(173, 255, 247);
+  --accent-muted: teal;
+  --accent-text-dark: black;
+  --accent-text-light: white;
+  --progress-bar-background: white;
+}
+
 body, html {
-  background-color: black;
+  background-color: var(--player-background);
   font-family: Avenir, Helvetica, Arial, sans-serif;
   margin: 0;
   padding: 0;
@@ -8,16 +24,14 @@ body, html {
   -moz-osx-font-smoothing: grayscale;
 }
 .player {
-  background-color: black;
-  color: white;
-  font-size: 24px;
+  background-color: var(--player-background);
+  color: var(--player-text);
   padding: 32px;
 }
 .title {
   background-color: transparent;
   border: none;
-  color: white;
-  font-size: 24px;
+  color: var(--currently-playing-text);
   margin: 0;
   outline: none;
   padding: 0;
@@ -63,7 +77,7 @@ body, html {
   transition: background-color 200ms ease-in-out;
 }
 ::-webkit-scrollbar-thumb:hover {
-  background-color: turquoise;
+  background-color: var(--accent);
   transition: background-color 200ms ease-in-out;
 }
 
@@ -97,6 +111,9 @@ body, html {
 }
 .fs-18 {
   font-size: 18px;
+}
+.fs-24 {
+  font-size: 24px;
 }
 .m-r {
   margin-right: 8px;

@@ -1,6 +1,6 @@
 .playlist {
-  background-color: black;
-  border: 1px solid white;
+  background-color: var(--player-background);
+  border: 1px solid var(--player-text);
   border-radius: 5px;
   height: 380px;
   overflow-y: scroll;
@@ -15,7 +15,7 @@
   background-color: transparent;
   border: none;
   border-radius: 5px;
-  color: white;
+  color: var(--player-text);
   outline: none;
   padding: 8px 16px;
   width: 100%;
@@ -30,11 +30,11 @@
   width: 32px;
 }
 .active {
-  background-color: turquoise;
-  color: black;
+  background-color: var(--accent);
+  color: var(--accent-text-dark);
 }
 .active:hover {
-  background-color: rgb(173, 255, 247);
+  background-color: var(--accent-highlighted);
 }
 .queued {
   background-color: rgb(36, 54, 0);

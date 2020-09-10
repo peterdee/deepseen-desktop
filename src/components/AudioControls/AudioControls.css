@@ -1,5 +1,5 @@
 .controls {
-  background-color: black;
+  background-color: var(--player-background);
   padding: 16px;
 }
 .buttons-block {
@@ -21,14 +21,11 @@
   outline: none;
   padding: 0;
 }
-.icon {
-  color: white;
-}
 .button:hover {
-  background-color: turquoise;
+  background-color: var(--accent);
 }
 .button:disabled {
-  background-color: teal;
+  background-color: var(--accent-muted);
   cursor: default;
 }
 .big-icon {
@@ -37,7 +34,7 @@
 }
 input[type='range'] {
   -webkit-appearance: none;
-  background-color: white;
+  background-color: var(--progress-bar-background);
   border-radius: 3px;
   cursor: pointer;
   height: 10px;
@@ -51,9 +48,9 @@ input[type='range']::-webkit-slider-runnable-track {
 }
 input[type='range']::-webkit-slider-thumb {
   -webkit-appearance: none;
-  background: turquoise;
+  background: var(--accent);
   border: 0;
-  box-shadow: -1000px 0 0 1000px turquoise;
+  box-shadow: -1000px 0 0 1000px var(--accent);
   height: 20px;
   width: 1px;
 }

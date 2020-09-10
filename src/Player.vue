@@ -10,7 +10,7 @@
     />
     <PlaybackError v-if="playbackError" />
     <button
-      class="title noselect"
+      class="title noselect fs-24"
       @contextmenu="openContextMenuForCurrent"
       @dblclick="openContextMenuForCurrent"
       type="button"
