@@ -21,7 +21,7 @@
   width: 100%;
 }
 .track:hover {
-  background-color: #555555;
+  background-color: var(--playlist-item-hover-background);
 }
 .track-number {
   margin-right: 8px;
@@ -37,16 +37,16 @@
   background-color: var(--accent-highlighted);
 }
 .queued {
-  background-color: rgb(36, 54, 0);
-  color: white;
+  background-color: var(--queued);
+  color: var(--queued-text);
 }
 .queued:hover {
-  background-color: yellowgreen;
+  background-color: var(--queued-hover);
 }
 .unavailable {
-  background-color: rgb(56, 34, 0);
-  color: white;
+  background-color: var(--unavailable);
+  color: var(--unavailable-text);
 }
 .unavailable:hover {
-  background-color: rgb(206, 74, 38);
+  background-color: var(--unavailable-hover);
 }

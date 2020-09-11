@@ -12,6 +12,15 @@
   --accent-text-dark: black;
   --accent-text-light: white;
   --progress-bar-background: white;
+  --error-title: #ff3915;
+  --error-text: #ff3915;
+  --playlist-item-hover-background: #555555;
+  --queued: rgb(36, 54, 0);
+  --queued-text: white;
+  --queued-hover: yellowgreen;
+  --unavailable: rgb(56, 34, 0);
+  --unavailable-text: white;
+  --unavailable-hover: rgb(206, 74, 38);
 }
 
 body, html {
@@ -133,4 +142,14 @@ body, html {
   -moz-user-select: none;
   -ms-user-select: none;
   user-select: none;
+}
+.modal-background {
+  backdrop-filter: blur(4px);
+  background-color: rgba(0, 0, 0, 0.3);
+  height: 100vh;
+  left: 0;
+  position: fixed;
+  top: 0;
+  width: 100%;
+  z-index: 10;
 }

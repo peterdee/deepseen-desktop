@@ -11,6 +11,6 @@
   width: 24px;
 }
 .enabled {
-  background-color: turquoise;
+  background-color: var(--accent);
   transition: background-color 200ms ease-in-out;
 }

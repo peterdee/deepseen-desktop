@@ -1,7 +1,7 @@
 <template>
   <div>
     <div
-      class="background"
+      class="modal-background"
       @click="setContextMenuVisibility(false)"
     />
     <div class="flex direction-column justify-content-space-between content">

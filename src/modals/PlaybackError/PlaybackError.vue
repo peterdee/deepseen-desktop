@@ -1,7 +1,7 @@
 <template>
   <div>
     <div
-      class="background"
+      class="modal-background"
       @click="handleClose()"
     />
     <div class="flex direction-column justify-content-space-between content">
