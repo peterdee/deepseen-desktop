@@ -2,7 +2,7 @@
   background-color: var(--player-background);
   border: 1px solid var(--player-text);
   border-radius: 5px;
-  height: 380px;
+  height: 365px;
   overflow-y: scroll;
 }
 .track, .track:hover,

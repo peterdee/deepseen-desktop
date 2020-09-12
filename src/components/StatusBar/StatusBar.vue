@@ -1,5 +1,5 @@
 <template>
-  <div class="flex align-items-center">
+  <div class="flex align-items-center noselect">
     <div :class="[
       'flex justify-content-center align-items-center status',
       shuffle

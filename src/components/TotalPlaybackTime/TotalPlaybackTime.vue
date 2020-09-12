@@ -1,5 +1,5 @@
 <template>
-  <div class="fs-14 wrap">
+  <div class="fs-14 wrap noselect">
     Total playlist length: {{ totalTime }}
   </div>
 </template>

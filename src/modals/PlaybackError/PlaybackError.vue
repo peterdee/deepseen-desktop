@@ -4,7 +4,7 @@
       class="modal-background"
       @click="handleClose()"
     />
-    <div class="flex direction-column justify-content-space-between content">
+    <div class="flex direction-column justify-content-space-between content noselect">
       <div class="title fs-18">
         Error!
       </div>

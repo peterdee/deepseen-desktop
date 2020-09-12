@@ -9,7 +9,7 @@
         {{ formatName(track.name) }}
       </div>
       <div class="flex direction-column justify-content-start text-left fs-16">
-        <div class="flex justify-content-space-between data-line">
+        <div class="flex justify-content-space-between data-line noselect">
           <div class="data-name">
             Added
           </div>
@@ -17,8 +17,8 @@
             {{ formatDate(track.added) }}
           </div>
         </div>
-        <div class="data-line">
-          <div class="data-name">
+        <div class="flex justify-content-space-between data-line">
+          <div class="data-name noselect">
             Full path
           </div>
           <div class="data-value">
@@ -31,7 +31,7 @@
             />
           </div>
         </div>
-        <div class="data-line">
+        <div class="flex justify-content-space-between data-line noselect">
           <div class="data-name">
             File size
           </div>
@@ -40,16 +40,22 @@
           </div>
         </div>
       </div>
-      <div v-if="current.id === contextTrackId">
+      <div
+        v-if="current.id === contextTrackId"
+        class="noselect"
+      >
         File is playing
       </div>
       <div
         v-else-if="!track.available"
-        class="error"
+        class="error noselect"
       >
         Track is not available!
       </div>
-      <div v-else>
+      <div
+        v-else
+        class="noselect"
+      >
         <button
           class="action-button menu-button"
           @click="handlePlay"
@@ -60,7 +66,7 @@
       </div>
       <button
         v-if="!inQueue"
-        class="action-button menu-button"
+        class="action-button menu-button noselect"
         @click="handleAddToQueue"
         :disabled="!track.available"
         type="button"
@@ -69,21 +75,21 @@
       </button>
       <button
         v-else
-        class="action-button menu-button"
+        class="action-button menu-button noselect"
         @click="handleRemoveFromQueue"
         type="button"
       >
         Remove from queue
       </button>
       <button
-        class="action-button menu-button"
+        class="action-button menu-button noselect"
         @click="handleDelete"
         type="button"
       >
         Delete
       </button>
       <button
-        class="action-button menu-button"
+        class="action-button menu-button noselect"
         @click="setContextMenuVisibility(false)"
         type="button"
       >

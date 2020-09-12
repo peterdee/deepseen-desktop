@@ -4,7 +4,7 @@
       class="modal-background"
       @click="setPlaylistActionsVisibility(false)"
     />
-    <div class="flex direction-column justify-content-space-between content">
+    <div class="flex direction-column justify-content-space-between content noselect">
       <div class="fs-18">
         Playlist Actions
       </div>
