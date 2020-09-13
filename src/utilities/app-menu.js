@@ -1,3 +1,6 @@
+import { from } from "core-js/fn/array";
+import { ipcMain } from 'electron';
+
 /**
  * Create an application menu template
  * @param {*} app - Electron application
@@ -48,5 +51,21 @@ export default (app, isMac = true) => [
   ),
   {
     label: 'File',
+    submenu: [
+      {
+        label: 'Add files and folders',
+        click: () => console.log('add file click'),
+      },
+      {
+        type: 'separator',
+      },
+      {
+        role: 'quit',
+      },
+    ],
+  },
+  {
+    label: 'About',
+    click: () => console.log('handle About click'),
   },
 ];

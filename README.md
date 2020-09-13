@@ -4,9 +4,7 @@
 
 [![Known Vulnerabilities](https://snyk.io/test/github/peterdee/deepseen-desktop/badge.svg?targetFile=package.json)](https://snyk.io/test/github/peterdee/deepseen-desktop?targetFile=package.json)
 
-Deepseen is a simple desktop audio player with Electron, Vue and Vuex
-
-DEV (browser): http://localhost:8080
+DeepSeen is a simple desktop audio player with Electron, Vue and Vuex
 
 ### Deploy
 
@@ -25,27 +23,11 @@ See the [.env.example](.env.example) for more information
 
 ### Launch
 
-Browser:
-
-```shell script
-npm run serve
-```
-
-Standalone:
-
 ```shell script
 npm run electron:serve
 ```
 
 ### Build
-
-Static:
-
-```shell script
-npm run build
-```
-
-Binary:
 
 ```shell script
 npm run electron:build
