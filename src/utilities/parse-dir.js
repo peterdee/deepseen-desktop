@@ -10,7 +10,7 @@ import getFileExtension from './get-file-extension';
  * @param {string} path - path to an item
  * @param {string[]} allowedExtensions - array of the allowed file extensions 
  * @param {object[]} results - array of results
- * @returns {object[]|[]|Error} 
+ * @returns {Promise<object[]|[]|Error>} 
  */
 async function parse(path = '', allowedExtensions = [], results = []) {
   try {

@@ -42,6 +42,7 @@
 </template>
 
 <script>
+import { remote as electron, ipcRenderer } from 'electron';
 import { promises as fs } from 'fs';
 import { mapActions, mapState } from 'vuex';
 
@@ -51,6 +52,7 @@ import formatTrackName from '../../utilities/format-track-name';
 import generateId from '../../utilities/generate-id';
 import getFileExtension from '../../utilities/get-file-extension';
 import parseDir from '../../utilities/parse-dir';
+import parseFile from '../../utilities/parse-file';
 
 // allowed audio extensions
 const allowedExtensions = [
@@ -69,6 +71,40 @@ export default {
       playbackQueue: ({ playbackQueue }) => playbackQueue.queue,
       tracks: ({ playlist }) => playlist.tracks,
     }),
+  },
+  mounted() {
+    // handle app menu
+    ipcRenderer.on('add-files-dialog', async () => {
+      try {
+        const {
+          canceled = false,
+          filePaths = [],
+        } = await electron.dialog.showOpenDialog(
+          null,
+          {
+            buttonLabel: 'Add',
+            filters: [{
+              extensions: allowedExtensions,
+              name: 'Audio',
+            }],
+            properties: [
+              'multiSelections',
+              'openFile',
+              'openDirectory',
+            ],
+            title: 'Add files and directories',
+          },
+        );
+        if (canceled) {
+          return false;
+        }
+
+        // pass file paths to the handler
+        return this.handleOpenDialog(filePaths);
+      } catch (error) {
+        return this.setPlaybackError('Could not add the file!');
+      }
+    });
   },
   methods: {
     ...mapActions({
@@ -102,6 +138,54 @@ export default {
       return formatTrackName(name);
     },
     /**
+     * Add track to the playlist when 'oncanplay' event fires
+     * @param {*} file - file to add
+     * @param {*} audio - Audio element
+     * @returns {Promise<void>}
+     */
+    addTrackOnCanPlay(file, audio) {
+      const track = {
+        ...file,
+        duration: audio.duration,
+      };
+
+      // prevent memory issues
+      URL.revokeObjectURL(audio.src);
+      audio = null;
+
+      // check if playlist is empty
+      if (this.tracks.length === 0) {
+        return this.addTrack(track);
+      }
+
+      // make sure that there are no duplicates (compare paths)
+      const [existingTrack = null] = this.tracks.filter(
+        ({ path = '' }) => path === track.path,
+      );
+      if (existingTrack) {
+        return false;
+      }
+                
+      return this.addTrack(track);
+    },
+    /**
+     * Handle adding files from a directory
+     * @param {string} path - full path to a directory
+     * @returns {Promise<void>}
+     */
+    async handleDirectory(path = '') {
+      const tracks = await parseDir(path, allowedExtensions);
+
+      // process files concurrently
+      for await (const item of tracks) {
+        const buffer = await fs.readFile(item.path);
+        let audio = new Audio();
+        audio.src = URL.createObjectURL(new Blob([buffer], { type: item.type }));
+
+        audio.oncanplay = () => this.addTrackOnCanPlay(item, audio);
+      }
+    },
+    /**
      * Handle drag & drop
      * @param {object} event - drop event
      * @returns {Promise<void>}
@@ -114,42 +198,9 @@ export default {
 
           // if this is a directory
           if (isDirectory) {
-            const tracks = await parseDir(file.path, allowedExtensions);
-
-            // process files concurrently
-            for await (const item of tracks) {
-              const buffer = await fs.readFile(item.path);
-              let audio = new Audio();
-              audio.src = URL.createObjectURL(new Blob([buffer], { type: item.type }));
-
-              audio.oncanplay = () => {
-                const track = {
-                  ...item,
-                  duration: audio.duration,
-                };
-
-                // prevent memory issues
-                URL.revokeObjectURL(audio.src);
-                audio = null;
-
-                // check if playlist is empty
-                if (this.tracks.length === 0) {
-                  return this.addTrack(track);
-                }
-
-                // make sure that there are no duplicates (compare paths)
-                const [existingTrack = null] = this.tracks.filter(
-                  ({ path = '' }) => path === track.path,
-                );
-                if (existingTrack) {
-                  return false;
-                }
-                
-                return this.addTrack(track);
-              };
-            }
+            return this.handleDirectory(file.path);
           }
-        } catch (error) {
+        } catch {
           return this.setPlaybackError('Could not add the file!');
         }
 
@@ -161,37 +212,56 @@ export default {
         let audio = new Audio();
         audio.src = URL.createObjectURL(file);
 
-        return audio.oncanplay = () => {
-          const track = {
+        audio.oncanplay = () => this.addTrackOnCanPlay(
+          {
             added: Date.now(),
             available: true,
-            duration: audio.duration,
             id: generateId(),
             name: file.name,
             path: file.path,
             size: file.size,
             type: file.type,
-          };
+          },
+          audio,
+        );
+      });
+    },
+    /**
+     * Handle adding files and directories with 'openDialog'
+     * @param {string[]} paths - paths to files and directories
+     * @returns {Promise<*>}
+     */
+    async handleOpenDialog(paths = []) {
+      // check array
+      if (!(Array.isArray(paths) && paths.length > 0)) {
+        return false;
+      }
 
-          // prevent memory issues
-          URL.revokeObjectURL(audio.src);
-          audio = null;
+      // process files
+      return paths.forEach(async (path = '') => {
+        try {
+          // check if this is a directory
+          const { isDirectory = false, size = null } = await checkPath(path);
 
-          // check if playlist is empty
-          if (this.tracks.length === 0) {
-            return this.addTrack(track);
+          // if path points to a directory
+          if (isDirectory) {
+            return this.handleDirectory(path);
           }
 
-          // make sure that there are no duplicates (compare paths)
-          const [existingTrack = null] = this.tracks.filter(
-            ({ path = '' }) => path === track.path,
-          );
-          if (existingTrack) {
+          // if path points to a file
+          const file = parseFile(path, size, allowedExtensions);
+          if (!file) {
             return false;
           }
-          
-          return this.addTrack(track);
-        };
+
+          const buffer = await fs.readFile(file.path);
+          let audio = new Audio();
+          audio.src = URL.createObjectURL(new Blob([buffer], { type: file.type }));
+
+          audio.oncanplay = () => this.addTrackOnCanPlay(file, audio);
+        } catch {
+          return this.setPlaybackError('Could not add the file!');
+        }
       });
     },
     /**
