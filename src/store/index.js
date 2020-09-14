@@ -1,6 +1,7 @@
 import { createStore } from 'vuex';
 import VuexPersistence from 'vuex-persist';
 
+import about from './modules/about';
 import contextMenu from './modules/context-menu';
 import playbackError from './modules/playback-error';
 import playbackQueue from './modules/playback-queue';
@@ -13,6 +14,7 @@ const storage = new VuexPersistence({ storage: window.localStorage });
 
 export default createStore({
   modules: {
+    about,
     contextMenu,
     playbackError,
     playbackQueue,
