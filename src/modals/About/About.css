@@ -3,40 +3,16 @@
   border: 1px solid var(--modal-border);
   border-radius: 16px;
   color: var(--modal-text);
-  height: 320px;
-  left: calc(50% - 350px);
+  height: 280px;
+  left: calc(50% - 250px);
   margin: auto auto;
   padding: 16px 0;
   position: fixed;
-  top: calc(50% - 180px);
-  width: 700px;
+  top: calc(50% - 160px);
+  width: 500px;
   z-index: 15;
 }
 .menu-button {
   margin: 0 auto;
   width: 160px;
-}
-.data-line {
-  margin: 4px 0;
-}
-.data-name {
-  margin: 0 16px;
-  width: 15%;
-}
-.data-value {
-  margin: 0 16px;
-  width: 85%;
-}
-.data-input {
-  background-color: var(--modal-background);
-  border: none;
-  border-bottom: 1px solid var(--modal-text);
-  color: var(--modal-text);
-  width: 100%;
-}
-.data-input:focus {
-  outline: none;
-}
-.error {
-  color: var(--error-text);
 }
