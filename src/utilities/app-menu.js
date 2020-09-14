@@ -12,11 +12,11 @@ export default (app, isMac = true, window) => [
         label: app.name,
         submenu: [
           {
-            label: 'Playlist Actions',
+            label: 'Playlist',
             click: () => window.webContents.send('show-playlist-actions'),
           },
           {
-            label: 'About DeepSeen',
+            label: 'About',
             click: () => window.webContents.send('show-about'),
           },
           {
@@ -32,7 +32,7 @@ export default (app, isMac = true, window) => [
         submenu: [
           {
             label: 'Add files and directories',
-            click: () => window.webContents.send('add-files-dialog'),
+            click: () => window.webContents.send('add-tracks-mac'),
           },
         ],
       },
@@ -42,8 +42,12 @@ export default (app, isMac = true, window) => [
         label: 'File',
         submenu: [
           {
-            label: 'Add files and directories',
-            click: () => window.webContents.send('add-files-dialog'),
+            label: 'Add files',
+            click: () => window.webContents.send('add-tracks-windows'),
+          },
+          {
+            label: 'Add directories',
+            click: () => window.webContents.send('add-directories-windows'),
           },
           {
             type: 'separator',
@@ -54,11 +58,11 @@ export default (app, isMac = true, window) => [
         ],
       },
       {
-        label: 'Playlist Actions',
+        label: 'Playlist',
         click: () => window.webContents.send('show-playlist-actions'),
       },
       {
-        label: 'About DeepSeen',
+        label: 'About',
         click: () => window.webContents.send('show-about'),
       },
     ]
