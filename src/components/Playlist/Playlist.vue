@@ -66,28 +66,77 @@ export default {
     }),
   },
   mounted() {
-    // handle app menu
-    ipcRenderer.on('add-files-dialog', async () => {
+    const options = {
+      buttonLabel: 'Add',
+      filters: [{
+        extensions: allowedExtensions,
+        name: 'Audio',
+      }],
+      properties: [
+        'multiSelections',
+        'openFile',
+        'openDirectory',
+      ],
+      title: 'Add files and directories',
+    };
+
+    // handle app menu: add files and directories for Mac
+    ipcRenderer.on('add-tracks-mac', async () => {
       try {
         const {
           canceled = false,
           filePaths = [],
-        } = await electron.dialog.showOpenDialog(
-          null,
-          {
-            buttonLabel: 'Add',
-            filters: [{
-              extensions: allowedExtensions,
-              name: 'Audio',
-            }],
-            properties: [
-              'multiSelections',
-              'openFile',
-              'openDirectory',
-            ],
-            title: 'Add files and directories',
-          },
-        );
+        } = await electron.dialog.showOpenDialog(null, options);
+        if (canceled) {
+          return false;
+        }
+
+        // pass file paths to the handler
+        return this.handleOpenDialog(filePaths);
+      } catch (error) {
+        return this.setPlaybackError('Could not add the file!');
+      }
+    });
+    
+    // handle app menu: add directories for Windows
+    ipcRenderer.on('add-directories-windows', async () => {
+      try {
+        const dirOptions = { ...options };
+        dirOptions.properties = [
+          'multiSelections',
+          'openDirectory',
+        ];
+        dirOptions.title = 'Add directories';
+
+        const {
+          canceled = false,
+          filePaths = [],
+        } = await electron.dialog.showOpenDialog(null, dirOptions);
+        if (canceled) {
+          return false;
+        }
+
+        // pass file paths to the handler
+        return this.handleOpenDialog(filePaths);
+      } catch (error) {
+        return this.setPlaybackError('Could not add the file!');
+      }
+    });
+
+    // handle app menu: add files for Windows
+    ipcRenderer.on('add-tracks-windows', async () => {
+      try {
+        const fileOptions = { ...options };
+        fileOptions.properties = [
+          'multiSelections',
+          'openFile',
+        ];
+        fileOptions.title = 'Add files';
+
+        const {
+          canceled = false,
+          filePaths = [],
+        } = await electron.dialog.showOpenDialog(null, fileOptions);
         if (canceled) {
           return false;
         }
