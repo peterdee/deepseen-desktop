@@ -42,6 +42,7 @@
 </template>
 
 <script>
+import { ipcRenderer } from 'electron';
 import { mapActions, mapGetters, mapState } from 'vuex';
 import { promises as fs } from 'fs';
 
@@ -126,6 +127,11 @@ export default {
         return player.play();
       }
     };
+
+    // handle app menu
+    ipcRenderer.on('show-about', () => {
+      console.log('-- show About page');
+    });
   },
   methods: {
     ...mapActions({

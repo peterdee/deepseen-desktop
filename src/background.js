@@ -85,7 +85,11 @@ app.on('ready', async () => {
 
   // set application menu
   const appMenu = Menu.buildFromTemplate(
-    buildMenuTemplate(app, process.platform === 'darwin'),
+    buildMenuTemplate(
+      app,
+      process.platform === 'darwin',
+      win,
+    ),
   );
   Menu.setApplicationMenu(appMenu);
 });
