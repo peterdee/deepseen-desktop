@@ -46,6 +46,8 @@ import { remote as electron, ipcRenderer } from 'electron';
 import { promises as fs } from 'fs';
 import { mapActions, mapState } from 'vuex';
 
+import { ALLOWED_EXTENSIONS as allowedExtensions } from '../../configuration';
+
 import checkPath from '../../utilities/check-path';
 import formatTime from '../../utilities/format-time';
 import formatTrackName from '../../utilities/format-track-name';
@@ -53,15 +55,6 @@ import generateId from '../../utilities/generate-id';
 import getFileExtension from '../../utilities/get-file-extension';
 import parseDir from '../../utilities/parse-dir';
 import parseFile from '../../utilities/parse-file';
-
-// allowed audio extensions
-const allowedExtensions = [
-  'aac',
-  'flac',
-  'mp3',
-  'ogg',
-  'wav',
-];
 
 export default {
   name: 'Playlist',

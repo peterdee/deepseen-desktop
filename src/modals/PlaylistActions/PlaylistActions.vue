@@ -84,6 +84,7 @@ import { remote as electron } from 'electron';
 import { mapActions, mapGetters, mapState } from 'vuex';
 import { promises as fs } from 'fs';
 
+import { PLAYLIST_EXTENSION } from '../../configuration';
 import Switch from '../../elements/Switch';
 
 export default {
@@ -176,7 +177,18 @@ export default {
         const {
           canceled = false,
           filePaths = [],
-        } = await electron.dialog.showOpenDialog(null, ['openFile']);
+        } = await electron.dialog.showOpenDialog(
+          null,
+          {
+            buttonLabel: 'Open',
+            filters: [{
+              extensions: [PLAYLIST_EXTENSION],
+              name: 'DeepSeen playlist',
+            }],
+            properties: ['openFile'],
+            title: 'Open a playlist',
+          },
+        );
         if (canceled) {
           return false;
         }
@@ -246,7 +258,7 @@ export default {
           return false;
         }
 
-        return fs.writeFile(`${filePath}.dpsn`, JSON.stringify(this.tracks));
+        return fs.writeFile(`${filePath}.${PLAYLIST_EXTENSION}`, JSON.stringify(this.tracks));
       } catch (error) {
         await this.setPlaylistActionsVisibility(false);
         return this.setPlaybackError('Could not save the playlist!');
