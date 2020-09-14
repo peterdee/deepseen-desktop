@@ -108,6 +108,7 @@
 </template>
 
 <script>
+import { ipcRenderer } from 'electron';
 import { mapActions, mapGetters, mapState } from 'vuex';
 
 import formatTime from '../../utilities/format-time';
@@ -170,6 +171,9 @@ export default {
           : Math.round(this.elapsed / (this.current.duration / 200));
       }
     };
+
+    // handle app menu: open Playlist Actions modal
+    ipcRenderer.on('show-playlist-actions', () => this.setPlaylistActionsVisibility(true));
   },
   methods: {
     ...mapActions({

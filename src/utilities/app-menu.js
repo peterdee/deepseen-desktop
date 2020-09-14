@@ -12,7 +12,11 @@ export default (app, isMac = true, window) => [
         label: app.name,
         submenu: [
           {
-            label: 'About',
+            label: 'Playlist Actions',
+            click: () => window.webContents.send('show-playlist-actions'),
+          },
+          {
+            label: 'About DeepSeen',
             click: () => window.webContents.send('show-about'),
           },
           {
@@ -50,7 +54,11 @@ export default (app, isMac = true, window) => [
         ],
       },
       {
-        label: 'About',
+        label: 'Playlist Actions',
+        click: () => window.webContents.send('show-playlist-actions'),
+      },
+      {
+        label: 'About DeepSeen',
         click: () => window.webContents.send('show-about'),
       },
     ]
