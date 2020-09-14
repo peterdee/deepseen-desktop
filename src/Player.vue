@@ -1,14 +1,15 @@
 <template>
   <div class="player">
+    <About v-if="aboutVisibility" />
     <ContextMenu
       v-if="contextMenu"
       @handle-track-selection="handleTrackSelection"
     />
+    <PlaybackError v-if="playbackError" />
     <PlaylistActions
       v-if="playlistActions"
       @handle-track-selection="handleTrackSelection"
     />
-    <PlaybackError v-if="playbackError" />
     <button
       class="title noselect fs-24"
       @contextmenu="openContextMenuForCurrent"
@@ -49,6 +50,7 @@ import { promises as fs } from 'fs';
 import formatTrackName from './utilities/format-track-name';
 import getNextTrackId from './utilities/get-next-track';
 
+import About from './modals/About/About';
 import AudioControls from './components/AudioControls/AudioControls';
 import ContextMenu from './modals/ContextMenu/ContextMenu';
 import PlaybackError from './modals/PlaybackError/PlaybackError';
@@ -60,6 +62,7 @@ import TotalPlaybackTime from './components/TotalPlaybackTime/TotalPlaybackTime'
 export default {
   name: 'Player',
   components: {
+    About,
     AudioControls,
     ContextMenu,
     PlaybackError,
@@ -79,6 +82,7 @@ export default {
       trackIds: 'playlist/getTrackIds',
     }),
     ...mapState({
+      aboutVisibility: ({ about }) => about.visibility,
       contextMenu: ({ contextMenu }) => contextMenu.visibility,
       current: ({ track }) => track.track,
       loop: ({ settings }) => settings.loop,
@@ -128,10 +132,8 @@ export default {
       }
     };
 
-    // handle app menu
-    ipcRenderer.on('show-about', () => {
-      console.log('-- show About page');
-    });
+    // handle app menu: show About modal
+    ipcRenderer.on('show-about', () => this.setAboutVisibility(true));
   },
   methods: {
     ...mapActions({
@@ -139,6 +141,7 @@ export default {
       clearTrack: 'track/clearTrack',
       removeFromQueue: 'playbackQueue/deleteTrack',
       reshuffle: 'playlist/reshuffle',
+      setAboutVisibility: 'about/setVisibility',
       setAvailability: 'playlist/setAvailability',
       setContextMenuTrackId: 'contextMenu/setTrackId',
       setContextMenuVisibility: 'contextMenu/setVisibility',
