@@ -6,6 +6,8 @@
     "name": "Peter Dyumin",
     "url": "https://github.com/peterdee"
   },
+  "copyright": "Copyright © 2020 Peter Dyumin",
+  "productName": "DeepSeen",
   "description": "Deepseen is a simple desktop audio player with Electron, Vue and Vuex",
   "homepage": "https://github.com/peterdee/deepseen-desktop",
   "main": "background.js",
@@ -20,7 +22,7 @@
     "serve": "vue-cli-service serve"
   },
   "engines": {
-    "node": "14.9.0",
+    "node": "14.11.0",
     "npm": "6.14.8"
   },
   "repository": {
