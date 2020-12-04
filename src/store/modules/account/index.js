@@ -4,6 +4,8 @@ import mutations from './mutations';
 // initial state
 export const state = {
   email: '',
+  formError: '',
+  id: '',
   isAuthenticated: false,
   isLoading: false,
   name: '',

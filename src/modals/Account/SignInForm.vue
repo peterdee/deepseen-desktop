@@ -4,16 +4,22 @@
     @submit.prevent="$emit('handle-form')"
   >
     <input
-      :class="['mb-8', emailError ? 'input-error' : '']"
       name="email"
       placeholder="Email"
       type="email"
+      :class="['mb-8', emailError ? 'input-error' : '']"
+      :disabled="isLoading"
+      :value="email"
+      @input="$emit('input', $event)"
     />
     <input
-      :class="['mb-8', passwordError ? 'input-error' : '']"
       name="password"
       placeholder="Password"
       type="password"
+      :class="['mb-8', passwordError ? 'input-error' : '']"
+      :disabled="isLoading"
+      :value="password"
+      @input="$emit('input', $event)"
     />
     <div class="form-error mb-8 text-center">
       <ErrorMessage
@@ -24,6 +30,7 @@
     <button
       class="action-button menu-button"
       type="submit"
+      :disabled="isLoading"
     >
       Sign in
     </button>
