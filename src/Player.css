@@ -21,6 +21,8 @@
   --unavailable: rgb(56, 34, 0);
   --unavailable-text: white;
   --unavailable-hover: rgb(206, 74, 38);
+  --input-background-active: #343434;
+  --input-background-disabled: #121212;
 }
 
 body, html {

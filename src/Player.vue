@@ -1,6 +1,7 @@
 <template>
   <div class="player">
     <About v-if="aboutVisibility" />
+    <Account v-if="accountVisibility" />
     <ContextMenu
       v-if="contextMenu"
       @handle-track-selection="handleTrackSelection"
@@ -51,6 +52,7 @@ import formatTrackName from './utilities/format-track-name';
 import getNextTrackId from './utilities/get-next-track';
 
 import About from './modals/About/About';
+import Account from './modals/Account/Account';
 import AudioControls from './components/AudioControls/AudioControls';
 import ContextMenu from './modals/ContextMenu/ContextMenu';
 import PlaybackError from './modals/PlaybackError/PlaybackError';
@@ -63,6 +65,7 @@ export default {
   name: 'Player',
   components: {
     About,
+    Account,
     AudioControls,
     ContextMenu,
     PlaybackError,
@@ -83,6 +86,7 @@ export default {
     }),
     ...mapState({
       aboutVisibility: ({ about }) => about.visibility,
+      accountVisibility: ({ account }) => account.visibility,
       contextMenu: ({ contextMenu }) => contextMenu.visibility,
       current: ({ track }) => track.track,
       loop: ({ settings }) => settings.loop,
