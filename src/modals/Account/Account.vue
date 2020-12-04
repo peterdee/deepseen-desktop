@@ -83,6 +83,7 @@ export default {
      */
     closeModal() {
       this.setFormError('');
+      this.setLoading(false);
       return this.setVisibility(false);
     },
     /**
