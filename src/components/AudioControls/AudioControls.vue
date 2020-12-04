@@ -92,6 +92,12 @@
             :src="playlistIcon"
           />
         </button>
+        <button
+          type="button"
+          @click="setAccountVisibility(true)"
+        >
+          Account
+        </button>
       </div>
       <input
         class="volume"
@@ -179,6 +185,7 @@ export default {
     ...mapActions({
       removeFromQueue: 'playbackQueue/deleteTrack',
       reshuffle: 'playlist/reshuffle',
+      setAccountVisibility: 'account/setVisibility',
       setPlaylistActionsVisibility: 'playlistActions/setVisibility',
       setShuffledTrackAsPlayed: 'playlist/setShuffledTrackAsPlayed',
     }),

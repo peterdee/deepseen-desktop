@@ -1,0 +1,18 @@
+.content {
+  background-color: var(--modal-background);
+  border: 1px solid var(--modal-border);
+  border-radius: 16px;
+  color: var(--modal-text);
+  height: 320px;
+  left: calc(50% - 250px);
+  margin: auto auto;
+  padding: 16px 0;
+  position: fixed;
+  top: calc(50% - 180px);
+  width: 500px;
+  z-index: 15;
+}
+.menu-button {
+  margin: 0 auto;
+  width: 160px;
+}
