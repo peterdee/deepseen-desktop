@@ -1,11 +1,11 @@
 import axios from 'axios';
+
 import {
   BACKEND_ORIGIN,
   CLIENT_TYPE,
   RESPONSE_MESSAGES,
   STATUS_CODES,
 } from '../../../configuration';
-
 import * as actionTypes from './action-types';
 
 export default {
@@ -76,7 +76,8 @@ export default {
       commit(actionTypes.ACCOUNT_MODAL_SET_LOADING, false);
       const { response: { data = {} } = {} } = error;
       if (data && data.info && data.status) {
-        if (data.info === RESPONSE_MESSAGES.accessDenied && data.status === STATUS_CODES.unauthorized) {
+        if (data.info === RESPONSE_MESSAGES.accessDenied
+          && data.status === STATUS_CODES.unauthorized) {
           return commit(
             actionTypes.ACCOUNT_MODAL_SET_ERROR,
             'Access denied!',
@@ -86,7 +87,7 @@ export default {
 
       return commit(
         actionTypes.ACCOUNT_MODAL_SET_ERROR,
-        'Whoops! Something\'s went wrong...',
+        'Whoops! Something went wrong...',
       );
     }
   },

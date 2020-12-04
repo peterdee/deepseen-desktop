@@ -12,6 +12,7 @@
         v-if="!isLoading && isAuthenticated"
         :email="userEmail"
         :name="userName"
+        @sign-out="signOut"
       />
       <Loader v-if="isLoading" />
       <SignInForm
@@ -82,6 +83,7 @@ export default {
      */
     closeModal() {
       this.setFormError('');
+      this.setLoading(false);
       return this.setVisibility(false);
     },
     /**
@@ -100,10 +102,13 @@ export default {
         return this.setFormError('Please provide your credentials!');
       }
 
-      // sign user in
+      const trimmedEmail = email.trim();
+      const trimmedPassword = password.trim();
+      this.email = '';
+      this.password = '';
       return this.signIn({
-        email: email.trim(),
-        password: password.trim(),
+        email: trimmedEmail,
+        password: trimmedPassword,
       });
     },
     /**

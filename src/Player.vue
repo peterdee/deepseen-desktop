@@ -255,7 +255,7 @@ export default {
           ...track,
           url,
         });
-        
+
         // fix track availability
         if (!track.available) {
           await this.setAvailability({ available: true, id });
