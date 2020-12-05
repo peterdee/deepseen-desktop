@@ -96,6 +96,7 @@ export default {
       playlistActions: ({ playlistActions }) => playlistActions.visibility,
       shuffle: ({ settings }) => settings.shuffle,
       shuffled: ({ playlist }) => playlist.shuffled,
+      token: ({ account }) => account.token,
       tracks: ({ playlist }) => playlist.tracks,
       volume: ({ track }) => track.volume,
     }),
@@ -138,6 +139,10 @@ export default {
 
     // handle app menu: show About modal
     ipcRenderer.on('show-about', () => this.setAboutVisibility(true));
+
+    // Websockets connection
+    this.$io().io.opts.query = { token: this.token };
+    this.$io().open();
   },
   methods: {
     ...mapActions({
