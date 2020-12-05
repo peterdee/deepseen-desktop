@@ -33,6 +33,7 @@
     "Audio player",
     "Deepseen",
     "Electron",
+    "Socket.IO",
     "Vue",
     "Vuex"
   ],
@@ -43,7 +44,6 @@
     "mime-types": "^2.1.27",
     "socket.io-client": "^3.0.3",
     "vue": "^3.0.4",
-    "vue-socket.io-extended": "^4.0.5",
     "vuex": "^4.0.0-rc.2",
     "vuex-persist": "^3.1.3"
   },
