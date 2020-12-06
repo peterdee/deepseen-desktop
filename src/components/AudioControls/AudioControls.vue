@@ -117,6 +117,7 @@
 import { ipcRenderer } from 'electron';
 import { mapActions, mapGetters, mapState } from 'vuex';
 
+import { EVENTS } from '../../configuration';
 import formatTime from '../../utilities/format-time';
 import getNextTrackId from '../../utilities/get-next-track';
 import getPreviousTrackId from '../../utilities/get-previous-track';
@@ -180,6 +181,12 @@ export default {
 
     // handle app menu: open Playlist Actions modal
     ipcRenderer.on('show-playlist-actions', () => this.setPlaylistActionsVisibility(true));
+
+    // Websockets events
+    this.$io().on(EVENTS.PLAY_NEXT, () => this.playNext());
+    this.$io().on(EVENTS.PLAY_PAUSE, () => this.$emit('handle-play'));
+    this.$io().on(EVENTS.PLAY_PREVIOUS, () => this.playPrevious());
+    this.$io().on(EVENTS.STOP_PLAYBACK, () => this.handleStop());
   },
   methods: {
     ...mapActions({

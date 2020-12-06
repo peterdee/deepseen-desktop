@@ -13,6 +13,17 @@ export const { BACKEND_ORIGIN = 'http://localhost:1337' } = process.env;
 // Application client type
 export const { CLIENT_TYPE = 'desktop' } = process.env;
 
+// Websockets events
+export const EVENTS = {
+  NEW_CLIENT_CONNECTED: 'NEW_CLIENT_CONNECTED',
+  PLAY_NEXT: 'PLAY_NEXT',
+  PLAY_PAUSE: 'PLAY_PAUSE',
+  PLAY_PREVIOUS: 'PLAY_PREVIOUS',
+  STOP_PLAYBACK: 'STOP_PLAYBACK',
+  UPDATE_CURRENT_TRACK: 'UPDATE_CURRENT_TRACK',
+  UPDATE_PLAYBACK_STATUS: 'UPDATE_PLAYBACK_STATUS',
+};
+
 // Playlist file extension
 export const PLAYLIST_EXTENSION = 'dpsn';
 
