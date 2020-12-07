@@ -131,7 +131,7 @@ export default {
 
       // update the store
       return this.signOut();
-    }
+    },
   },
 };
 </script>
