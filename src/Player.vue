@@ -48,6 +48,8 @@ import { ipcRenderer } from 'electron';
 import { mapActions, mapGetters, mapState } from 'vuex';
 import { promises as fs } from 'fs';
 
+import checkToken from './utilities/check-token';
+import { EVENTS } from './configuration';
 import formatTrackName from './utilities/format-track-name';
 import getNextTrackId from './utilities/get-next-track';
 
@@ -89,6 +91,7 @@ export default {
       accountVisibility: ({ account }) => account.visibility,
       contextMenu: ({ contextMenu }) => contextMenu.visibility,
       current: ({ track }) => track.track,
+      isAuthenticated: ({ account }) => account.isAuthenticated,
       loop: ({ settings }) => settings.loop,
       muted: ({ track }) => track.muted,
       playbackError: ({ playbackError }) => playbackError.message,
@@ -108,6 +111,14 @@ export default {
         return formatTrackName(this.current.name);
       }
       return '';
+    },
+  },
+  watch: {
+    // restore Websockets connection if user signs in
+    isAuthenticated(newState) {
+      if (newState) {
+        return this.connectSockets();
+      }
     },
   },
   async mounted() {
@@ -141,8 +152,7 @@ export default {
     ipcRenderer.on('show-about', () => this.setAboutVisibility(true));
 
     // Websockets connection
-    this.$io().io.opts.query = { token: this.token };
-    this.$io().open();
+    await this.connectSockets();
   },
   methods: {
     ...mapActions({
@@ -160,7 +170,25 @@ export default {
       setShuffledTrackAsPlayed: 'playlist/setShuffledTrackAsPlayed',
       setTrack: 'track/setTrack',
       setVolume: 'track/setVolume',
+      signOut: 'account/signOut',
     }),
+    /**
+     * Connect Websockets
+     * @returns {Promise<void|boolean>}
+     */
+    async connectSockets() {
+      if (!(this.isAuthenticated && this.token)) {
+        return false;
+      }
+
+      const isValid = await checkToken(this.token);
+      if (!isValid) {
+        return this.signOut();
+      }
+
+      this.$io().io.opts.query = { token: this.token };
+      this.$io().open();
+    },
     /**
      * Handle Mute button
      * @returns {void}
@@ -269,6 +297,16 @@ export default {
         // keep the playback paused if necessary
         if (paused) {
           return this.paused = true;
+        }
+
+        // Websockets
+        if (this.$io().connected) {
+          this.$io().emit(
+            EVENTS.UPDATE_CURRENT_TRACK,
+            {
+              track,
+            },
+          );
         }
 
         return this.paused = false;
