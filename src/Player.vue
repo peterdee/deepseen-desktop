@@ -48,6 +48,7 @@ import { ipcRenderer } from 'electron';
 import { mapActions, mapGetters, mapState } from 'vuex';
 import { promises as fs } from 'fs';
 
+import { CLIENTS, EVENTS } from './configuration';
 import formatTrackName from './utilities/format-track-name';
 import getNextTrackId from './utilities/get-next-track';
 
@@ -269,6 +270,17 @@ export default {
         // keep the playback paused if necessary
         if (paused) {
           return this.paused = true;
+        }
+
+        // Websockets
+        if (this.$io().connected) {
+          this.$io().emit(
+            EVENTS.UPDATE_CURRENT_TRACK,
+            {
+              target: CLIENTS.mobile,
+              track,
+            },
+          );
         }
 
         return this.paused = false;

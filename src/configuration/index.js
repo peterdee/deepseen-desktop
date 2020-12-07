@@ -10,8 +10,15 @@ export const ALLOWED_EXTENSIONS = [
 // Backend origin
 export const { BACKEND_ORIGIN = 'http://localhost:1337' } = process.env;
 
+// All client types
+export const CLIENTS = {
+  desktop: 'desktop',
+  mobile: 'mobile',
+  web: 'web',
+};
+
 // Application client type
-export const { CLIENT_TYPE = 'desktop' } = process.env;
+export const { CLIENT_TYPE = CLIENTS.desktop } = process.env;
 
 // Websockets events
 export const EVENTS = {

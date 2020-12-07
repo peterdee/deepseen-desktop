@@ -12,7 +12,7 @@
         v-if="!isLoading && isAuthenticated"
         :email="userEmail"
         :name="userName"
-        @sign-out="signOut"
+        @sign-out="handleSignOut"
       />
       <Loader v-if="isLoading" />
       <SignInForm
@@ -121,6 +121,17 @@ export default {
       this[event.target.name] = event.target.value;
       return this.setFormError('');
     },
+    /**
+     * Handle signing out
+     * @returns {void}
+     */
+    handleSignOut() {
+      // destroy the Websockets connection
+      this.$io().disconnect();
+
+      // update the store
+      return this.signOut();
+    }
   },
 };
 </script>
