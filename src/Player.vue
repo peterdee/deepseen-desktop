@@ -153,6 +153,14 @@ export default {
 
     // Websockets connection
     await this.connectSockets();
+
+    // Websockets handlers
+    this.$io().on(EVENTS.UPDATE_MUTE, () => this.handleMute());
+    this.$io().on(EVENTS.UPDATE_VOLUME, (data) => {
+      const { volume = "0" } = data;
+      const adjusted = Number(volume) / 100;
+      return this.handleVolume({ target: { value: adjusted } });
+    });
   },
   methods: {
     ...mapActions({
@@ -200,6 +208,17 @@ export default {
       } else {
         player.volume = this.volume;
       }
+
+      // Websockets
+      if (this.$io().connected) {
+        this.$io().emit(
+          EVENTS.UPDATE_MUTE,
+          {
+            isMuted: !this.muted
+          },
+        );
+      }
+
       return this.setMuted(!this.muted);
     },
     /**
@@ -339,6 +358,27 @@ export default {
       // unmute if it was muted
       if (this.muted) {
         await this.setMuted(false);
+      }
+
+      // Websockets
+      if (this.$io().connected) {
+        if (this.muted) {
+          // update muted state
+          this.$io().emit(
+            EVENTS.UPDATE_MUTE,
+            {
+              isMuted: false,
+            },
+          );
+        }
+
+        // update volume
+        this.$io().emit(
+          EVENTS.UPDATE_VOLUME,
+          {
+            volume: value,
+          },
+        );
       }
 
       return this.setVolume(value);
