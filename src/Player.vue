@@ -157,7 +157,7 @@ export default {
     // Websockets handlers
     this.$io().on(EVENTS.UPDATE_MUTE, () => this.handleMute());
     this.$io().on(EVENTS.UPDATE_VOLUME, (data) => {
-      const { volume = "0" } = data;
+      const { volume = 0 } = data;
       const adjusted = Number(volume) / 100;
       return this.handleVolume({ target: { value: adjusted } });
     });
@@ -230,6 +230,16 @@ export default {
 
       if (!(player && player.src && player.src[player.src.length - 1] !== '/')) {
         return false;
+      }
+
+      // Websockets
+      if (this.$io().connected) {
+        this.$io().emit(
+          EVENTS.UPDATE_PLAYBACK_STATE,
+          {
+            isPlaying: player.paused,
+          },
+        );
       }
 
       if (player.paused) {
