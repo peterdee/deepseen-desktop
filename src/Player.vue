@@ -248,6 +248,12 @@ export default {
       const { player } = this.$refs;
       player.currentTime = 0;
       player.pause();
+
+      // Websockets
+      if (this.$io().connected) {
+        this.$io().emit(EVENTS.STOP_PLAYBACK);
+      }
+
       return this.paused = true;
     },
     /**

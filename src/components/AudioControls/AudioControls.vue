@@ -117,7 +117,7 @@
 import { ipcRenderer } from 'electron';
 import { mapActions, mapGetters, mapState } from 'vuex';
 
-import { EVENTS } from '../../configuration';
+import { CLIENT_TYPE, EVENTS } from '../../configuration';
 import formatTime from '../../utilities/format-time';
 import getNextTrackId from '../../utilities/get-next-track';
 import getPreviousTrackId from '../../utilities/get-previous-track';
@@ -182,11 +182,23 @@ export default {
     // handle app menu: open Playlist Actions modal
     ipcRenderer.on('show-playlist-actions', () => this.setPlaylistActionsVisibility(true));
 
-    // Websockets events
+    // Websockets events TODO: add client type checks
     this.$io().on(EVENTS.PLAY_NEXT, () => this.playNext());
     this.$io().on(EVENTS.PLAY_PAUSE, () => this.$emit('handle-play'));
     this.$io().on(EVENTS.PLAY_PREVIOUS, () => this.playPrevious());
     this.$io().on(EVENTS.STOP_PLAYBACK, () => this.handleStop());
+    this.$io().on(
+      EVENTS.UPDATE_PROGRESS,
+      (data) => {
+        const { progress: updatedProgress = 0, target = '' } = data;
+        if (!(target && target === CLIENT_TYPE)) {
+          return false;
+        }
+
+        player.currentTime = (this.current.duration / 200) * Number(updatedProgress);
+        progress.value = updatedProgress;
+      },
+    );
   },
   methods: {
     ...mapActions({
@@ -220,7 +232,19 @@ export default {
      */
     handleProgress(event) {
       const { player } = this.$parent.$refs;
-      return player.currentTime = (this.current.duration / 200) * event.target.value;
+      const progress = event.target.value;
+
+      // Websockets
+      if (this.$io().connected) {
+        this.$io().emit(
+          EVENTS.UPDATE_PROGRESS,
+          {
+            progress,
+          },
+        );
+      }
+
+      return player.currentTime = (this.current.duration / 200) * progress;
     },
     /**
      * Play the next track
