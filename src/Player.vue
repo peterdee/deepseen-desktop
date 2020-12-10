@@ -49,7 +49,7 @@ import { mapActions, mapGetters, mapState } from 'vuex';
 import { promises as fs } from 'fs';
 
 import checkToken from './utilities/check-token';
-import { EVENTS } from './configuration';
+import { CLIENTS, CLIENT_TYPE, EVENTS } from './configuration';
 import formatTrackName from './utilities/format-track-name';
 import getNextTrackId from './utilities/get-next-track';
 
@@ -78,7 +78,9 @@ export default {
   },
   data() {
     return {
-      appName: 'DeepSeen',
+      appName: 'Deepseen',
+      desktopConnected: false,
+      mobileConnected: false,
       paused: true,
     };
   },
@@ -155,12 +157,55 @@ export default {
     await this.connectSockets();
 
     // Websockets handlers
+    this.$io().on(
+      EVENTS.NEW_CLIENT_CONNECTED,
+      (data) => {
+        const { client = '' } = data;
+        if (client === CLIENTS.mobile) {
+          this.mobileConnected = true;
+        }
+      },
+    );
+    this.$io().on(
+      EVENTS.ROOM_STATUS,
+      (data) => {
+        const { room = [], target = '' } = data;
+        if (target !== CLIENT_TYPE) {
+          return false;
+        }
+
+        const socketId = this.$io().id;
+        const { desktop = null, mobile = null } = room.reduce((obj, item) => {
+          if (item.socketId === socketId) {
+            return {
+              ...obj,
+              [CLIENTS.desktop]: { ...item },
+            };
+          }
+          if (item.client === CLIENTS.mobile) {
+            return {
+              ...obj,
+              [CLIENTS.mobile]: { ...item },
+            };
+          }
+        }, {});
+        if (desktop) {
+          this.desktopConnected = true;
+        }
+        if (mobile) {
+          this.mobileConnected = true;
+        }
+      },
+    );
     this.$io().on(EVENTS.UPDATE_MUTE, () => this.handleMute());
-    this.$io().on(EVENTS.UPDATE_VOLUME, (data) => {
-      const { volume = 0 } = data;
-      const adjusted = Number(volume) / 100;
-      return this.handleVolume({ target: { value: adjusted } });
-    });
+    this.$io().on(
+      EVENTS.UPDATE_VOLUME,
+      (data) => {
+        const { volume = 0 } = data;
+        const adjusted = Number(volume) / 100;
+        return this.handleVolume({ target: { value: adjusted } });
+      },
+    );
   },
   methods: {
     ...mapActions({
