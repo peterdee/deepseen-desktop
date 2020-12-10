@@ -158,10 +158,21 @@ export default {
 
     // Websockets handlers
     this.$io().on(
+      EVENTS.CLIENT_DISCONNECTED,
+      (data) => {
+        const { client = '' } = data;
+        if (client === CLIENTS.mobile) {
+          this.mobileConnected = false;
+        }
+      },
+    );
+    this.$io().on(
       EVENTS.NEW_CLIENT_CONNECTED,
       (data) => {
         const { client = '' } = data;
         if (client === CLIENTS.mobile) {
+          // TODO: "DESKTOP_INIT" should be emitted here
+
           this.mobileConnected = true;
         }
       },
@@ -193,15 +204,31 @@ export default {
           this.desktopConnected = true;
         }
         if (mobile) {
+          // TODO: "DESKTOP_INIT" should be emitted here
+
           this.mobileConnected = true;
         }
       },
     );
-    this.$io().on(EVENTS.UPDATE_MUTE, () => this.handleMute());
+    this.$io().on(
+      EVENTS.UPDATE_MUTE,
+      (data) => {
+        const { target = '' } = data;
+        if (target !== CLIENT_TYPE) {
+          return false;
+        }
+
+        return this.handleMute();
+      },
+    );
     this.$io().on(
       EVENTS.UPDATE_VOLUME,
       (data) => {
-        const { volume = 0 } = data;
+        const { target = '', volume = 0 } = data;
+        if (target !== CLIENT_TYPE) {
+          return false;
+        }
+
         const adjusted = Number(volume) / 100;
         return this.handleVolume({ target: { value: adjusted } });
       },

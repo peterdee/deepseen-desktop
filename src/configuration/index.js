@@ -22,6 +22,7 @@ export const { CLIENT_TYPE = CLIENTS.desktop } = process.env;
 
 // Websockets events
 export const EVENTS = {
+  CLIENT_DISCONNECTED: 'CLIENT_DISCONNECTED',
   NEW_CLIENT_CONNECTED: 'NEW_CLIENT_CONNECTED',
   PLAY_NEXT: 'PLAY_NEXT',
   PLAY_PAUSE: 'PLAY_PAUSE',
