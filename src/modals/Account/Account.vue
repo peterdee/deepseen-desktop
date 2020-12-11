@@ -11,6 +11,8 @@
       <AccountData
         v-if="!isLoading && isAuthenticated"
         :email="userEmail"
+        :desktopConnected="desktopConnected"
+        :mobileConnected="mobileConnected"
         :name="userName"
         @sign-out="handleSignOut"
       />
@@ -58,6 +60,16 @@ export default {
       password: '',
       passwordError: false,
     };
+  },
+  props: {
+    desktopConnected: {
+      required: true,
+      type: Boolean,
+    },
+    mobileConnected: {
+      required: true,
+      type: Boolean,
+    },
   },
   computed: {
     ...mapState({
