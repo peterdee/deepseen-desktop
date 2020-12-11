@@ -1,7 +1,11 @@
 <template>
   <div class="player">
     <About v-if="aboutVisibility" />
-    <Account v-if="accountVisibility" />
+    <Account
+      v-if="accountVisibility"
+      :desktopConnected="desktopConnected"
+      :mobileConnected="mobileConnected"
+    />
     <ContextMenu
       v-if="contextMenu"
       @handle-track-selection="handleTrackSelection"
