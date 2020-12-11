@@ -139,6 +139,10 @@ export default {
     };
   },
   props: {
+    mobileConnected: {
+      required: true,
+      type: Boolean,
+    },
     muted: {
       required: true,
       type: Boolean,
@@ -161,6 +165,25 @@ export default {
       shuffle: ({ settings }) => settings.shuffle,
       shuffled: ({ playlist }) => playlist.shuffled,
     }),
+  },
+  watch: {
+    mobileConnected(newValue) {
+      // Websockets
+      if (newValue && this.$io().connected) {
+        const { progress } = this.$refs;
+        this.$io().emit(
+          EVENTS.DESKTOP_INIT,
+          {
+            elapsed: this.elapsed,
+            isMuted: this.muted,
+            isPlaying: !this.paused,
+            progress: progress.value,
+            track: this.current,
+            volume: this.volume,
+          },
+        );
+      }
+    },
   },
   mounted() {
     // set values on mount

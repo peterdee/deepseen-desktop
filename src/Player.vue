@@ -30,6 +30,7 @@
       :type="current.type"
     />
     <AudioControls
+      :mobileConnected="mobileConnected"
       :muted="muted"
       :paused="paused"
       :volume="volume"
@@ -175,8 +176,6 @@ export default {
       (data) => {
         const { client = '' } = data;
         if (client === CLIENTS.mobile) {
-          // TODO: "DESKTOP_INIT" should be emitted here
-
           this.mobileConnected = true;
         }
       },
@@ -208,8 +207,6 @@ export default {
           this.desktopConnected = true;
         }
         if (mobile) {
-          // TODO: "DESKTOP_INIT" should be emitted here
-
           this.mobileConnected = true;
         }
       },
