@@ -6,11 +6,11 @@
     />
     <div class="flex direction-column justify-content-space-between content noselect">
       <div class="fs-18 mb-8">
-        About DeepSeen
+        About Deepseen
       </div>
       <div class="flex direction-column mb-8">
         <div class="mb-4">
-          DeepSeen
+          Deepseen
         </div>
         <div class="mb-4">
           Electron, Vue, Vuex

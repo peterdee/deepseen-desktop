@@ -183,7 +183,7 @@ export default {
             buttonLabel: 'Open',
             filters: [{
               extensions: [PLAYLIST_EXTENSION],
-              name: 'DeepSeen playlist',
+              name: 'Deepseen playlist',
             }],
             properties: ['openFile'],
             title: 'Open a playlist',

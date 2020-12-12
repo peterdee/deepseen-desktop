@@ -181,13 +181,16 @@ export default {
         if (client !== CLIENT_TYPE) {
           return false;
         }
-        console.log('here @ client type error', data)
+
         this.clientTypeError = true;
-        this.$io().emit('md');
-        return this.$io().disconnect();
       },
     );
-        this.$io().on('disconnect', (reason) => console.log('reas', reason));
+    this.$io().on(
+      EVENTS.DISCONNECT,
+      () => {
+        this.desktopConnected = false;
+      },
+    );
     this.$io().on(
       EVENTS.NEW_CLIENT_CONNECTED,
       (data) => {
@@ -204,29 +207,27 @@ export default {
         if (target !== CLIENT_TYPE) {
           return false;
         }
-        console.log('here @ room status', data, this.desktopConnected, this.mobileConnected);
+
         const socketId = this.$io().id;
-        const onlineClients = room.reduce((obj, item) => {
+        const { desktop = null, mobile = null } = room.reduce((obj, item) => {
           if (item.socketId === socketId) {
             return {
               ...obj,
-              [CLIENTS.desktop]: true,
+              [CLIENTS.desktop]: { ...item },
             };
           }
           if (item.client === CLIENTS.mobile) {
             return {
               ...obj,
-              [CLIENTS.mobile]: true,
+              [CLIENTS.mobile]: { ...item },
             };
           }
-        }, { desktop: false, mobile: false });
-        console.log('online', onlineClients)
-        if (onlineClients.desktop) {
-          console.log('cd')
+        }, {});
+
+        if (desktop) {
           this.desktopConnected = true;
         }
-        if (onlineClients.mobile) {
-                    console.log('cm')
+        if (mobile) {
           this.mobileConnected = true;
         }
       },
@@ -281,7 +282,7 @@ export default {
       if (!(this.isAuthenticated && this.token)) {
         return false;
       }
-      console.log('here @ connectSockets', this.$io().connected)
+
       const isValid = await checkToken(this.token);
       if (!isValid) {
         return this.signOut();
