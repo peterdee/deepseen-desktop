@@ -25,7 +25,7 @@
       <button
         class="action-button menu-button"
         @click="handleSortByDate"
-        :disabled="this.tracks.length === 0"
+        :disabled="tracks.length === 0"
         type="button"
       >
         Sort by date
@@ -33,7 +33,7 @@
       <button
         class="action-button menu-button"
         @click="handleSortByName"
-        :disabled="this.tracks.length === 0"
+        :disabled="tracks.length === 0"
         type="button"
       >
         Sort by name
@@ -41,7 +41,7 @@
       <button
         class="action-button menu-button"
         @click="randomizeTracks"
-        :disabled="this.tracks.length === 0"
+        :disabled="tracks.length === 0"
         type="button"
       >
         Randomize tracks
@@ -56,7 +56,7 @@
       <button
         class="action-button menu-button"
         @click="savePlaylist"
-        :disabled="this.tracks.length === 0"
+        :disabled="tracks.length === 0"
         type="button"
       >
         Save playlist
