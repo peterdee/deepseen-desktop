@@ -8,7 +8,7 @@
         It seems that desktop application for your account is already connected.
       </div>
       <div>
-        Please close all of the other desktop applications for {{ email }} and click on the button below.
+        Please close all of the other desktop applications for {{ email }} and click on the "Reconnect".
       </div>
       <button
         class="action-button menu-button"
@@ -21,6 +21,15 @@
     <div v-else>
       <div>
         Desktop app: {{ desktopConnected ? 'connected' : 'not connected' }}
+      </div>
+      <div v-if="!desktopConnected">
+        <button
+          class="action-button menu-button"
+          type="button"
+          @click="$emit('reconnect')"
+        >
+          Reconnect
+        </button>
       </div>
       <div>
         Mobile app: {{ mobileConnected ? 'connected' : 'not connected' }}

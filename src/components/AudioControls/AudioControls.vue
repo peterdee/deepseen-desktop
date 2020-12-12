@@ -81,7 +81,7 @@
             :src="muted ? mutedIcon : volumeIcon"
           />
         </button>
-        <div>
+        <div class="flex align-iems-center">
           <button
             class="button pointer"
             @click="setPlaylistActionsVisibility(true)"
