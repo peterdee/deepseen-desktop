@@ -183,10 +183,11 @@ export default {
         }
         console.log('here @ client type error', data)
         this.clientTypeError = true;
-        await this.$io().emit(EVENTS.DISCONNECT);
-        // return this.$io().disconnect();
+        this.$io().emit('md');
+        return this.$io().disconnect();
       },
     );
+        this.$io().on('disconnect', (reason) => console.log('reas', reason));
     this.$io().on(
       EVENTS.NEW_CLIENT_CONNECTED,
       (data) => {
