@@ -81,23 +81,30 @@
             :src="muted ? mutedIcon : volumeIcon"
           />
         </button>
-        <button
-          class="button pointer"
-          @click="setPlaylistActionsVisibility(true)"
-          type="button"
-        >
-          <img
-            alt="Playlist actions"
-            class="icon pointer"
-            :src="playlistIcon"
-          />
-        </button>
-        <button
-          type="button"
-          @click="setAccountVisibility(true)"
-        >
-          Account
-        </button>
+        <div>
+          <button
+            class="button pointer"
+            @click="setPlaylistActionsVisibility(true)"
+            type="button"
+          >
+            <img
+              alt="Playlist actions"
+              class="icon pointer"
+              :src="playlistIcon"
+            />
+          </button>
+          <button
+            class="button pointer"
+            type="button"
+            @click="setAccountVisibility(true)"
+          >
+            <img
+              alt="Account"
+              class="icon pointer"
+              :src="accountIcon"
+            />
+          </button>
+        </div>
       </div>
       <input
         class="volume"
@@ -126,6 +133,7 @@ export default {
   name: 'Audio',
   data() {
     return {
+      accountIcon: require('../../assets/account.svg'),
       elapsed: 0,
       mutedIcon: require('../../assets/muted.svg'),
       nextIcon: require('../../assets/next.svg'),
