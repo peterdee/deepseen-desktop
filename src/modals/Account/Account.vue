@@ -10,10 +10,12 @@
       </div>
       <AccountData
         v-if="!isLoading && isAuthenticated"
-        :email="userEmail"
+        :clientTypeError="clientTypeError"
         :desktopConnected="desktopConnected"
+        :email="userEmail"
         :mobileConnected="mobileConnected"
         :name="userName"
+        @reconnect="$emit('reconnect')"
         @sign-out="handleSignOut"
       />
       <Loader v-if="isLoading" />
@@ -62,6 +64,10 @@ export default {
     };
   },
   props: {
+    clientTypeError: {
+      required: true,
+      type: Boolean,
+    },
     desktopConnected: {
       required: true,
       type: Boolean,

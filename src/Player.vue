@@ -3,8 +3,10 @@
     <About v-if="aboutVisibility" />
     <Account
       v-if="accountVisibility"
+      :clientTypeError="clientTypeError"
       :desktopConnected="desktopConnected"
       :mobileConnected="mobileConnected"
+      @reconnect="connectSockets"
     />
     <ContextMenu
       v-if="contextMenu"
@@ -84,6 +86,7 @@ export default {
   data() {
     return {
       appName: 'Deepseen',
+      clientTypeError: false,
       desktopConnected: false,
       mobileConnected: false,
       paused: true,
@@ -172,6 +175,19 @@ export default {
       },
     );
     this.$io().on(
+      EVENTS.CLIENT_TYPE_IS_ALREADY_ONLINE,
+      async (data) => {
+        const { client = '' } = data;
+        if (client !== CLIENT_TYPE) {
+          return false;
+        }
+        console.log('here @ client type error', data)
+        this.clientTypeError = true;
+        await this.$io().emit(EVENTS.DISCONNECT);
+        // return this.$io().disconnect();
+      },
+    );
+    this.$io().on(
       EVENTS.NEW_CLIENT_CONNECTED,
       (data) => {
         const { client = '' } = data;
@@ -187,26 +203,29 @@ export default {
         if (target !== CLIENT_TYPE) {
           return false;
         }
-
+        console.log('here @ room status', data, this.desktopConnected, this.mobileConnected);
         const socketId = this.$io().id;
-        const { desktop = null, mobile = null } = room.reduce((obj, item) => {
+        const onlineClients = room.reduce((obj, item) => {
           if (item.socketId === socketId) {
             return {
               ...obj,
-              [CLIENTS.desktop]: { ...item },
+              [CLIENTS.desktop]: true,
             };
           }
           if (item.client === CLIENTS.mobile) {
             return {
               ...obj,
-              [CLIENTS.mobile]: { ...item },
+              [CLIENTS.mobile]: true,
             };
           }
-        }, {});
-        if (desktop) {
+        }, { desktop: false, mobile: false });
+        console.log('online', onlineClients)
+        if (onlineClients.desktop) {
+          console.log('cd')
           this.desktopConnected = true;
         }
-        if (mobile) {
+        if (onlineClients.mobile) {
+                    console.log('cm')
           this.mobileConnected = true;
         }
       },
@@ -261,12 +280,13 @@ export default {
       if (!(this.isAuthenticated && this.token)) {
         return false;
       }
-
+      console.log('here @ connectSockets', this.$io().connected)
       const isValid = await checkToken(this.token);
       if (!isValid) {
         return this.signOut();
       }
 
+      this.clientTypeError = false;
       this.$io().io.opts.query = { token: this.token };
       this.$io().open();
     },
