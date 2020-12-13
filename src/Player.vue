@@ -6,6 +6,7 @@
       :clientTypeError="clientTypeError"
       :desktopConnected="desktopConnected"
       :mobileConnected="mobileConnected"
+      @disconnect-clients="disconnectClients"
       @reconnect="connectSockets"
     />
     <ContextMenu
@@ -45,7 +46,10 @@
     <Playlist @handle-track-selection="handleTrackSelection" />
     <div class="flex justify-content-space-between align-items-center status-bar">
       <TotalPlaybackTime />
-      <StatusBar />
+      <StatusBar
+        :desktopConnected="desktopConnected"
+        :mobileConnected="mobileConnected"
+      />
     </div> 
   </div>
 </template>
@@ -291,6 +295,14 @@ export default {
       this.clientTypeError = false;
       this.$io().io.opts.query = { token: this.token };
       this.$io().open();
+    },
+    /**
+     * Mark clients as disconnected
+     * @returns {void}
+     */
+    disconnectClients() {
+      this.desktopConnected = false;
+      return this.mobileConnected = false;
     },
     /**
      * Handle Mute button
