@@ -1,5 +1,36 @@
 <template>
-  <div class="flex align-items-center noselect">
+  <div class="flex align-items-center justify-content-space-between bar noselect">
+    <div class="flex align-items-center">
+      <div :class="[
+        'flex justify-content-center align-items-center status',
+        desktopConnected
+          ? 'enabled'
+          : '',
+        ]"
+      >
+        <img
+          alt="Desktop"
+          class="client-icon"
+          :src="desktopIcon"
+          :title="desktopConnected ? 'Desktop connected' : 'Desktop disconnected'"
+        />
+      </div>
+      <div :class="[
+        'flex justify-content-center align-items-center status',
+        mobileConnected
+          ? 'enabled'
+          : '',
+        ]"
+      >
+        <img
+          alt="Mobile"
+          class="client-icon"
+          :src="mobileIcon"
+          :title="mobileConnected ? 'Mobile connected' : 'Mobile disconnected'"
+        />
+      </div>
+    </div>
+    <div class="flex align-items-center">
     <div :class="[
       'flex justify-content-center align-items-center status',
       shuffle
@@ -44,6 +75,7 @@
           : 'Playback queue is empty'"
       />
     </div>
+    </div>
   </div>
 </template>
 
@@ -54,10 +86,22 @@ export default {
   name: 'StatusBar',
   data() {
     return {
+      desktopIcon: require('../../assets/desktop.svg'),
       loopIcon: require('../../assets/loop.svg'),
+      mobileIcon: require('../../assets/mobile.svg'),
       queueIcon: require('../../assets/queue.svg'),
       shuffleIcon: require('../../assets/shuffle.svg'),
     };
+  },
+  props: {
+    desktopConnected: {
+      required: true,
+      type: Boolean,
+    },
+    mobileConnected: {
+      required: true,
+      type: Boolean,
+    },
   },
   computed: {
     ...mapState({

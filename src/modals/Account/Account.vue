@@ -141,11 +141,14 @@ export default {
     },
     /**
      * Handle signing out
-     * @returns {void}
+     * @returns {Promise<void>}
      */
-    handleSignOut() {
+    async handleSignOut() {
       // destroy the Websockets connection
       this.$io().disconnect();
+
+      // update the clients connection statuses
+      await this.$emit('disconnect-clients');
 
       // update the store
       return this.signOut();
