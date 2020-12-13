@@ -186,14 +186,20 @@ export default {
           return false;
         }
 
+        this.disconnectClients();
         this.clientTypeError = true;
       },
     );
     this.$io().on(
-      EVENTS.DISCONNECT,
+      EVENTS.CONNECT_ERROR,
       () => {
-        this.desktopConnected = false;
+        this.disconnectClients();
+        return this.signOut();
       },
+    );
+    this.$io().on(
+      EVENTS.DISCONNECT,
+      () => this.disconnectClients(),
     );
     this.$io().on(
       EVENTS.NEW_CLIENT_CONNECTED,
