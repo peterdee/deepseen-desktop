@@ -9,10 +9,11 @@ export default {
    */
   [actionTypes.ACCOUNT_MODAL_SET_ACCOUNT](state, data) {
     state.email = data.email;
+    state.firstName = data.firstName;
     state.id = data.id;
     state.isAuthenticated = true;
     state.isLoading = false;
-    state.name = data.name;
+    state.lastName = data.lastName;
     state.token = data.token;
   },
   /**
@@ -49,10 +50,11 @@ export default {
    */
   [actionTypes.ACCOUNT_MODAL_SIGN_OUT](state) {
     state.email = '';
+    state.firstName = '';
     state.id = '';
     state.isAuthenticated = false;
     state.isLoading = false;
-    state.name = '';
+    state.lastName = '';
     state.token = '';
   },
 };

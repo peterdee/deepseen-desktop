@@ -1,7 +1,7 @@
 <template>
   <div class="flex direction-column">
     <div class="text-center">
-      Hi there, {{ name }}!
+      Hi there, {{ firstName }} {{ lastName }}!
     </div>
     <div v-if="clientTypeError">
       <div>
@@ -61,13 +61,17 @@ export default {
       required: true,
       type: String,
     },
+    firstName: {
+      required: true,
+      type: String,
+    },
+    lastName: {
+      required: true,
+      type: String,
+    },
     mobileConnected: {
       required: true,
       type: Boolean,
-    },
-    name: {
-      required: true,
-      type: String,
     },
   },
 };
