@@ -13,8 +13,9 @@
         :clientTypeError="clientTypeError"
         :desktopConnected="desktopConnected"
         :email="userEmail"
+        :firstName="firstName"
+        :lastName="lastName"
         :mobileConnected="mobileConnected"
-        :name="userName"
         @reconnect="$emit('reconnect')"
         @sign-out="handleSignOut"
       />
@@ -79,12 +80,13 @@ export default {
   },
   computed: {
     ...mapState({
+      firstName: ({ account }) => account.firstName,
       formError: ({ account }) => account.formError,
       isAuthenticated: ({ account }) => account.isAuthenticated,
       isLoading: ({ account }) => account.isLoading,
+      lastName: ({ account }) => account.lastName,
       token: ({ account }) => account.token,
       userEmail: ({ account }) => account.email,
-      userName: ({ account }) => account.name,
     }),
   },
   methods: {

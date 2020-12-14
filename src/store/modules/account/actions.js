@@ -67,8 +67,9 @@ export default {
         actionTypes.ACCOUNT_MODAL_SET_ACCOUNT,
         {
           email: data.user.email,
+          firstName: data.user.firstName,
           id: data.user.id,
-          name: data.user.name,
+          lastName: data.user.lastName,
           token: data.token,
         },
       );
