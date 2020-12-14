@@ -194,6 +194,7 @@ export default {
       EVENTS.CONNECT_ERROR,
       () => {
         this.disconnectClients();
+        this.setPlaybackError('Error connecting to the backend!')
         return this.signOut();
       },
     );
