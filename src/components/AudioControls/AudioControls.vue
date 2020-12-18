@@ -213,11 +213,47 @@ export default {
     // handle app menu: open Playlist Actions modal
     ipcRenderer.on('show-playlist-actions', () => this.setPlaylistActionsVisibility(true));
 
-    // Websockets events TODO: add client type checks
-    this.$io().on(EVENTS.PLAY_NEXT, () => this.playNext());
-    this.$io().on(EVENTS.PLAY_PAUSE, () => this.$emit('handle-play'));
-    this.$io().on(EVENTS.PLAY_PREVIOUS, () => this.playPrevious());
-    this.$io().on(EVENTS.STOP_PLAYBACK, () => this.handleStop());
+    // Websockets events
+    this.$io().on(
+      EVENTS.PLAY_NEXT,
+      (data) => {
+        const { target = '' } = data;
+        if (!(target && target === CLIENT_TYPE)) {
+          return false;
+        }
+        return this.playNext();
+      },
+    );
+    this.$io().on(
+      EVENTS.PLAY_PAUSE,
+      (data) => {
+        const { target = '' } = data;
+        if (!(target && target === CLIENT_TYPE)) {
+          return false;
+        }
+        return this.$emit('handle-play');
+      },
+    );
+    this.$io().on(
+      EVENTS.PLAY_PREVIOUS,
+      (data) => {
+        const { target = '' } = data;
+        if (!(target && target === CLIENT_TYPE)) {
+          return false;
+        }
+        return this.playPrevious();
+      },
+    );
+    this.$io().on(
+      EVENTS.STOP_PLAYBACK,
+      (data) => {
+        const { target = '' } = data;
+        if (!(target && target === CLIENT_TYPE)) {
+          return false;
+        }
+        return this.handleStop();
+      },
+    );
     this.$io().on(
       EVENTS.UPDATE_PROGRESS,
       (data) => {
