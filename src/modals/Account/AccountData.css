@@ -1,0 +1,24 @@
+.connected {
+  color: var(--accent);
+}
+.disconnected {
+  color: var(--modal-text);
+}
+.name-tag {
+  background-color: var(--accent);
+  border-radius: 50%;
+  box-shadow: 0 0 10px 2px var(--accent);
+  color: var(--accent-text-dark);
+  font-weight: 600;
+  height: 64px;
+  text-shadow: 0 0 1px var(--accent-text-dark);
+  width: 64px;
+}
+.full-name {
+  font-size: 20px;
+  margin-left: 16px;
+}
+.menu-button {
+  margin: 0 auto;
+  width: 160px;
+}

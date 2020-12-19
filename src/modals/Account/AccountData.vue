@@ -1,14 +1,22 @@
 <template>
   <div class="flex direction-column">
-    <div class="text-center">
-      Hi there, {{ firstName }} {{ lastName }}!
-    </div>
-    <div v-if="clientTypeError">
-      <div>
-        It seems that desktop application for your account is already connected.
+    <div class="flex justify-content-center align-items-center mb-8">
+      <div class="flex justify-content-center align-items-center name-tag fs-24">
+        {{ initials }}
       </div>
-      <div>
-        Please close all of the other desktop applications for {{ email }} and click on the "Reconnect".
+      <div class="full-name">
+        {{ firstName }} {{ lastName }}
+      </div>
+    </div>
+    <div
+      v-if="clientTypeError"
+      class="mb-8"
+    >
+      <div class="mb-8">
+        It seems that desktop application for your account is already connected
+      </div>
+      <div class="mb-8">
+        Please close all of the other desktop applications for {{ email }} and reconnect
       </div>
       <button
         class="action-button menu-button"
@@ -18,9 +26,15 @@
         Reconnect
       </button>
     </div>
-    <div v-else>
-      <div>
-        Desktop app: {{ desktopConnected ? 'connected' : 'not connected' }}
+    <div
+      v-else
+      class="mb-8"
+    >
+      <div class="mb-8">
+        Desktop application
+        <span :class="desktopConnected ? 'connected' : 'disconnected'">
+          {{ desktopConnected ? 'is connected' : 'is not connected' }}
+        </span>
       </div>
       <div v-if="!desktopConnected">
         <button
@@ -32,7 +46,10 @@
         </button>
       </div>
       <div>
-        Mobile app: {{ mobileConnected ? 'connected' : 'not connected' }}
+        Mobile application
+        <span :class="mobileConnected ? 'connected' : 'disconnected'">
+          {{ mobileConnected ? 'is connected' : 'is not connected' }}
+        </span>
       </div>
     </div>
     <button
@@ -48,6 +65,11 @@
 <script>
 export default {
   name: 'AccountData',
+  computed: {
+    initials() {
+      return `${this.firstName[0] || ''}${this.lastName[0] || ''}`;
+    },
+  },
   props: {
     clientTypeError: {
       required: true,
@@ -76,3 +98,5 @@ export default {
   },
 };
 </script>
+
+<style src="./AccountData.css" scoped />
