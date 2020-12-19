@@ -8,7 +8,9 @@ export const ALLOWED_EXTENSIONS = [
 ];
 
 // Backend origin
-export const { BACKEND_ORIGIN = 'http://localhost:1337' } = process.env;
+export const {
+  VUE_APP_BACKEND_ORIGIN: BACKEND_ORIGIN = 'http://localhost:1337',
+} = process.env;
 
 // All client types
 export const CLIENTS = {
@@ -18,7 +20,9 @@ export const CLIENTS = {
 };
 
 // Application client type
-export const { CLIENT_TYPE = CLIENTS.desktop } = process.env;
+export const {
+  VUE_APP_CLIENT_TYPE: CLIENT_TYPE = CLIENTS.desktop,
+} = process.env;
 
 // Websockets events
 export const EVENTS = {
@@ -59,4 +63,6 @@ export const STATUS_CODES = {
 };
 
 // Websockets server origin
-export const { WS_ORIGIN = 'ws://localhost:9500' } = process.env;
+export const {
+  VUE_APP_WS_ORIGIN: WS_ORIGIN = 'ws://localhost:9500',
+} = process.env;
