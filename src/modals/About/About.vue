@@ -9,11 +9,11 @@
         About Deepseen
       </div>
       <div class="flex direction-column mb-8">
-        <div class="mb-4">
+        <div class="mb-4 fs-24">
           Deepseen
         </div>
         <div class="mb-4">
-          Electron, Vue, Vuex
+          Electron, Vue, Vuex, Socket.IO
         </div>
         <div>
           By Peter Dyumin, 2020
