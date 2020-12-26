@@ -263,7 +263,14 @@ export default {
         }
 
         const adjusted = Number(volume) / 100;
-        return this.handleVolume({ target: { value: adjusted } });
+        return this.handleVolume(
+          {
+            target: {
+              value: adjusted,
+            },
+          },
+          false,
+        );
       },
     );
   },
@@ -474,9 +481,10 @@ export default {
     /**
      * Handle player volume
      * @param {*} event - input event
+     * @param {boolean} emit - if the value should be emitted
      * @returns {void}
      */
-    async handleVolume(event) {
+    async handleVolume(event, emit = true) {
       const { player } = this.$refs;
       const { value } = event.target;
 
@@ -503,12 +511,14 @@ export default {
         }
 
         // update volume
-        this.$io().emit(
-          EVENTS.UPDATE_VOLUME,
-          {
-            volume: value,
-          },
-        );
+        if (emit) {
+          this.$io().emit(
+            EVENTS.UPDATE_VOLUME,
+            {
+              volume: value,
+            },
+          );
+        }
       }
 
       return this.setVolume(value);
