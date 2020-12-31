@@ -71,7 +71,7 @@
         class="status-icon"
         :src="queueIcon"
         :title="playbackQueue.length > 0
-          ? 'Playback follows the queue'
+          ? `${playbackQueue.length} track${playbackQueue.length === 1 ? '' : 's'} queued`
           : 'Playback queue is empty'"
       />
     </div>
