@@ -8,7 +8,7 @@
   },
   "copyright": "Copyright © 2020 Peter Dyumin",
   "productName": "Deepseen",
-  "description": "Deepseen is a simple desktop audio player with Electron, Vue and Vuex",
+  "description": "Deepseen is a simple desktop audio player with Electron, Vue, Vuex and Socket.IO",
   "homepage": "https://github.com/peterdee/deepseen-desktop",
   "main": "background.js",
   "license": "MIT",
