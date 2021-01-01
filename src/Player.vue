@@ -335,7 +335,7 @@ export default {
         this.$io().emit(
           EVENTS.UPDATE_MUTE,
           {
-            isMuted: !this.muted
+            isMuted: !this.muted,
           },
         );
       }
