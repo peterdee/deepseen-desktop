@@ -92,7 +92,11 @@ import { remote as electron } from 'electron';
 import { mapActions, mapGetters, mapState } from 'vuex';
 import { promises as fs } from 'fs';
 
-import { PLAYLIST_EXTENSION } from '../../configuration';
+import {
+  CLIENT_TYPE,
+  EVENTS,
+  PLAYLIST_EXTENSION,
+} from '../../configuration';
 import Switch from '../../elements/Switch';
 
 export default {
@@ -111,6 +115,19 @@ export default {
       shuffle: ({ settings }) => settings.shuffle,
       tracks: ({ playlist }) => playlist.tracks,
     }),
+  },
+  mounted() {
+    // Websockets handlers
+    this.$io().on(
+      EVENTS.UPDATE_LOOP,
+      (data) => {
+        const { loop = false, target = '' } = data;
+        if (target !== CLIENT_TYPE) {
+          return false;
+        }
+        return this.setLoopPlaylist(loop);
+      },
+    );
   },
   methods: {
     ...mapActions({
@@ -149,7 +166,20 @@ export default {
      * @returns {void}
      */
     handleLoopSwitch(event) {
-      return this.setLoopPlaylist(event.target.checked);
+      const { target: { checked = false } = {} } = event;
+
+      // Websockets
+      if (this.$io().connected) {
+        // emit the UPDATE_LOOP event
+        this.$io().emit(
+          EVENTS.UPDATE_LOOP,
+          {
+            loop: checked,
+          },
+        );
+      }
+
+      return this.setLoopPlaylist(checked);
     },
     /**
      * Handle shuffle switch click
