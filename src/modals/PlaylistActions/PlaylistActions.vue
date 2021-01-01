@@ -63,6 +63,14 @@
       </button>
       <button
         class="action-button menu-button"
+        @click="clearPlaybackQueue"
+        :disabled="playbackQueue.length === 0"
+        type="button"
+      >
+        Clear playback queue
+      </button>
+      <button
+        class="action-button menu-button"
         @click="clearPlaylist"
         type="button"
       >
@@ -99,6 +107,7 @@ export default {
     ...mapState({
       current: ({ track }) => track.track,
       loop: ({ settings }) => settings.loop,
+      playbackQueue: ({ playbackQueue }) => playbackQueue.queue,
       shuffle: ({ settings }) => settings.shuffle,
       tracks: ({ playlist }) => playlist.tracks,
     }),
