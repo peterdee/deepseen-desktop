@@ -122,10 +122,21 @@ export default {
       EVENTS.UPDATE_LOOP,
       (data) => {
         const { loop = false, target = '' } = data;
-        if (target !== CLIENT_TYPE) {
+        if (!(target && target === CLIENT_TYPE)) {
           return false;
         }
         return this.setLoopPlaylist(loop);
+      },
+    );
+    this.$io().on(
+      EVENTS.UPDATE_SHUFFLE,
+      async (data) => {
+        const { shuffle = false, target = '' } = data;
+        if (!(target && target === CLIENT_TYPE)) {
+          return false;
+        }
+        await this.reshuffle(this.trackIds);
+        return this.setPlaylistShuffling(shuffle);
       },
     );
   },
@@ -187,8 +198,21 @@ export default {
      * @returns {Promise<void>}
      */
     async handleShuffleSwitch(event) {
+      const { target: { checked = false } = {} } = event;
+
+      // Websockets
+      if (emit && this.$io().connected) {
+        // emit the UPDATE_SHUFFLE event
+        this.$io().emit(
+          EVENTS.UPDATE_SHUFFLE,
+          {
+            shuffle: checked,
+          },
+        );
+      }
+
       await this.reshuffle(this.trackIds);
-      return this.setPlaylistShuffling(event.target.checked);
+      return this.setPlaylistShuffling(checked);
     },
     /**
      * Clear playlist
