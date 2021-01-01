@@ -63,6 +63,14 @@
       </button>
       <button
         class="action-button menu-button"
+        @click="clearPlaybackQueue"
+        :disabled="playbackQueue.length === 0"
+        type="button"
+      >
+        Clear playback queue
+      </button>
+      <button
+        class="action-button menu-button"
         @click="clearPlaylist"
         type="button"
       >
@@ -84,7 +92,11 @@ import { remote as electron } from 'electron';
 import { mapActions, mapGetters, mapState } from 'vuex';
 import { promises as fs } from 'fs';
 
-import { PLAYLIST_EXTENSION } from '../../configuration';
+import {
+  CLIENT_TYPE,
+  EVENTS,
+  PLAYLIST_EXTENSION,
+} from '../../configuration';
 import Switch from '../../elements/Switch';
 
 export default {
@@ -99,9 +111,34 @@ export default {
     ...mapState({
       current: ({ track }) => track.track,
       loop: ({ settings }) => settings.loop,
+      playbackQueue: ({ playbackQueue }) => playbackQueue.queue,
       shuffle: ({ settings }) => settings.shuffle,
       tracks: ({ playlist }) => playlist.tracks,
     }),
+  },
+  mounted() {
+    // Websockets handlers
+    this.$io().on(
+      EVENTS.UPDATE_LOOP,
+      (data) => {
+        const { loop = false, target = '' } = data;
+        if (!(target && target === CLIENT_TYPE)) {
+          return false;
+        }
+        return this.setLoopPlaylist(loop);
+      },
+    );
+    this.$io().on(
+      EVENTS.UPDATE_SHUFFLE,
+      async (data) => {
+        const { shuffle = false, target = '' } = data;
+        if (!(target && target === CLIENT_TYPE)) {
+          return false;
+        }
+        await this.reshuffle(this.trackIds);
+        return this.setPlaylistShuffling(shuffle);
+      },
+    );
   },
   methods: {
     ...mapActions({
@@ -140,7 +177,20 @@ export default {
      * @returns {void}
      */
     handleLoopSwitch(event) {
-      return this.setLoopPlaylist(event.target.checked);
+      const { target: { checked = false } = {} } = event;
+
+      // Websockets
+      if (this.$io().connected) {
+        // emit the UPDATE_LOOP event
+        this.$io().emit(
+          EVENTS.UPDATE_LOOP,
+          {
+            loop: checked,
+          },
+        );
+      }
+
+      return this.setLoopPlaylist(checked);
     },
     /**
      * Handle shuffle switch click
@@ -148,8 +198,21 @@ export default {
      * @returns {Promise<void>}
      */
     async handleShuffleSwitch(event) {
+      const { target: { checked = false } = {} } = event;
+
+      // Websockets
+      if (this.$io().connected) {
+        // emit the UPDATE_SHUFFLE event
+        this.$io().emit(
+          EVENTS.UPDATE_SHUFFLE,
+          {
+            shuffle: checked,
+          },
+        );
+      }
+
       await this.reshuffle(this.trackIds);
-      return this.setPlaylistShuffling(event.target.checked);
+      return this.setPlaylistShuffling(checked);
     },
     /**
      * Clear playlist

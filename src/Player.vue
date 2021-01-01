@@ -11,6 +11,7 @@
     />
     <ContextMenu
       v-if="contextMenu"
+      :paused="paused"
       @handle-track-selection="handleTrackSelection"
     />
     <PlaybackError v-if="playbackError" />
@@ -335,7 +336,7 @@ export default {
         this.$io().emit(
           EVENTS.UPDATE_MUTE,
           {
-            isMuted: !this.muted
+            isMuted: !this.muted,
           },
         );
       }

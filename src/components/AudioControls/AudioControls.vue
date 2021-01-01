@@ -204,9 +204,21 @@ export default {
     player.ontimeupdate = () => {
       this.elapsed = player.currentTime;
       if (!this.progressClicked) {
-        progress.value = this.elapsed === 0
+        const updatedProgress = this.elapsed === 0
           ? 0
           : Math.round(this.elapsed / (this.current.duration / 200));
+        progress.value = updatedProgress;
+
+        // Websockets
+        if (this.$io().connected) {
+          // emit the progress value
+          this.$io().emit(
+            EVENTS.UPDATE_PROGRESS,
+            {
+              progress: updatedProgress,
+            },
+          );
+        }
       }
     };
 

@@ -41,7 +41,7 @@
         </div>
       </div>
       <div
-        v-if="current.id === contextTrackId"
+        v-if="current.id === contextTrackId && !paused"
         class="noselect"
       >
         File is playing
@@ -108,6 +108,12 @@ import months from '../../utilities/months';
 
 export default {
   name: 'ContextMenu',
+  props: {
+    paused: {
+      required: true,
+      type: Boolean,
+    },
+  },
   computed: {
     ...mapGetters({
       trackIds: 'playlist/getTrackIds',
