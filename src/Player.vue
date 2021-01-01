@@ -11,6 +11,7 @@
     />
     <ContextMenu
       v-if="contextMenu"
+      :paused="paused"
       @handle-track-selection="handleTrackSelection"
     />
     <PlaybackError v-if="playbackError" />
