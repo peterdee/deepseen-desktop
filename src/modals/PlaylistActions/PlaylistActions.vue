@@ -201,7 +201,7 @@ export default {
       const { target: { checked = false } = {} } = event;
 
       // Websockets
-      if (emit && this.$io().connected) {
+      if (this.$io().connected) {
         // emit the UPDATE_SHUFFLE event
         this.$io().emit(
           EVENTS.UPDATE_SHUFFLE,
