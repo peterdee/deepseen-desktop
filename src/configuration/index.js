@@ -26,6 +26,7 @@ export const {
 
 // Websockets events
 export const EVENTS = {
+  CLEAR_QUEUE: 'CLEAR_QUEUE',
   CLIENT_DISCONNECTED: 'CLIENT_DISCONNECTED',
   CLIENT_TYPE_IS_ALREADY_ONLINE: 'CLIENT_TYPE_IS_ALREADY_ONLINE',
   CONNECT_ERROR: 'connect_error',
