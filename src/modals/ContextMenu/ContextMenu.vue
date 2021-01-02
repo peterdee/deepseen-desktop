@@ -102,6 +102,7 @@
 <script>
 import { mapActions, mapGetters, mapState } from 'vuex';
 
+import { EVENTS } from '../../configuration';
 import formatTrackName from '../../utilities/format-track-name';
 import getNextTrackId from '../../utilities/get-next-track';
 import months from '../../utilities/months';
@@ -160,6 +161,18 @@ export default {
     async handleAddToQueue() {
       await this.addToQueue(this.contextTrackId);
       await this.setContextMenuTrackId('');
+
+      // Websockets
+      if (this.$io().connected) {
+        // emit the UPDATE_QUEUE event
+        this.$io().emit(
+          EVENTS.UPDATE_QUEUE,
+          {
+            queue: this.playbackQueue.length,
+          },
+        );
+      }
+
       return this.setContextMenuVisibility(false);
     },
     /**
@@ -196,6 +209,18 @@ export default {
     async handleRemoveFromQueue() {
       await this.removeFromQueue(this.contextTrackId);
       await this.setContextMenuTrackId('');
+
+      // Websockets
+      if (this.$io().connected) {
+        // emit the UPDATE_QUEUE event
+        this.$io().emit(
+          EVENTS.UPDATE_QUEUE,
+          {
+            queue: this.playbackQueue.length,
+          },
+        );
+      }
+
       return this.setContextMenuVisibility(false);
     },
     /**

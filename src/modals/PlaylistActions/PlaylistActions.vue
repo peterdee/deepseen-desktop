@@ -63,7 +63,7 @@
       </button>
       <button
         class="action-button menu-button"
-        @click="clearPlaybackQueue"
+        @click="handleClearQueue"
         :disabled="playbackQueue.length === 0"
         type="button"
       >
@@ -119,6 +119,16 @@ export default {
   mounted() {
     // Websockets handlers
     this.$io().on(
+      EVENTS.CLEAR_QUEUE,
+      (data) => {
+        const { target = '' } = data;
+        if (!(target && target === CLIENT_TYPE)) {
+          return false;
+        }
+        return this.clearPlaybackQueue();
+      },
+    );
+    this.$io().on(
       EVENTS.UPDATE_LOOP,
       (data) => {
         const { loop = false, target = '' } = data;
@@ -170,6 +180,18 @@ export default {
     async handleSortByName() {
       await this.sortByName();
       return this.setPlaylistActionsVisibility(false);
+    },
+    /**
+     * Handle clearing playback queue
+     * @returns {void}
+     */
+    handleClearQueue() {
+      // Websockets
+      if (this.$io().connected) {
+        this.$io().emit(EVENTS.CLEAR_QUEUE);
+      }
+
+      return this.clearPlaybackQueue();
     },
     /**
      * Handle loop switch click
