@@ -177,7 +177,7 @@ export default {
      * @returns {string}
      */
     formatName(name = '') {
-      return formatTrackName(name);
+      return formatTrackName(name, false);
     },
     /**
      * Add track to the playlist when 'oncanplay' event fires
