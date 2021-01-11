@@ -123,7 +123,7 @@ export default {
      */
     currentlyPlaying() {
       if (this.current.name) {
-        return formatTrackName(this.current.name);
+        return formatTrackName(this.current.name, false);
       }
       return '';
     },
