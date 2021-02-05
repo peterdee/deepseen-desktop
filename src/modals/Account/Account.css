@@ -3,12 +3,12 @@
   border: 1px solid var(--modal-border);
   border-radius: 16px;
   color: var(--modal-text);
-  height: 320px;
+  height: 360px;
   left: calc(50% - 250px);
   margin: auto auto;
   padding: 16px 0;
   position: fixed;
-  top: calc(50% - 180px);
+  top: calc(50% - 210px);
   width: 500px;
   z-index: 15;
 }

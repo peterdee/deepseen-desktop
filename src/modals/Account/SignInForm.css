@@ -33,3 +33,11 @@ input:disabled {
   color: var(--error-text);
   height: 24px;
 }
+.link-button {
+  color: var(--modal-text);
+  background-color: transparent;
+  border: none;
+  cursor: pointer;
+  outline: none;
+  padding: 0;
+}

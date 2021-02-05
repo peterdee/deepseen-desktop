@@ -84,6 +84,13 @@ export default {
             'Access denied!',
           );
         }
+        if (data.info === RESPONSE_MESSAGES.tooManyRequests
+          && data.status === STATUS_CODES.tooManyRequests) {
+          return commit(
+            actionTypes.ACCOUNT_MODAL_SET_ERROR,
+            'Too many requests! Repeat in 5 minutes!',
+          );
+        }
       }
 
       return commit(

@@ -34,11 +34,30 @@
     >
       Sign in
     </button>
+    <button
+      class="link-button mt-8 mb-8"
+      type="button"
+      :disabled="isLoading"
+      @click="handleForgotPassword"
+    >
+      Forgot password?
+    </button>
+    <button
+      class="link-button mb-8"
+      type="button"
+      :disabled="isLoading"
+      @click="handleSignUp"
+    >
+      Don't have an account?
+    </button>
   </form>
 </template>
 
 <script>
+import { shell } from 'electron';
+
 import ErrorMessage from '../../elements/ErrorMessage';
+import { WEB_APP_ORIGIN } from '../../configuration';
 
 export default {
   name: 'SignInForm',
@@ -69,6 +88,14 @@ export default {
     passwordError: {
       required: true,
       type: Boolean,
+    },
+  },
+  methods: {
+    handleForgotPassword() {
+      return shell.openExternal(`${WEB_APP_ORIGIN}/recovery`);
+    },
+    handleSignUp() {
+      return shell.openExternal(`${WEB_APP_ORIGIN}/signup`);
     },
   },
 };
