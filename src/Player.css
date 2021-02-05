@@ -135,6 +135,9 @@ body, html {
 .mb-8 {
   margin-bottom: 8px;
 }
+.mt-8 {
+  margin-top: 8px;
+}
 .pointer {
   cursor: pointer;
 }

@@ -55,6 +55,7 @@ export const PLAYLIST_EXTENSION = 'dpsn';
 export const RESPONSE_MESSAGES = {
   accessDenied: 'ACCESS_DENIED',
   internalServerError: 'INTERNAL_SERVER_ERROR',
+  tooManyRequests: 'TOO_MANY_REQUESTS',
 };
 
 // Status codes
@@ -63,8 +64,14 @@ export const STATUS_CODES = {
   created: 201,
   internalServerError: 500,
   ok: 200,
+  tooManyRequests: 429,
   unauthorized: 401,
 };
+
+// Web application origin
+export const {
+  VUE_APP_WEB_APP_ORIGIN: WEB_APP_ORIGIN = 'http://localhost:3000',
+} = process.env;
 
 // Websockets server origin
 export const {
