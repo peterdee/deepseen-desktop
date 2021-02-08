@@ -36,7 +36,10 @@
           {{ desktopConnected ? 'is connected' : 'is not connected' }}
         </span>
       </div>
-      <div v-if="!desktopConnected">
+      <div
+        v-if="!desktopConnected"
+        class="mb-8"
+      >
         <button
           class="action-button menu-button"
           type="button"
