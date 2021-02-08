@@ -192,6 +192,14 @@ export default {
       },
     );
     this.$io().on(
+      EVENTS.COMPLETE_LOGOUT,
+      () => {
+        this.disconnectClients();
+        this.setPlaybackError('You have been logged out!')
+        return this.signOut();
+      },
+    );
+    this.$io().on(
       EVENTS.CONNECT_ERROR,
       () => {
         this.disconnectClients();
@@ -309,7 +317,13 @@ export default {
 
       this.clientTypeError = false;
       this.$io().io.opts.query = { token: this.token };
-      this.$io().open();
+
+      // disconnect before opening a connection
+      if (this.$io().connected) {
+        this.$io().disconnect();
+      }
+
+      return this.$io().open();
     },
     /**
      * Mark clients as disconnected
