@@ -92,11 +92,7 @@ import { remote as electron } from 'electron';
 import { mapActions, mapGetters, mapState } from 'vuex';
 import { promises as fs } from 'fs';
 
-import {
-  CLIENT_TYPE,
-  EVENTS,
-  PLAYLIST_EXTENSION,
-} from '../../configuration';
+import { EVENTS, PLAYLIST_EXTENSION } from '../../configuration';
 import Switch from '../../elements/Switch';
 
 export default {
@@ -115,40 +111,6 @@ export default {
       shuffle: ({ settings }) => settings.shuffle,
       tracks: ({ playlist }) => playlist.tracks,
     }),
-  },
-  mounted() {
-    // Websockets handlers
-    this.$io().on(
-      EVENTS.CLEAR_QUEUE,
-      (data) => {
-        const { target = '' } = data;
-        if (!(target && target === CLIENT_TYPE)) {
-          return false;
-        }
-        return this.clearPlaybackQueue();
-      },
-    );
-    this.$io().on(
-      EVENTS.UPDATE_LOOP,
-      (data) => {
-        const { loop = false, target = '' } = data;
-        if (!(target && target === CLIENT_TYPE)) {
-          return false;
-        }
-        return this.setLoopPlaylist(loop);
-      },
-    );
-    this.$io().on(
-      EVENTS.UPDATE_SHUFFLE,
-      async (data) => {
-        const { shuffle = false, target = '' } = data;
-        if (!(target && target === CLIENT_TYPE)) {
-          return false;
-        }
-        await this.reshuffle(this.trackIds);
-        return this.setPlaylistShuffling(shuffle);
-      },
-    );
   },
   methods: {
     ...mapActions({
