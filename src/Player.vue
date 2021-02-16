@@ -264,6 +264,37 @@ export default {
       },
     );
     this.$io().on(
+      EVENTS.CLEAR_QUEUE,
+      (data) => {
+        const { target = '' } = data;
+        if (!(target && target === CLIENT_TYPE)) {
+          return false;
+        }
+        return this.clearPlaybackQueue();
+      },
+    );
+    this.$io().on(
+      EVENTS.UPDATE_LOOP,
+      (data) => {
+        const { loop = false, target = '' } = data;
+        if (!(target && target === CLIENT_TYPE)) {
+          return false;
+        }
+        return this.setLoopPlaylist(loop);
+      },
+    );
+    this.$io().on(
+      EVENTS.UPDATE_SHUFFLE,
+      async (data) => {
+        const { shuffle = false, target = '' } = data;
+        if (!(target && target === CLIENT_TYPE)) {
+          return false;
+        }
+        await this.reshuffle(this.trackIds);
+        return this.setPlaylistShuffling(shuffle);
+      },
+    );
+    this.$io().on(
       EVENTS.UPDATE_VOLUME,
       (data) => {
         const { target = '', volume = 0 } = data;
@@ -286,6 +317,7 @@ export default {
   methods: {
     ...mapActions({
       addTrack: 'playlist/addTrack',
+      clearPlaybackQueue: 'playbackQueue/clearQueue',
       clearTrack: 'track/clearTrack',
       removeFromQueue: 'playbackQueue/deleteTrack',
       reshuffle: 'playlist/reshuffle',
@@ -293,9 +325,11 @@ export default {
       setAvailability: 'playlist/setAvailability',
       setContextMenuTrackId: 'contextMenu/setTrackId',
       setContextMenuVisibility: 'contextMenu/setVisibility',
+      setLoopPlaylist: 'settings/setLoopPlaylist',
       setMuted: 'track/setMuted',
       setPlaybackError: 'playbackError/setError',
       setPlaylistActionsVisibility: 'playlistActions/setVisibility',
+      setPlaylistShuffling: 'settings/setPlaylistShuffling',
       setShuffledTrackAsPlayed: 'playlist/setShuffledTrackAsPlayed',
       setTrack: 'track/setTrack',
       setVolume: 'track/setVolume',
